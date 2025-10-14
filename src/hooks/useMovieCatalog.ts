@@ -1,5 +1,57 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Movie, MovieCategory, MovieFilters, MovieCatalogState } from '../types/movie';
+// Temporary inline types to fix import issues
+interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  year: number;
+  genre: string;
+  rating: number;
+  imageUrl: string;
+  videoUrl: string;
+  duration: number;
+  director: string;
+  cast: string[];
+  ageRating: string;
+  isTrending: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface MovieCategory {
+  id: string;
+  name: string;
+  description: string;
+  movieCount: number;
+}
+
+interface MovieFilters {
+  search?: string;
+  genre?: string;
+  yearFrom?: number;
+  yearTo?: number;
+  minRating?: number;
+  trendingOnly?: boolean;
+  featuredOnly?: boolean;
+  sortBy?: 'title' | 'year' | 'rating' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+}
+
+interface MovieCatalogState {
+  movies: Movie[];
+  categories: MovieCategory[];
+  searchQuery: string;
+  selectedGenre: string;
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+  isLoading: boolean;
+  error: string | null;
+  currentPage: number;
+  totalPages: number;
+}
 import { mockMovies, movieCategories, searchMovies, sortMovies, getMoviesByGenre } from '../constants/movies';
 import { mockApiService } from '../services/mockApi';
 
@@ -209,14 +261,14 @@ export const useMovieCatalog = (initialFilters: MovieFilters = {}) => {
       currentPage: 1
     });
     loadMovies(initialFilters);
-  }, [updateState, loadMovies, initialFilters]);
+  }, [updateState, loadMovies]);
 
   /**
    * Loads movies on component mount.
    */
   useEffect(() => {
     loadMovies(initialFilters);
-  }, [loadMovies, initialFilters]);
+  }, []); // Remove dependencies to prevent infinite loop
 
   return {
     // State

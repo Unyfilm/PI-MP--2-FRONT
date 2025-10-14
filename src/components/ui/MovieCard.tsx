@@ -1,6 +1,35 @@
 import React, { useState } from 'react';
-import { MovieCardProps } from '../../types/movie';
 import './MovieCard.scss';
+
+// Temporary inline types to fix import issues
+interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  year: number;
+  genre: string;
+  rating: number;
+  imageUrl: string;
+  videoUrl: string;
+  duration: number;
+  director: string;
+  cast: string[];
+  ageRating: string;
+  isTrending: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface MovieCardProps {
+  movie: Movie;
+  isFavorited?: boolean;
+  onMovieClick?: (movie: Movie) => void;
+  onFavoriteClick?: (movie: Movie) => void;
+  className?: string;
+  showFavoriteButton?: boolean;
+  size?: 'small' | 'medium' | 'large';
+}
 
 /**
  * MovieCard component for displaying individual movie information.
