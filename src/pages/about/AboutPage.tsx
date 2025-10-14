@@ -1,5 +1,5 @@
 import React from "react";
-import "./AboutPage.css";
+import "../../styles/AboutPage.css";
 
 /**
  * About page describing the Unyfilm team and purpose.

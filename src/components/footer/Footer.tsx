@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
-import "./Footer.css";
+import "../../styles/Footer.css";
 
 /**
  * Application footer with a quick link to the site map.

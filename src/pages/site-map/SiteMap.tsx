@@ -1,5 +1,5 @@
 import React from "react";
-import "./SiteMap.css";
+import "../../styles/SiteMap.css";
 
 /**
  * Site Map page listing the structure of available routes.
