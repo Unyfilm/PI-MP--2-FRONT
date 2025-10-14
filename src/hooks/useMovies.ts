@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Movie, MovieFilters, MovieResponse } from '../types';
+import { Movie, MovieFilters, MovieResponse } from '../types/movie';
 import { apiService } from '../services/api';
 import { ERROR_MESSAGES } from '../constants/movies';
 
