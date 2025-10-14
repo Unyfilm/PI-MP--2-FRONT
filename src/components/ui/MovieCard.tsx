@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Movie } from "../../types";
+import { Movie } from "../../types/movie";
 import "./MovieCard.css";
 
 /**
