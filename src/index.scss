@@ -1,6 +1,6 @@
 /* Import global styles */
-@import './styles/globals.scss';
-@import './styles/components.scss';
+@use './styles/globals.scss';
+@use './styles/components.scss';
 
 /* Legacy styles - to be refactored */
 $font-poppins: Poppins, sans-serif;

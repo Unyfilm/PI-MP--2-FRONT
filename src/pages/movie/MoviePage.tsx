@@ -1,5 +1,5 @@
 import React from "react";
-import "./MoviePage.css";
+import "../../styles/MoviePage.css";
 
 /**
  * Movies listing page.
