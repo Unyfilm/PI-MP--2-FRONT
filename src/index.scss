@@ -1,10 +1,9 @@
-$font-poppins: Poppins, sans-serif;
+/* Import global styles */
+@import './styles/globals.scss';
+@import './styles/components.scss';
 
-body {
-    font-family: $font-poppins;
-    margin: 0;
-    padding: 0;
-}
+/* Legacy styles - to be refactored */
+$font-poppins: Poppins, sans-serif;
 
 .container-page {
     div {
