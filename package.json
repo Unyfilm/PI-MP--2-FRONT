@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type-check": "npx tsc --noEmit",
+    "lint": "echo 'Linting not configured yet'",
+    "ci": "npm run type-check && npm run build"
   },
   "keywords": [
     "react",
@@ -29,5 +32,11 @@
     "tailwindcss": "^4.1.14",
     "typescript": "~5.9.3",
     "vite": "^7.1.7"
+  },
+  "overrides": {
+    "rollup": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
