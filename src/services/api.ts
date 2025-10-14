@@ -23,13 +23,7 @@ const defaultConfig: ApiConfig = {
   },
 };
 
-/**
- * Check if we should use mock API for development.
- */
-const shouldUseMockApi = (): boolean => {
-  return import.meta.env.VITE_NODE_ENV === 'development' && 
-         import.meta.env.VITE_ENABLE_DEBUG === 'true';
-};
+// Mock API check removed - using direct environment variables
 
 /**
  * HTTP methods supported by the API service.
