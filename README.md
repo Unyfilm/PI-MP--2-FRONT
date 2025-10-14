@@ -152,18 +152,3 @@ Proyecto desarrollado por un equipo de **5 integrantes**
 | 🧪 **Pruebas**                    | Heurísticas, WCAG y experiencia de usuario       |
 
 ---
-
-## 🏁 Estado actual
-
-✔️ Proyecto inicializado con configuración de entorno
-✔️ Estructura base React + Vite + TS
-✔️ Tailwind + SASS configurados
-✔️ Rutas y layouts iniciales
-⬜ Integración API backend (en progreso)
-⬜ Implementación de heurísticas Sprint 1
----
-
-## 📜 Licencia
-
-Proyecto académico - Universidad del Valle
-Curso **750018C - Proyecto Integrador I (2025-2)**
