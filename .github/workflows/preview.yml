@@ -1,12 +1,14 @@
 name: Preview Deployment
 
 on:
-  # Temporarily disabled until secrets are properly configured
-  # push:
-  #   branches: [ develop ]
-  # pull_request:
-  #   branches: [ develop ]
-  workflow_dispatch:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   preview:
