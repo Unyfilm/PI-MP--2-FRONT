@@ -1,6 +1,5 @@
 ## 🧾 **README.md**
 
-````markdown
 # 🎬 Plataforma de Películas – Unyfilm
 
 Este repositorio contiene el **frontend** del proyecto académico **“Unyfilm”**, desarrollado como parte del curso **Proyecto Integrador I (2025-2)**.
@@ -43,8 +42,6 @@ src/
 ├── index.scss          # Estilos globales (Tailwind + SASS)
 ├── main.tsx            # Punto de entrada
 ````
-
----
 
 ## ⚙️ Instalación y ejecución
 
