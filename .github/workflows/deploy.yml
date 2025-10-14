@@ -1,8 +1,9 @@
 name: Production Deployment
 
 on:
-  push:
-    branches: [ main ]
+  # Temporarily disabled until secrets are properly configured
+  # push:
+  #   branches: [ main ]
   workflow_dispatch:
 
 jobs:
