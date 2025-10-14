@@ -3,7 +3,7 @@ import HomePage from "../pages/home/HomePage";
 import AboutPage from "../pages/about/AboutPage";
 import SiteMap from "../pages/site-map/SiteMap";
 import MoviePage from "../pages/movie/MoviePage";
-import CatalogPage from "../pages/catalog/CatalogPageSimple";
+import CatalogPage from "../pages/catalog/CatalogPage";
 import LayoutUnyfilm from "../layout/LayoutUnyfilm";
 
 /**
