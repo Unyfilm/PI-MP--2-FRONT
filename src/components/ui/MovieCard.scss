@@ -17,8 +17,8 @@
   min-height: 200px;
 
   &:hover {
-    transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    transform: translateY(-12px) scale(1.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     z-index: 10;
 
     .movie-card__overlay {
@@ -28,6 +28,10 @@
 
     .movie-card__title-container {
       opacity: 0;
+    }
+
+    .movie-card__image {
+      transform: scale(1.1);
     }
   }
 
