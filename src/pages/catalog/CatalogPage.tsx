@@ -3,7 +3,25 @@ import { useNavigate } from 'react-router';
 import MovieGrid from '../../components/ui/MovieGrid';
 import SearchBar from '../../components/ui/SearchBar';
 import { useMovieCatalog } from '../../hooks/useMovieCatalog';
-import { Movie } from '../../types/movie';
+// Temporary inline types to fix import issues
+interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  year: number;
+  genre: string;
+  rating: number;
+  imageUrl: string;
+  videoUrl: string;
+  duration: number;
+  director: string;
+  cast: string[];
+  ageRating: string;
+  isTrending: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 import './CatalogPage.scss';
 
 /**

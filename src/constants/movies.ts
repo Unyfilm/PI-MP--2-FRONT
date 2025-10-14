@@ -2,7 +2,32 @@
  * Movie data constants and mock data for development.
  */
 
-import { Movie, MovieCategory } from '../types/movie';
+// Temporary inline types to fix import issues
+interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  year: number;
+  genre: string;
+  rating: number;
+  imageUrl: string;
+  videoUrl: string;
+  duration: number;
+  director: string;
+  cast: string[];
+  ageRating: string;
+  isTrending: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface MovieCategory {
+  id: string;
+  name: string;
+  description: string;
+  movieCount: number;
+}
 
 /**
  * Mock movie data for development and testing.

@@ -1,7 +1,26 @@
 import React from 'react';
 import MovieCard from './MovieCard';
-import { Movie } from '../../types/movie';
 import './MovieGrid.scss';
+
+// Temporary inline types to fix import issues
+interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  year: number;
+  genre: string;
+  rating: number;
+  imageUrl: string;
+  videoUrl: string;
+  duration: number;
+  director: string;
+  cast: string[];
+  ageRating: string;
+  isTrending: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 /**
  * Props interface for MovieGrid component.
