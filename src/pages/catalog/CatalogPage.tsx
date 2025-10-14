@@ -134,13 +134,24 @@ const CatalogPage: React.FC = () => {
 
   return (
     <div className="catalog-page">
-      {/* Header Section */}
-      <header className="catalog-page__header">
-        <div className="catalog-page__header-content">
-          <h1 className="catalog-page__title">Movie Catalog</h1>
-          <p className="catalog-page__subtitle">
-            Discover and explore our collection of movies
-          </p>
+      {/* Top Header */}
+      <header className="catalog-page__top-header">
+        <div className="catalog-page__top-content">
+          <h1 className="catalog-page__page-title">Catálogo</h1>
+          <div className="catalog-page__top-actions">
+            <div className="catalog-page__search-container">
+              <SearchBar
+                value={searchQuery}
+                placeholder="Buscar película..."
+                onSearch={handleSearchChange}
+                onSubmit={handleSearchChange}
+                suggestions={searchSuggestions}
+                onSuggestionClick={handleSuggestionClick}
+                className="catalog-page__search-bar"
+              />
+            </div>
+            <div className="catalog-page__user-avatar">J</div>
+          </div>
         </div>
       </header>
 

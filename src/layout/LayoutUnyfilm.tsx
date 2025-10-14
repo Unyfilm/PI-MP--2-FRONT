@@ -14,8 +14,8 @@ interface LayoutUnyfilmProps {
 }
 
 /**
- * Shared application layout that renders a global navigation bar at the top,
- * the current page content in a `<main>` region, and a footer at the bottom.
+ * Shared application layout with sidebar navigation and main content area.
+ * Features a fixed left sidebar and scrollable main content.
  *
  * @component
  * @param {LayoutUnyfilmProps} props - Component properties.
@@ -24,11 +24,15 @@ interface LayoutUnyfilmProps {
  */
 const LayoutUnyfilm: React.FC<LayoutUnyfilmProps> = ({ children }) => {
     return (
-        <>
-            <Navbar />
-            <main>{children}</main>
+        <div className="layout-container">
+            <aside className="layout-sidebar">
+                <Navbar />
+            </aside>
+            <main className="layout-main">
+                {children}
+            </main>
             <Footer />
-        </>
+        </div>
     );
 };
 
