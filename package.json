@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type-check": "npx tsc --noEmit",
+    "lint": "echo 'Linting not configured yet'",
+    "ci": "npm run type-check && npm run build"
   },
   "keywords": [
     "react",
