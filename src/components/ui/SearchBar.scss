@@ -1,0 +1,313 @@
+/**
+ * SearchBar component styles with modern design.
+ * Features search suggestions, keyboard navigation, and accessibility support.
+ */
+
+.search-bar {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+
+  // Form container
+  &__form {
+    position: relative;
+    width: 100%;
+  }
+
+  // Input container
+  &__input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    &:focus-within {
+      border-color: #e50914;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.2);
+    }
+  }
+
+  // Search icon
+  &__icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #999;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  // Input field
+  &__input {
+    width: 100%;
+    padding: 12px 40px 12px 40px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+
+    &::placeholder {
+      color: #999;
+      font-weight: 400;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // Clear button
+  &__clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+
+    &:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &:focus {
+      outline: 2px solid #e50914;
+      outline-offset: 2px;
+    }
+  }
+
+  // Suggestions dropdown
+  &__suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.2s ease;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+
+  // Individual suggestion
+  &__suggestion {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover,
+    &--selected {
+      background: rgba(229, 9, 20, 0.2);
+      color: white;
+    }
+
+    &:focus {
+      outline: 2px solid #e50914;
+      outline-offset: -2px;
+    }
+  }
+
+  // Suggestion icon
+  &__suggestion-icon {
+    margin-right: 8px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  // Suggestion text
+  &__suggestion-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .search-bar {
+    max-width: 100%;
+
+    &__input {
+      font-size: 14px;
+      padding: 10px 36px 10px 36px;
+    }
+
+    &__icon {
+      font-size: 14px;
+      left: 10px;
+    }
+
+    &__clear {
+      right: 10px;
+      font-size: 14px;
+    }
+
+    &__suggestion {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    &__suggestion-icon {
+      font-size: 11px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .search-bar {
+    &__input {
+      font-size: 13px;
+      padding: 8px 32px 8px 32px;
+    }
+
+    &__icon {
+      font-size: 13px;
+      left: 8px;
+    }
+
+    &__clear {
+      right: 8px;
+      font-size: 13px;
+    }
+
+    &__suggestion {
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+  }
+}
+
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  .search-bar {
+    &__input-container {
+      transition: none;
+    }
+
+    &__suggestions {
+      animation: none;
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .search-bar {
+    &__input-container {
+      border-color: #fff;
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    &__suggestions {
+      border-color: #fff;
+      background: rgba(0, 0, 0, 0.9);
+    }
+
+    &__suggestion {
+      border-bottom-color: #fff;
+    }
+  }
+}
+
+// Focus visible support for better accessibility
+.search-bar__input:focus-visible,
+.search-bar__clear:focus-visible,
+.search-bar__suggestion:focus-visible {
+  outline: 2px solid #e50914;
+  outline-offset: 2px;
+}
+
+// Dark mode support (if needed)
+@media (prefers-color-scheme: dark) {
+  .search-bar {
+    &__input-container {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &__suggestions {
+      background: rgba(0, 0, 0, 0.9);
+    }
+  }
+}
