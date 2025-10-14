@@ -17,5 +17,7 @@
   ],
   "env": {
     "VITE_NODE_ENV": "production"
-  }
+  },
+  "buildCommand": "npm ci && npm run build",
+  "installCommand": "npm ci"
 }
