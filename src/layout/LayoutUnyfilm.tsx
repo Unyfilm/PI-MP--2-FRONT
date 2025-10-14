@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router";
-import Sidebar from "../components/layout/Sidebar";
+import React from "react";
+import Navbar from "../components/navbar/Navbar";
 import Footer from "../components/footer/Footer";
-import "../styles/LayoutUnyfilm.css";
+import "./LayoutUnyfilm.css";
 
 /**
  * Props accepted by {@link LayoutUnyfilm}.
@@ -15,7 +14,7 @@ interface LayoutUnyfilmProps {
 }
 
 /**
- * Shared application layout that renders a sidebar navigation, 
+ * Shared application layout that renders a global navigation bar at the top,
  * the current page content in a `<main>` region, and a footer at the bottom.
  *
  * @component
@@ -24,25 +23,12 @@ interface LayoutUnyfilmProps {
  * @returns {JSX.Element} The layout wrapper for app pages.
  */
 const LayoutUnyfilm: React.FC<LayoutUnyfilmProps> = ({ children }) => {
-    const location = useLocation();
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    
-    // Don't show sidebar on certain pages
-    const hideSidebar = location.pathname === '/' || location.pathname === '/sobre-nosotros' || location.pathname === '/mapa-sitio';
-    
     return (
-        <div className="app-layout">
-            {!hideSidebar && (
-                <Sidebar 
-                    collapsed={sidebarCollapsed}
-                    onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                />
-            )}
-            <main className={`main-content ${hideSidebar ? 'full-width' : ''}`}>
-                {children}
-            </main>
+        <>
+            <Navbar />
+            <main>{children}</main>
             <Footer />
-        </div>
+        </>
     );
 };
 

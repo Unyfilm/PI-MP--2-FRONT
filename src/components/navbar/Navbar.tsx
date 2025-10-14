@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
-import "../../styles/Navbar.css";
+import "./Navbar.css";
 
 /**
  * Global navigation bar providing primary links to key routes.
