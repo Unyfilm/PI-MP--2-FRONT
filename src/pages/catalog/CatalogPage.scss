@@ -5,43 +5,57 @@
 
 .catalog-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  background: #0f0f0f;
   color: white;
   padding: 0;
 
-  // Header section
-  &__header {
-    background: linear-gradient(
-      135deg,
-      rgba(229, 9, 20, 0.1) 0%,
-      rgba(0, 0, 0, 0.8) 100%
-    );
-    padding: 40px 20px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  // Top header
+  &__top-header {
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
-  &__header-content {
+  &__top-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     max-width: 1200px;
     margin: 0 auto;
   }
 
-  &__title {
-    font-size: 48px;
-    font-weight: 700;
-    margin: 0 0 16px 0;
-    background: linear-gradient(45deg, #e50914, #f40612);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  &__page-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    color: white;
   }
 
-  &__subtitle {
-    font-size: 18px;
-    color: #ccc;
-    margin: 0;
-    font-weight: 400;
+  &__top-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__search-container {
+    max-width: 400px;
+    width: 100%;
+  }
+
+  &__user-avatar {
+    width: 36px;
+    height: 36px;
+    background: #e50914;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
   }
 
   // Filters section
