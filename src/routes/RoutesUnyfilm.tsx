@@ -3,6 +3,7 @@ import HomePage from "../pages/home/HomePage";
 import AboutPage from "../pages/about/AboutPage";
 import SiteMap from "../pages/site-map/SiteMap";
 import MoviePage from "../pages/movie/MoviePage";
+import CatalogPage from "../pages/catalog/CatalogPage";
 import LayoutUnyfilm from "../layout/LayoutUnyfilm";
 
 /**
@@ -21,6 +22,7 @@ const RoutesUnyfilm = () => {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/peliculas" element={<MoviePage />} />
+                    <Route path="/catalogo" element={<CatalogPage />} />
                     <Route path="/sobre-nosotros" element={<AboutPage />} />
                     <Route path="/mapa-sitio" element={<SiteMap />} />
                 </Routes>

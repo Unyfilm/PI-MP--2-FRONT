@@ -1,0 +1,300 @@
+/**
+ * MovieGrid component styles with responsive grid layout.
+ * Features modern Netflix/HBO Max inspired design with smooth animations.
+ */
+
+.movie-grid {
+  width: 100%;
+  padding: 0;
+
+  // Grid container
+  &__container {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    grid-template-columns: repeat(var(--grid-columns, 4), 1fr);
+    transition: all 0.3s ease;
+
+    &--grid {
+      grid-template-columns: repeat(var(--grid-columns, 4), 1fr);
+    }
+
+    &--list {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+
+  // Grid item
+  &__item {
+    position: relative;
+    width: 100%;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      z-index: 5;
+    }
+  }
+
+  // Grid card
+  &__card {
+    width: 100%;
+    height: 100%;
+  }
+
+  // Loading state
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #ccc;
+  }
+
+  &__loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #333;
+    border-top: 3px solid #e50914;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+
+  &__loading-text {
+    font-size: 16px;
+    margin: 0;
+    color: #999;
+  }
+
+  // Error state
+  &__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #ccc;
+  }
+
+  &__error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  &__error-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #fff;
+  }
+
+  &__error-message {
+    font-size: 16px;
+    margin: 0 0 24px 0;
+    color: #999;
+    max-width: 400px;
+  }
+
+  &__error-retry {
+    background: #e50914;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: #f40612;
+    }
+
+    &:focus {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+  }
+
+  // Empty state
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #ccc;
+  }
+
+  &__empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  &__empty-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #fff;
+  }
+
+  &__empty-message {
+    font-size: 16px;
+    margin: 0;
+    color: #999;
+    max-width: 400px;
+  }
+}
+
+// Animations
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+  .movie-grid {
+    &__container {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .movie-grid {
+    &__container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-grid {
+    &__container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    &__loading,
+    &__error,
+    &__empty {
+      padding: 40px 16px;
+    }
+
+    &__loading-spinner {
+      width: 32px;
+      height: 32px;
+    }
+
+    &__loading-text {
+      font-size: 14px;
+    }
+
+    &__error-icon,
+    &__empty-icon {
+      font-size: 36px;
+    }
+
+    &__error-title,
+    &__empty-title {
+      font-size: 20px;
+    }
+
+    &__error-message,
+    &__empty-message {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-grid {
+    &__container {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    &__loading,
+    &__error,
+    &__empty {
+      padding: 30px 12px;
+    }
+
+    &__loading-spinner {
+      width: 28px;
+      height: 28px;
+    }
+
+    &__loading-text {
+      font-size: 12px;
+    }
+
+    &__error-icon,
+    &__empty-icon {
+      font-size: 32px;
+    }
+
+    &__error-title,
+    &__empty-title {
+      font-size: 18px;
+    }
+
+    &__error-message,
+    &__empty-message {
+      font-size: 12px;
+    }
+  }
+}
+
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  .movie-grid {
+    &__container {
+      transition: none;
+    }
+
+    &__item {
+      transition: none;
+    }
+
+    &__loading-spinner {
+      animation: none;
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .movie-grid {
+    &__loading-spinner {
+      border-color: #fff;
+      border-top-color: #e50914;
+    }
+
+    &__error-retry {
+      border: 2px solid #fff;
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .movie-grid {
+    &__container {
+      display: block;
+    }
+
+    &__item {
+      break-inside: avoid;
+      margin-bottom: 20px;
+    }
+  }
+}

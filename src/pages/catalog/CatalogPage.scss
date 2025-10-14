@@ -1,0 +1,398 @@
+/**
+ * CatalogPage component styles with modern Netflix/HBO Max inspired design.
+ * Features responsive layout, search functionality, and accessibility support.
+ */
+
+.catalog-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  color: white;
+  padding: 0;
+
+  // Header section
+  &__header {
+    background: linear-gradient(
+      135deg,
+      rgba(229, 9, 20, 0.1) 0%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+    padding: 40px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    background: linear-gradient(45deg, #e50914, #f40612);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  &__subtitle {
+    font-size: 18px;
+    color: #ccc;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  // Filters section
+  &__filters {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  &__filters-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  // Search section
+  &__search {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  &__search-bar {
+    width: 100%;
+  }
+
+  // Controls section
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: end;
+    justify-content: center;
+  }
+
+  &__control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 150px;
+  }
+
+  &__control-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__control-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    &:focus {
+      outline: 2px solid #e50914;
+      outline-offset: 2px;
+      border-color: #e50914;
+    }
+
+    option {
+      background: #1a1a1a;
+      color: white;
+    }
+  }
+
+  &__clear-filters {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ccc;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #e50914;
+      color: #e50914;
+    }
+
+    &:focus {
+      outline: 2px solid #e50914;
+      outline-offset: 2px;
+    }
+  }
+
+  // Results section
+  &__results {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  &__results-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0;
+    color: white;
+  }
+
+  &__results-count {
+    font-size: 16px;
+    color: #ccc;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  // Movie grid
+  &__movie-grid {
+    margin-bottom: 40px;
+  }
+
+  // Pagination
+  &__pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 40px 0;
+    flex-wrap: wrap;
+  }
+
+  &__pagination-button {
+    background: #e50914;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:hover:not(:disabled) {
+      background: #f40612;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+    }
+
+    &:disabled {
+      background: #333;
+      color: #666;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    &:focus {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+  }
+
+  &__pagination-info {
+    font-size: 14px;
+    color: #ccc;
+    font-weight: 500;
+  }
+
+  // Actions section
+  &__actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+
+  &__refresh-button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ccc;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #e50914;
+      color: #e50914;
+    }
+
+    &:focus {
+      outline: 2px solid #e50914;
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .catalog-page {
+    &__header {
+      padding: 30px 16px;
+    }
+
+    &__title {
+      font-size: 36px;
+    }
+
+    &__subtitle {
+      font-size: 16px;
+    }
+
+    &__filters {
+      padding: 20px 16px;
+    }
+
+    &__filters-container {
+      gap: 16px;
+    }
+
+    &__controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__control-group {
+      min-width: auto;
+    }
+
+    &__results {
+      padding: 30px 16px;
+    }
+
+    &__results-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    &__results-title {
+      font-size: 24px;
+    }
+
+    &__pagination {
+      gap: 16px;
+    }
+
+    &__pagination-button {
+      padding: 10px 20px;
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .catalog-page {
+    &__header {
+      padding: 20px 12px;
+    }
+
+    &__title {
+      font-size: 28px;
+    }
+
+    &__subtitle {
+      font-size: 14px;
+    }
+
+    &__filters {
+      padding: 16px 12px;
+    }
+
+    &__results {
+      padding: 20px 12px;
+    }
+
+    &__results-title {
+      font-size: 20px;
+    }
+
+    &__pagination {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    &__pagination-button {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+  }
+}
+
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  .catalog-page {
+    &__pagination-button {
+      transition: none;
+
+      &:hover:not(:disabled) {
+        transform: none;
+      }
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .catalog-page {
+    &__control-select {
+      border-color: #fff;
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    &__clear-filters,
+    &__refresh-button {
+      border-color: #fff;
+    }
+  }
+}
+
+// Focus visible support for better accessibility
+.catalog-page__control-select:focus-visible,
+.catalog-page__clear-filters:focus-visible,
+.catalog-page__pagination-button:focus-visible,
+.catalog-page__refresh-button:focus-visible {
+  outline: 2px solid #e50914;
+  outline-offset: 2px;
+}
