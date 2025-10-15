@@ -1,0 +1,219 @@
+/* Login Container */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Overlay */
+.overlay {
+    position: absolute;
+    inset: 0;
+    left: 536px;
+    background: rgba(255, 255, 255, 0.28);
+    pointer-events: none;
+}
+
+/* Left Panel */
+.left-panel {
+    position: relative;
+    width: 536px;
+    min-height: 100vh;
+    background: #000115;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.content-wrapper {
+    width: 100%;
+    max-width: 28rem;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Logo */
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.logo-image {
+    max-width: 215px;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Title */
+.title {
+    color: #F3F3F3;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Form Container */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    width: 368px;
+    background: #0A0A2E;
+    border: 2px solid #312A6F;
+    border-radius: 20px;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Input Field */
+.input-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    color: #F3F3F3;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 140%;
+}
+
+.input {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    outline: none;
+    color: #B3B3B3;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.email-input {
+    background: rgba(103, 121, 181, 0.38);
+    border: 1px solid #13267A;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.password-input {
+    background: #27306B;
+    border: 1px solid #0B1A66;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.input::placeholder {
+    color: #B3B3B3;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    height: 46px;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn:hover {
+    transform: scale(1.02);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-login {
+    background: radial-gradient(50% 50% at 50% 50%, rgba(5, 38, 104, 0.2) 0%, rgba(71, 141, 254, 0.2) 100%), linear-gradient(0deg, #13267A, #13267A);
+    color: #F5F5F5;
+    border-radius: 8px;
+}
+
+.btn-register {
+    background: radial-gradient(50% 50% at 50% 50%, rgba(5, 38, 104, 0.2) 0%, rgba(71, 141, 254, 0.2) 100%), linear-gradient(0deg, #13267A, #13267A);
+    border: 1px solid #13267A;
+    border-radius: 8px;
+    color: #F5F5F5;
+}
+
+/* Forgot Password */
+.forgot-password {
+    text-align: center;
+}
+
+.link {
+    color: #43BEF7;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 140%;
+    text-decoration: underline;
+}
+
+/* Divider */
+.divider {
+    width: 100%;
+    height: 2px;
+    background: #211D51;
+}
+
+/* Register Section */
+.register-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.register-text {
+    text-align: center;
+    text-decoration: underline;
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 140%;
+}
+
+/* Right Panel */
+.right-panel {
+    flex: 1;
+    position: relative;
+    background-color: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.astronaut-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.astronaut-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 0;
+}
