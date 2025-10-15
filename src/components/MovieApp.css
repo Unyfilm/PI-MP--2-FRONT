@@ -1,0 +1,31 @@
+/* UnyFilm Main Container */
+.movie-app-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  color: white;
+  font-family: system-ui, -apple-system, sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main Content */
+.main-content {
+  min-height: calc(100vh - 80px);
+  overflow-y: auto;
+  flex: 1;
+  margin-bottom: 0; /* Remove any bottom margin */
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+}
