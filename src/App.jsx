@@ -1,8 +1,13 @@
 import React from 'react';
-import MovieApp from './components/MovieApp';
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
 
 function App() {
-  return <MovieApp />;
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
 }
 
 export default App;

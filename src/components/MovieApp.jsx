@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';
 import UnyFilmHeader from './header/UnyFilmHeader';
 import UnyFilmHome from './home/UnyFilmHome';
@@ -13,11 +14,37 @@ import Footer from './footer/Footer';
 import './MovieApp.css';
 
 export default function MovieApp() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState('home');
   const [favorites, setFavorites] = useState([0, 4, 8]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentMovie, setCurrentMovie] = useState(null);
   const [showPlayer, setShowPlayer] = useState(false);
+
+  // Sync URL with current view
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/' || path === '/home') {
+      setCurrentView('home');
+    } else if (path === '/catalog') {
+      setCurrentView('catalog');
+    } else if (path === '/about') {
+      setCurrentView('about');
+    } else if (path === '/sitemap') {
+      setCurrentView('sitemap');
+    }
+  }, [location.pathname]);
+
+  // Handle view changes with navigation
+  const handleViewChange = (view) => {
+    setCurrentView(view);
+    if (view === 'home') {
+      navigate('/');
+    } else {
+      navigate(`/${view}`);
+    }
+  };
   
   const movieTitles = [
     'Piratas Espaciales', 'Galaxia Perdida', 'Aventura Cósmica', 'Misterio Estelar',
@@ -80,7 +107,7 @@ export default function MovieApp() {
       {/* Fixed Sidebar */}
       <UnyFilmSidebar 
         currentView={currentView} 
-        setCurrentView={setCurrentView} 
+        setCurrentView={handleViewChange} 
         id="navigation"
       />
 
@@ -137,7 +164,7 @@ export default function MovieApp() {
       <AccessibilityFeatures />
 
       {/* Global Footer */}
-      <Footer setCurrentView={setCurrentView} />
+      <Footer setCurrentView={handleViewChange} />
     </div>
   );
 }
