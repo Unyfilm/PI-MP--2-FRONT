@@ -1,0 +1,431 @@
+/* Video Player Page */
+.unyfilm-player-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0e1a;
+  color: white;
+  padding: 20px;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+/* Close Button */
+.unyfilm-player-close-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+}
+
+.unyfilm-player-close-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+/* Video Container */
+.unyfilm-video-container {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.unyfilm-video-container.fullscreen {
+  max-width: 100vw;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+.unyfilm-video-element {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.unyfilm-video-container.fullscreen .unyfilm-video-element {
+  height: 100vh;
+  object-fit: contain;
+}
+
+/* Video Controls */
+.unyfilm-video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.unyfilm-video-controls.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Progress Bar */
+.unyfilm-progress-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: height 0.2s ease;
+}
+
+.unyfilm-progress-container:hover {
+  height: 8px;
+}
+
+.unyfilm-progress-bar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.unyfilm-progress-filled {
+  height: 100%;
+  background: #6366f1;
+  border-radius: 3px;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.unyfilm-progress-filled::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Control Buttons */
+.unyfilm-controls-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.unyfilm-controls-left,
+.unyfilm-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.unyfilm-control-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.unyfilm-control-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+/* Volume Control */
+.unyfilm-volume-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unyfilm-volume-slider {
+  width: 80px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.unyfilm-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.unyfilm-volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.unyfilm-volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.unyfilm-volume-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Time Display */
+.unyfilm-time-display {
+  font-size: 14px;
+  color: white;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Movie Info Section */
+.unyfilm-movie-info-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.unyfilm-movie-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.unyfilm-movie-title-main {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+.unyfilm-movie-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(99, 102, 241, 0.2);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.unyfilm-movie-rating .star {
+  color: #fbbf24;
+  font-size: 20px;
+}
+
+.unyfilm-movie-metadata {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  color: #9ca3af;
+  margin-bottom: 30px;
+}
+
+.unyfilm-metadata-item {
+  font-weight: 500;
+}
+
+.unyfilm-metadata-separator {
+  opacity: 0.5;
+}
+
+.unyfilm-movie-description {
+  margin-bottom: 35px;
+}
+
+.unyfilm-movie-description h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  color: white;
+}
+
+.unyfilm-description-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #d1d5db;
+  margin: 0;
+}
+
+/* User Rating Section */
+.unyfilm-user-rating-section {
+  margin-bottom: 35px;
+}
+
+.unyfilm-user-rating-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  color: white;
+}
+
+.unyfilm-star-rating {
+  display: flex;
+  gap: 8px;
+}
+
+.unyfilm-rating-star {
+  font-size: 28px;
+  color: #fbbf24;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.unyfilm-rating-star:hover {
+  transform: scale(1.2);
+}
+
+/* Review Section */
+.unyfilm-review-section {
+  margin-bottom: 40px;
+}
+
+.unyfilm-review-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  color: white;
+}
+
+.unyfilm-review-textarea {
+  width: 100%;
+  min-height: 120px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.unyfilm-review-textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.unyfilm-review-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.unyfilm-submit-review-btn {
+  background: #6366f1;
+  border: none;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.unyfilm-submit-review-btn:hover {
+  background: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .unyfilm-player-page {
+    padding: 10px;
+  }
+
+  .unyfilm-movie-title-main {
+    font-size: 24px;
+  }
+
+  .unyfilm-movie-rating {
+    font-size: 16px;
+  }
+
+  .unyfilm-movie-metadata {
+    font-size: 14px;
+  }
+
+  .unyfilm-controls-bottom {
+    flex-wrap: wrap;
+  }
+
+  .unyfilm-volume-slider {
+    width: 60px;
+  }
+
+  .unyfilm-time-display {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .unyfilm-movie-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .unyfilm-volume-control {
+    display: none;
+  }
+
+  .unyfilm-controls-left {
+    flex-wrap: wrap;
+  }
+}

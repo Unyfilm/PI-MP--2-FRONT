@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import RoutesUnyfilm from "./routes/RoutesUnyfilm.tsx";
+import App from "./App.jsx";
 import "./index.scss";
 
 /**
@@ -9,6 +9,6 @@ import "./index.scss";
  */
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RoutesUnyfilm />
+    <App />
   </React.StrictMode>
 );
