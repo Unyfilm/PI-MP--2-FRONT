@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';
 import UnyFilmHeader from './header/UnyFilmHeader';
 import UnyFilmHome from './home/UnyFilmHome';
@@ -12,39 +12,37 @@ import AccessibilityFeatures from './accessibility/AccessibilityFeatures';
 import UserAuth from './auth/UserAuth';
 import Footer from './footer/Footer';
 import './MovieApp.css';
+import Login from './login/Login';
 
 export default function MovieApp() {
   const location = useLocation();
-  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState('home');
   const [favorites, setFavorites] = useState([0, 4, 8]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentMovie, setCurrentMovie] = useState(null);
   const [showPlayer, setShowPlayer] = useState(false);
 
-  // Sync URL with current view
+  // Detectar la ruta actual y actualizar currentView
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/' || path === '/home') {
-      setCurrentView('home');
-    } else if (path === '/catalog') {
-      setCurrentView('catalog');
-    } else if (path === '/about') {
-      setCurrentView('about');
-    } else if (path === '/sitemap') {
-      setCurrentView('sitemap');
+    switch (path) {
+      case '/':
+      case '/home':
+        setCurrentView('home');
+        break;
+      case '/catalog':
+        setCurrentView('catalog');
+        break;
+      case '/about':
+        setCurrentView('about');
+        break;
+      case '/sitemap':
+        setCurrentView('sitemap');
+        break;
+      default:
+        setCurrentView('home');
     }
-  }, [location.pathname]);
-
-  // Handle view changes with navigation
-  const handleViewChange = (view) => {
-    setCurrentView(view);
-    if (view === 'home') {
-      navigate('/');
-    } else {
-      navigate(`/${view}`);
-    }
-  };
+  }, [location]);
   
   const movieTitles = [
     'Piratas Espaciales', 'Galaxia Perdida', 'Aventura Cósmica', 'Misterio Estelar',
@@ -101,6 +99,7 @@ export default function MovieApp() {
     setShowPlayer(false);
     setCurrentMovie(null);
   };
+
 
   return (
     <div className="movie-app-container">
