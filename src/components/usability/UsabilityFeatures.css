@@ -1,0 +1,289 @@
+/* Usability Features Component */
+.usability-features {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.usability-help-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  transition: all 0.3s ease;
+  pointer-events: all;
+  z-index: 1001;
+}
+
+.usability-help-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+}
+
+.usability-help-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+  pointer-events: all;
+  animation: fadeIn 0.3s ease;
+}
+
+.usability-help-content {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.usability-help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.usability-help-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: #6366f1;
+}
+
+.usability-help-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.usability-help-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.usability-help-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.usability-heuristic {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.usability-heuristic h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  color: white;
+}
+
+.usability-icon {
+  width: 24px;
+  height: 24px;
+  color: #6366f1;
+}
+
+.usability-heuristic p {
+  font-size: 16px;
+  color: #d1d5db;
+  margin: 0 0 15px 0;
+  line-height: 1.6;
+}
+
+.usability-heuristic ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.usability-heuristic li {
+  padding: 8px 0;
+  color: #9ca3af;
+  font-size: 14px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.usability-heuristic li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.usability-shortcuts {
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.usability-shortcuts h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  color: white;
+}
+
+.usability-shortcuts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.usability-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.usability-shortcut kbd {
+  background: #374151;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #4b5563;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.usability-shortcut span {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+.usability-notifications {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1003;
+  pointer-events: all;
+}
+
+.usability-notification {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 15px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #6366f1;
+  animation: slideInRight 0.3s ease, fadeOut 0.3s ease 4.7s forwards;
+  max-width: 300px;
+}
+
+.usability-notification--error {
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.usability-notification--success {
+  border-left-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.usability-notification--info {
+  border-left-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.usability-notification-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { 
+    transform: translateX(100%); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateX(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes fadeOut {
+  to { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .usability-help-content {
+    margin: 20px;
+    max-height: 90vh;
+  }
+  
+  .usability-help-header h2 {
+    font-size: 24px;
+  }
+  
+  .usability-shortcuts-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .usability-notification {
+    max-width: 250px;
+  }
+}
