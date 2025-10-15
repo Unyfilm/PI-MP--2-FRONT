@@ -106,7 +106,7 @@ export default function MovieApp() {
       {/* Fixed Sidebar */}
       <UnyFilmSidebar 
         currentView={currentView} 
-        setCurrentView={setCurrentView} 
+        setCurrentView={handleViewChange} 
         id="navigation"
       />
 
@@ -163,7 +163,7 @@ export default function MovieApp() {
       <AccessibilityFeatures />
 
       {/* Global Footer */}
-      <Footer setCurrentView={setCurrentView} />
+      <Footer setCurrentView={handleViewChange} />
     </div>
   );
 }
