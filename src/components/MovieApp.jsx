@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';
 import UnyFilmHeader from './header/UnyFilmHeader';
 import UnyFilmHome from './home/UnyFilmHome';
@@ -11,13 +12,37 @@ import AccessibilityFeatures from './accessibility/AccessibilityFeatures';
 import UserAuth from './auth/UserAuth';
 import Footer from './footer/Footer';
 import './MovieApp.css';
+import Login from './login/Login';
 
 export default function MovieApp() {
+  const location = useLocation();
   const [currentView, setCurrentView] = useState('home');
   const [favorites, setFavorites] = useState([0, 4, 8]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentMovie, setCurrentMovie] = useState(null);
   const [showPlayer, setShowPlayer] = useState(false);
+
+  // Detectar la ruta actual y actualizar currentView
+  useEffect(() => {
+    const path = location.pathname;
+    switch (path) {
+      case '/':
+      case '/home':
+        setCurrentView('home');
+        break;
+      case '/catalog':
+        setCurrentView('catalog');
+        break;
+      case '/about':
+        setCurrentView('about');
+        break;
+      case '/sitemap':
+        setCurrentView('sitemap');
+        break;
+      default:
+        setCurrentView('home');
+    }
+  }, [location]);
   
   const movieTitles = [
     'Piratas Espaciales', 'Galaxia Perdida', 'Aventura Cósmica', 'Misterio Estelar',
@@ -74,6 +99,7 @@ export default function MovieApp() {
     setShowPlayer(false);
     setCurrentMovie(null);
   };
+
 
   return (
     <div className="movie-app-container">

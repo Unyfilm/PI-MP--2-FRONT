@@ -1,5 +1,6 @@
 import React from 'react';
-import { Home, Film, Heart, Users, Settings, LogOut, Info, Map } from 'lucide-react';
+import { Link } from 'react-router';
+import { Home, Film, Heart, Users, Settings, LogOut } from 'lucide-react';
 import logoImage from '../../images/logo 3.png';
 import './UnyFilmSidebar.css';
 
@@ -21,30 +22,20 @@ export default function UnyFilmSidebar({ currentView, setCurrentView }) {
       </div>
       
       <nav className="unyfilm-sidebar__nav">
-        <NavIcon 
-          active={currentView === 'home'} 
-          onClick={() => setCurrentView('home')}
-          icon={<Home size={24} strokeWidth={2} />}
-          label="Inicio"
-        />
-        <NavIcon 
-          active={currentView === 'catalog'} 
-          onClick={() => setCurrentView('catalog')}
-          icon={<Film size={24} strokeWidth={2} />}
-          label="Catálogo"
-        />
-        <NavIcon 
-          active={currentView === 'about'} 
-          onClick={() => setCurrentView('about')}
-          icon={<Info size={24} strokeWidth={2} />}
-          label="Sobre Nosotros"
-        />
-        <NavIcon 
-          active={currentView === 'sitemap'} 
-          onClick={() => setCurrentView('sitemap')}
-          icon={<Map size={24} strokeWidth={2} />}
-          label="Mapa del Sitio"
-        />
+        <Link to="/home">
+          <NavIcon 
+            active={currentView === 'home'} 
+            icon={<Home size={24} strokeWidth={2} />}
+            label="Inicio"
+          />
+        </Link>
+        <Link to="/catalog">
+          <NavIcon 
+            active={currentView === 'catalog'} 
+            icon={<Film size={24} strokeWidth={2} />}
+            label="Catálogo"
+          />
+        </Link>
         <NavIcon 
           icon={<Heart size={24} strokeWidth={2} />}
           label="Favoritos"
@@ -77,14 +68,13 @@ export default function UnyFilmSidebar({ currentView, setCurrentView }) {
  * @param {React.ReactNode} props.icon - Icon component
  * @param {string} props.label - Accessibility label
  */
-function NavIcon({ active = false, onClick, icon, label }) {
+function NavIcon({ active = false, icon, label }) {
   const [isHover, setIsHover] = React.useState(false);
   
   return (
     <div 
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
-      onClick={onClick}
       className={`unyfilm-sidebar__nav-icon ${active ? 'unyfilm-sidebar__nav-icon--active' : ''} ${isHover ? 'unyfilm-sidebar__nav-icon--hover' : ''}`}
       title={label}
       aria-label={label}
