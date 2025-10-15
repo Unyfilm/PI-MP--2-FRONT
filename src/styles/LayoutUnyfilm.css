@@ -1,0 +1,34 @@
+/**
+ * Styles for the main application layout.
+ * Implements the sidebar and main content layout as shown in the Figma design.
+ */
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+  min-height: calc(100vh - 80px);
+}
+
+.main-content.full-width {
+  margin-left: 0;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+}
