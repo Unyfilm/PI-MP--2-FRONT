@@ -1,7 +1,7 @@
 /* UnyFilm Home Component */
 .unyfilm-home {
   margin-top: 80px;
-  margin-left: 120px;
+  margin-left: 0; /* eliminado margen izquierdo */
   min-height: calc(100vh - 80px);
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
   color: white;
@@ -371,7 +371,7 @@
   
   .unyfilm-home__trending-grid,
   .unyfilm-home__section-grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Scaled down proportionally */
+    grid-template-columns: repeat(2, 1fr); /* dos columnas */
   }
   
   .unyfilm-home__trending,
@@ -403,7 +403,7 @@
   
   .unyfilm-home__trending-grid,
   .unyfilm-home__section-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr); /* dos columnas aún en tablets/móviles anchos */
   }
   
   .unyfilm-home__spaceship {
@@ -426,6 +426,17 @@
   
   .unyfilm-home__sitemap-links {
     grid-template-columns: 1fr;
+  }
+
+  /* botones hero responsive */
+  .unyfilm-home__hero-actions { gap: 12px; }
+  .unyfilm-home__hero-button { padding: 10px 16px; font-size: 14px; border-radius: 10px; }
+}
+
+@media (max-width: 540px) {
+  .unyfilm-home__trending-grid,
+  .unyfilm-home__section-grid {
+    grid-template-columns: 1fr; /* una columna en móviles pequeños */
   }
 }
 

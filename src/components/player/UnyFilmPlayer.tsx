@@ -34,6 +34,16 @@ export default function UnyFilmPlayer({ movie, onClose }: PlayerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
 
+  // Simulated comments
+  type Comment = { id: number; author: string; content: string; date: string };
+  const [comments, setComments] = useState<Comment[]>([
+    { id: 1, author: 'Ana María', content: 'Una obra maestra, la fotografía es increíble.', date: '2025-10-12' },
+    { id: 2, author: 'Carlos García', content: 'La banda sonora me encantó, muy inmersiva.', date: '2025-10-13' },
+    { id: 3, author: 'Lucía Pérez', content: 'El guion flojea por momentos, pero entretiene.', date: '2025-10-15' }
+  ]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState<string>('');
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -269,6 +279,58 @@ export default function UnyFilmPlayer({ movie, onClose }: PlayerProps) {
             className="unyfilm-review-textarea"
           ></textarea>
           <button className="unyfilm-submit-review-btn">Publicar reseña</button>
+        </div>
+
+        {/* Comments (simulados) */}
+        <div className="unyfilm-comments-section">
+          <h3>Comentarios</h3>
+          <ul className="unyfilm-comments-list">
+            {comments.map((c) => (
+              <li key={c.id} className="unyfilm-comment-item">
+                <div className="unyfilm-comment-header">
+                  <span className="unyfilm-comment-author">{c.author}</span>
+                  <span className="unyfilm-comment-date">{new Date(c.date).toLocaleDateString()}</span>
+                </div>
+                {editingId === c.id ? (
+                  <div className="unyfilm-comment-edit">
+                    <textarea
+                      className="unyfilm-comment-textarea"
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                    />
+                    <div className="unyfilm-comment-actions">
+                      <button
+                        className="unyfilm-comment-btn unyfilm-comment-btn--save"
+                        onClick={() => {
+                          setComments(prev => prev.map(x => x.id === c.id ? { ...x, content: editingText } : x));
+                          setEditingId(null);
+                          setEditingText('');
+                        }}
+                      >Guardar</button>
+                      <button
+                        className="unyfilm-comment-btn unyfilm-comment-btn--cancel"
+                        onClick={() => { setEditingId(null); setEditingText(''); }}
+                      >Cancelar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="unyfilm-comment-content">{c.content}</p>
+                    <div className="unyfilm-comment-actions">
+                      <button
+                        className="unyfilm-comment-btn"
+                        onClick={() => { setEditingId(c.id); setEditingText(c.content); }}
+                      >Editar</button>
+                      <button
+                        className="unyfilm-comment-btn unyfilm-comment-btn--danger"
+                        onClick={() => setComments(prev => prev.filter(x => x.id !== c.id))}
+                      >Eliminar</button>
+                    </div>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

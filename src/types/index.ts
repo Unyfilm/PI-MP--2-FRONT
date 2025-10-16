@@ -105,9 +105,6 @@ export interface AccessibilityFeaturesProps extends BaseComponentProps {
 }
 
 // Tipos para footer
-export interface FooterProps {
-  setCurrentView: (view: ViewType) => void;
-}
 
 // Tipos para eventos
 export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;

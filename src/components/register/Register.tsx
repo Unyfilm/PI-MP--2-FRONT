@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import './Register.scss';
+// Reuse the same styles and layout from Login
+import '../login/Login.scss';
+import '../recover/ResetPassword.scss';
+import { Mail, Lock, User, Eye, EyeOff, Calendar, UserPlus, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import logo2 from '../../images/logo2.png';
+import collage from '../../images/collage.jpg';
 import type { RegisterFormData, AuthProps, InputChangeEvent } from '../../types';
 
 // Interface específica para las props del componente Register
@@ -14,6 +20,19 @@ export default function Register({ onRegister }: RegisterProps = {}) {
     const [edad, setEdad] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+    // Checklist visual para contraseña
+    const passwordChecks = {
+        length: password.length >= 8,
+        upper: /[A-Z]/.test(password),
+        lower: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[^A-Za-z0-9]/.test(password),
+    };
 
     const handleRegister = (): void => {
         const formData: RegisterFormData = {
@@ -23,9 +42,29 @@ export default function Register({ onRegister }: RegisterProps = {}) {
             email,
             password
         };
-        
+        // Validations
+        const newErrors: Record<string, string> = {};
+        if (!nombres) newErrors.nombres = 'Los nombres son requeridos';
+        if (!apellidos) newErrors.apellidos = 'Los apellidos son requeridos';
+        if (!edad) newErrors.edad = 'La edad es requerida';
+        if (edad && (Number(edad) < 13 || Number(edad) > 120)) newErrors.edad = 'Ingresa una edad válida (13-120)';
+        if (!email) newErrors.email = 'El correo electrónico es requerido';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email && !emailRegex.test(email)) newErrors.email = 'Correo electrónico inválido';
+        if (!password) newErrors.password = 'La contraseña es requerida';
+        if (password && password.length < 8) newErrors.password = 'Mínimo 8 caracteres';
+        if (password && !/[A-Z]/.test(password)) newErrors.password = 'Debe incluir al menos una mayúscula';
+        if (password && !/[a-z]/.test(password)) newErrors.password = 'Debe incluir al menos una minúscula';
+        if (password && !/[0-9]/.test(password)) newErrors.password = 'Debe incluir al menos un número';
+        if (password && !/[^A-Za-z0-9]/.test(password)) newErrors.password = 'Debe incluir al menos un carácter especial';
+        if (!confirmPassword) newErrors.confirmPassword = 'Confirma tu contraseña';
+        if (password && confirmPassword && password !== confirmPassword) newErrors.confirmPassword = 'Las contraseñas no coinciden';
+        setErrors(newErrors);
+        setTouched({ nombres: true, apellidos: true, edad: true, email: true, password: true, confirmPassword: true });
+        if (Object.keys(newErrors).length) return;
+
         console.log('Register attempt:', formData);
-        
+
         // Llamar a la función callback si existe
         if (onRegister) {
             onRegister(formData);
@@ -52,156 +91,126 @@ export default function Register({ onRegister }: RegisterProps = {}) {
             case 'password':
                 setPassword(value);
                 break;
+            case 'confirmPassword':
+                setConfirmPassword(value);
+                break;
             default:
                 break;
         }
+        setTouched(prev => ({ ...prev, [name]: true }));
     };
 
     return (
-        <div className="register-container">
-            {/* Overlay translúcido sobre el lado derecho */}
-            <div className="overlay-register"></div>
+        <div className="login-page">
+            <div className="login-page__bg-gradient login-page__bg-gradient--1" />
+            <div className="login-page__bg-gradient login-page__bg-gradient--2" />
 
-            {/* Left Panel - Register Form */}
-            <div className="left-panel-register">
-                <div className="content-wrapper-register">
-                    {/* Logo */}
-                    <div className="logo-container-register">
-                        <img 
-                            src="/src/images/logo 3.png" 
-                            alt="UnyFilm Logo"
-                            className="logo-image-register"
-                        />
+            <div className="login-page__container">
+                {/* Left: Register Form with same layout as Login */}
+                <div className="login-form">
+                    <div className="login-form__logo">
+                        <img src={logo2} alt="UnyFilm" className="login-form__logo-img" />
                     </div>
 
-                    {/* Title */}
-                    <h2 className="title-register">Registro</h2>
+                    <h1 className="login-form__title">Registro</h1>
+                    <p className="login-form__subtitle">Completa tus datos para crear tu cuenta</p>
 
-                    {/* Form Container */}
-                    <div className="form-container-register">
-                        {/* Nombres Field */}
-                        <div className="input-field-register">
-                            <label className="label-register">Nombres</label>
-                            <div className="input-wrapper-register">
-                                <svg className="input-icon-register" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                    <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>
-                                </svg>
-                                <input
-                                    type="text"
-                                    name="nombres"
-                                    value={nombres}
-                                    onChange={handleInputChange}
-                                    placeholder="Pepito"
-                                    className="input-register nombres-input"
-                                />
+                    <div className="login-form__form">
+                        <div className="form-field">
+                            <label className="form-field__label">Nombres</label>
+                            <div className="form-field__input-wrapper">
+                                <User size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
+                                <input type="text" name="nombres" value={nombres} onChange={handleInputChange} placeholder="Ejemplo: Ana María" className={`form-field__input ${touched.nombres && errors.nombres ? 'form-field__input--error' : ''}`} />
+                            </div>
+                            {touched.nombres && errors.nombres && <p className="form-field__error">{errors.nombres}</p>}
+                        </div>
+
+                        <div className="form-field">
+                            <label className="form-field__label">Apellidos</label>
+                            <div className="form-field__input-wrapper">
+                                <User size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
+                                <input type="text" name="apellidos" value={apellidos} onChange={handleInputChange} placeholder="Ejemplo: García López" className={`form-field__input ${touched.apellidos && errors.apellidos ? 'form-field__input--error' : ''}`} />
+                            </div>
+                            {touched.apellidos && errors.apellidos && <p className="form-field__error">{errors.apellidos}</p>}
+                        </div>
+
+                        <div className="form-field">
+                            <label className="form-field__label">Edad</label>
+                            <div className="form-field__input-wrapper">
+                                <Calendar size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
+                                <input type="number" name="edad" value={edad} onChange={handleInputChange} placeholder="Ejemplo: 28" className={`form-field__input ${touched.edad && errors.edad ? 'form-field__input--error' : ''}`} />
+                            </div>
+                            {touched.edad && errors.edad && <p className="form-field__error">{errors.edad}</p>}
+                        </div>
+
+                        <div className="form-field">
+                            <label className="form-field__label">Correo electrónico</label>
+                            <div className="form-field__input-wrapper">
+                                <Mail size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
+                                <input type="email" name="email" value={email} onChange={handleInputChange} placeholder="Ejemplo: nombre@correo.com" className={`form-field__input ${touched.email && errors.email ? 'form-field__input--error' : ''}`} />
+                            </div>
+                            {touched.email && errors.email && <p className="form-field__error">{errors.email}</p>}
+                        </div>
+
+                        <div className="form-field">
+                            <label className="form-field__label">Contraseña</label>
+                            <div className="form-field__input-wrapper">
+                                <Lock size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
+                                <input type={showPassword ? 'text' : 'password'} name="password" value={password} onChange={handleInputChange} placeholder="••••••••" className={`form-field__input form-field__input--password ${touched.password && errors.password ? 'form-field__input--error' : ''}`} />
+                                <button type="button" className="form-field__toggle" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={22} strokeWidth={2.5} color="#ffffff" /> : <Eye size={22} strokeWidth={2.5} color="#ffffff" />}</button>
+                            </div>
+                            {touched.password && errors.password && <p className="form-field__error">{errors.password}</p>}
+                        </div>
+                        {/* Checklist visual de requisitos - bajo el campo de contraseña */}
+                        <div className={`password-checklist ${password ? 'password-checklist--show' : ''}`}>
+                            <div className={`password-checklist__item ${passwordChecks.length ? 'password-checklist__item--ok' : ''}`}>
+                                <span className="password-checklist__dot" /> Mínimo 8 caracteres
+                                {passwordChecks.length && <CheckCircle size={14} className="password-checklist__icon" />}
+                            </div>
+                            <div className={`password-checklist__item ${passwordChecks.upper ? 'password-checklist__item--ok' : ''}`}>
+                                <span className="password-checklist__dot" /> Al menos una mayúscula
+                                {passwordChecks.upper && <CheckCircle size={14} className="password-checklist__icon" />}
+                            </div>
+                            <div className={`password-checklist__item ${passwordChecks.lower ? 'password-checklist__item--ok' : ''}`}>
+                                <span className="password-checklist__dot" /> Al menos una minúscula
+                                {passwordChecks.lower && <CheckCircle size={14} className="password-checklist__icon" />}
+                            </div>
+                            <div className={`password-checklist__item ${passwordChecks.number ? 'password-checklist__item--ok' : ''}`}>
+                                <span className="password-checklist__dot" /> Al menos un número
+                                {passwordChecks.number && <CheckCircle size={14} className="password-checklist__icon" />}
+                            </div>
+                            <div className={`password-checklist__item ${passwordChecks.special ? 'password-checklist__item--ok' : ''}`}>
+                                <span className="password-checklist__dot" /> Al menos un carácter especial
+                                {passwordChecks.special && <CheckCircle size={14} className="password-checklist__icon" />}
                             </div>
                         </div>
 
-                        {/* Apellidos Field */}
-                        <div className="input-field-register">
-                            <label className="label-register">Apellidos</label>
-                            <div className="input-wrapper-register">
-                                <svg className="input-icon-register" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                    <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>
-                                </svg>
-                                <input
-                                    type="text"
-                                    name="apellidos"
-                                    value={apellidos}
-                                    onChange={handleInputChange}
-                                    placeholder="Perez"
-                                    className="input-register apellidos-input"
-                                />
+                        <div className="form-field">
+                            <label className="form-field__label">Confirmar contraseña</label>
+                            <div className="form-field__input-wrapper">
+                                <Lock size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
+                                <input type="password" name="confirmPassword" value={confirmPassword} onChange={handleInputChange} placeholder="••••••••" className={`form-field__input form-field__input--password ${touched.confirmPassword && errors.confirmPassword ? 'form-field__input--error' : ''}`} />
                             </div>
+                            {touched.confirmPassword && errors.confirmPassword && <p className="form-field__error">{errors.confirmPassword}</p>}
                         </div>
 
-                        {/* Edad Field */}
-                        <div className="input-field-register">
-                            <label className="label-register">Edad</label>
-                            <div className="input-wrapper-register">
-                                <svg className="input-icon-register" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                <input
-                                    type="number"
-                                    name="edad"
-                                    value={edad}
-                                    onChange={handleInputChange}
-                                    placeholder="28"
-                                    className="input-register edad-input"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Email Field */}
-                        <div className="input-field-register">
-                            <label className="label-register">Correo electrónico</label>
-                            <div className="input-wrapper-register">
-                                <svg className="input-icon-register" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="4"/>
-                                    <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>
-                                </svg>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={email}
-                                    onChange={handleInputChange}
-                                    placeholder="example@correo.com"
-                                    className="input-register email-input-register"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Password Field */}
-                        <div className="input-field-register">
-                            <label className="label-register">Contraseña</label>
-                            <div className="input-wrapper-register">
-                                <svg className="input-icon-register" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/>
-                                    <path d="m21 2-9.6 9.6"/>
-                                    <circle cx="7.5" cy="15.5" r="5.5"/>
-                                </svg>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={password}
-                                    onChange={handleInputChange}
-                                    placeholder="••••••••"
-                                    className="input-register password-input-register"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Register Button */}
-                        <button onClick={handleRegister} className="btn-register-submit">
+                        <button onClick={handleRegister} className="login-form__button">
+                            <UserPlus size={18} />
                             Registrarse
                         </button>
 
-                        {/* Divider */}
-                        <div className="divider-register"></div>
+                    </div>
 
-                        {/* Login Link */}
-                        <div className="login-section">
-                            <p className="login-text">
-                                ¿Ya tienes cuenta? <a href="#" className="link-register">Iniciar Sesión</a>
-                            </p>
-                        </div>
+                    <div className="login-form__register">
+                        <span className="login-form__register-text">¿Ya tienes cuenta? </span>
+                        <Link to="/login" className="login-form__link login-form__link--bold">Inicia sesión</Link>
                     </div>
                 </div>
-            </div>
 
-            {/* Right Panel - Background image */}
-            <div className="right-panel-register">
-                {/* Imagen del astronauta */}
-                <div className="astronaut-image-register">
-                    <img 
-                        src="/src/images/astronaut.jpg" 
-                        alt="Astronauta observando la Tierra desde el espacio"
-                        className="astronaut-img-register"
-                    />
+                {/* Right: Image hero with same adjustment */}
+                <div className="login-hero">
+                    <img src={collage} alt="Collage" className="login-hero__image" />
+                    <div className="login-hero__overlay" />
                 </div>
             </div>
         </div>

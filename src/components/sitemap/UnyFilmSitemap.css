@@ -4,23 +4,21 @@
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
   color: white;
   min-height: calc(100vh - 80px);
-  margin-left: 120px; /* Avoid sidebar overlap */
+  margin-left: 0; /* Avoid sidebar overlap removed */
 }
 
 .unyfilm-sitemap__header {
-  text-align: center;
-  margin-bottom: 60px;
-  padding: 40px 0;
+  text-align: left;
+  margin: 0 auto 30px auto;
+  padding: 20px 0;
+  max-width: 1200px;
 }
 
 .unyfilm-sitemap__title {
-  font-size: 48px;
+  font-size: 40px;
   font-weight: 800;
-  margin: 0 0 20px 0;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin: 0;
+  color: #e5e7eb;
 }
 
 .unyfilm-sitemap__subtitle {
@@ -30,12 +28,37 @@
   font-weight: 400;
 }
 
-.unyfilm-sitemap__content {
+.unyfilm-sitemap__grid {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 40px;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 24px 48px;
+}
+
+.unyfilm-sitemap__col-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #cbd5e1;
+}
+
+.unyfilm-sitemap__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.unyfilm-sitemap__list a {
+  color: #8fb5d8;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.unyfilm-sitemap__list a:hover {
+  text-decoration: underline;
 }
 
 .unyfilm-sitemap__section {
@@ -128,7 +151,7 @@
 @media (max-width: 1024px) {
   .unyfilm-sitemap {
     padding: 30px 40px;
-    margin-left: 80px; /* Adjust for smaller sidebar */
+    margin-left: 0; /* Adjust for smaller sidebar removed */
   }
   
   .unyfilm-sitemap__title {

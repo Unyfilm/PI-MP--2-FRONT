@@ -1,32 +1,17 @@
-import { Home, Film, User, Info, Map, Mail, Phone, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Home, Film, User, Info, Map, Mail, Phone, Globe, Heart, History, Settings } from 'lucide-react';
 import './Footer.css';
 
-// Tipos locales para el footer
-type ViewType = 'home' | 'catalog' | 'about' | 'sitemap';
-
-interface FooterProps {
-  setCurrentView: (view: ViewType) => void;
-}
-
 /**
- * Global Footer component that appears on all pages
+ * Global Footer component with navigation to all existing pages
+ * @component
+ * @returns {JSX.Element} Footer with navigation links
  */
-export default function Footer({ 
-  setCurrentView
-}: FooterProps) {
-  /**
-   * Handle navigation click with scroll to top
-   * @param {string} view - View to navigate to
-   */
-  const handleNavigation = (view: ViewType): void => {
-    setCurrentView(view);
-    // Scroll to top of page
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
+export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer__container">
+        {/* Main Footer Content */}
         <div className="footer__content">
           {/* Navigation Section */}
           <div className="footer__section">
@@ -35,34 +20,22 @@ export default function Footer({
               Navegación
             </h3>
             <div className="footer__links">
-              <button 
-                onClick={() => handleNavigation('home')}
-                className="footer__link"
-              >
+              <Link to="/home" className="footer__link">
                 <Home size={16} />
                 Inicio
-              </button>
-              <button 
-                onClick={() => handleNavigation('catalog')}
-                className="footer__link"
-              >
+              </Link>
+              <Link to="/catalog" className="footer__link">
                 <Film size={16} />
                 Catálogo
-              </button>
-              <button 
-                onClick={() => handleNavigation('about')}
-                className="footer__link"
-              >
+              </Link>
+              <Link to="/about" className="footer__link">
                 <Info size={16} />
                 Sobre Nosotros
-              </button>
-              <button 
-                onClick={() => handleNavigation('sitemap')}
-                className="footer__link"
-              >
+              </Link>
+              <Link to="/sitemap" className="footer__link">
                 <Map size={16} />
                 Mapa del Sitio
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -73,24 +46,15 @@ export default function Footer({
               Contenido
             </h3>
             <div className="footer__links">
-              <button 
-                onClick={() => handleNavigation('catalog')}
-                className="footer__link"
-              >
+              <Link to="/catalog" className="footer__link">
                 Películas en Tendencia
-              </button>
-              <button 
-                onClick={() => handleNavigation('catalog')}
-                className="footer__link"
-              >
+              </Link>
+              <Link to="/catalog" className="footer__link">
                 Películas Populares
-              </button>
-              <button 
-                onClick={() => handleNavigation('catalog')}
-                className="footer__link"
-              >
+              </Link>
+              <Link to="/catalog" className="footer__link">
                 Contenido Familiar
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -101,24 +65,18 @@ export default function Footer({
               Usuario
             </h3>
             <div className="footer__links">
-              <button 
-                onClick={() => handleNavigation('home')}
-                className="footer__link"
-              >
+              <Link to="/profile" className="footer__link">
+                <User size={16} />
                 Mi Perfil
-              </button>
-              <button 
-                onClick={() => handleNavigation('home')}
-                className="footer__link"
-              >
+              </Link>
+              <Link to="/profile" className="footer__link">
+                <Heart size={16} />
                 Mis Favoritos
-              </button>
-              <button 
-                onClick={() => handleNavigation('home')}
-                className="footer__link"
-              >
+              </Link>
+              <Link to="/profile" className="footer__link">
+                <History size={16} />
                 Historial
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -145,10 +103,12 @@ export default function Footer({
           </div>
         </div>
 
-        {/* Bottom Section */}
+        {/* Bottom Horizontal Bar */}
         <div className="footer__bottom">
           <div className="footer__bottom-content">
-            <p>&copy; 2025 UnyFilm. Todos los derechos reservados.</p>
+            <p className="footer__copyright">
+              © 2025 UnyFilm. Todos los derechos reservados.
+            </p>
             <div className="footer__bottom-links">
               <button className="footer__bottom-link">Términos de Servicio</button>
               <button className="footer__bottom-link">Política de Privacidad</button>

@@ -1,16 +1,11 @@
 // Register Component Styles con SASS
 // ===================================
 
-@import '../../styles/variables';
-@import '../../styles/mixins';
+@use 'sass:color';
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
-// Global styles to prevent scroll
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-}
+// NOTE: Avoid global overflow rules to prevent blocking page scroll
 
 // Register Container
 .register-container {
@@ -18,7 +13,8 @@ html, body {
   width: 100vw;
   @include flex-center;
   position: relative;
-  overflow: hidden;
+  /* Avoid blocking scroll on page */
+  overflow: visible;
   background: white;
   box-shadow: $shadow-lg;
   margin: 0;
@@ -50,7 +46,8 @@ html, body {
 .right-panel-register {
   background-color: $background-dark;
   height: 100vh;
-  overflow: hidden;
+  /* Allow scroll if content exceeds container */
+  overflow: auto;
   position: relative;
 }
 
@@ -110,10 +107,11 @@ html, body {
   width: 100vw;
   margin: 0;
   padding: $spacing-md;
-  overflow: hidden;
+  /* Prevent double clipping; allow internal scroll if needed */
+  overflow: auto;
   max-width: 380px;
   max-height: calc(100vh - 8rem);
-  overflow: hidden;
+  overflow: auto;
   justify-content: space-between;
   margin: $spacing-md 0;
 }
@@ -151,10 +149,13 @@ html, body {
   left: $spacing-sm;
   top: 50%;
   transform: translateY(-50%);
-  color: $accent-color;
-  z-index: 1;
+  color: #ffffff;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.35));
+  z-index: 2;
   pointer-events: none;
 }
+.input-wrapper-register:focus-within .input-icon-register { color: #ffffff; }
 
 .input-register {
   @include input-base;
@@ -183,6 +184,13 @@ html, body {
     background: rgba(106, 140, 255, 0.35);
     color: #ffffff;
   }
+}
+
+/* Mostrar mensajes de error del registro como el login */
+.form-field__error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 6px;
 }
 
 /* Estilos para inputs numéricos (evitar spinners blancos) */

@@ -1,206 +1,145 @@
-// Login Component Styles con SASS
-// =================================
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-@import '../../styles/variables';
-@import '../../styles/mixins';
+$primary: #6366f1;
+$primary-hover: #4f46e5;
+$secondary: #7c3aed;
+$background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+$glass: rgba(255, 255, 255, 0.05);
+$glass-dark: rgba(255, 255, 255, 0.08);
+$glass-focus: rgba(255, 255, 255, 0.12);
+$border: rgba(255, 255, 255, 0.15);
+$text: #ffffff;
+$text-muted: #9ca3af;
+$error: #ef4444;
 
-// Login Container
-.login-container {
-  min-height: 100vh;
-  @include flex-center;
-  position: relative;
-  overflow: hidden;
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
 }
 
-// Overlay
-.overlay {
-  position: absolute;
-  inset: 0;
-  left: 536px;
-  background: rgba(255, 255, 255, 0.28);
-  pointer-events: none;
-}
-
-// Left Panel
-.left-panel {
-  position: relative;
-  width: 536px;
-  min-height: 100vh;
-  background: #000115;
-  @include flex-center;
-  padding: $spacing-xl;
-}
-
-.content-wrapper {
-  @include flex-column;
-  align-items: center;
-  width: 100%;
-  max-width: 400px;
-}
-
-// Logo Container
-.logo-container {
-  @include flex-center;
-  margin-bottom: $spacing-lg;
-}
-
-.logo-image {
-  max-width: 200px;
-  max-height: 100px;
-  object-fit: contain;
-}
-
-// Title
-.title {
-  font-size: $font-size-3xl;
-  font-weight: 700;
-  color: white;
-  text-align: center;
-  margin-bottom: $spacing-xl;
-}
-
-// Form Container
-.form-container {
-  @include flex-column;
-  gap: $spacing-md;
-  padding: $spacing-xl;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: $border-radius-xl;
+@mixin glassmorphism {
+  background: $glass;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  width: 100%;
+  border: 1px solid $border;
 }
 
-// Input Fields
-.input-field {
-  @include flex-column;
-  gap: $spacing-sm;
-  width: 100%;
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
 }
 
-.label {
-  font-size: $font-size-sm;
-  font-weight: 500;
-  color: white;
-  margin-bottom: $spacing-xs;
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Suave paneo para imágenes del héroe (login y registro) */
+@keyframes hero-pan {
+  0% { transform: scale(var(--hero-scale, 1.15)) translate3d(0, 0, 0); }
+  50% { transform: scale(var(--hero-scale, 1.15)) translate3d(-16px, -10px, 0); }
+  100% { transform: scale(var(--hero-scale, 1.15)) translate3d(16px, 10px, 0); }
 }
 
-// Input Wrapper
-.input-wrapper {
-  position: relative;
-  @include flex-center;
-  width: 100%;
+/* Animaciones de entrada para evitar cambios bruscos */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-// Input Icon
-.input-icon {
-  position: absolute;
-  left: $spacing-sm;
-  top: 50%;
-  transform: translateY(-50%);
-  color: $accent-color;
-  z-index: 1;
-  pointer-events: none;
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.input {
-  @include input-base;
-  padding: $spacing-sm $spacing-sm $spacing-sm 2.5rem;
-  font-size: $font-size-sm;
-  height: 40px;
-  width: 100%;
-  
-  &.email-input,
-  &.password-input {
-    // Estilos específicos para cada input
-  }
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-// Submit Button
-.btn-login-submit {
-  @include button-primary;
-  font-size: $font-size-base;
-  height: 40px;
-  width: 100%;
-  margin-top: $spacing-md;
-}
-
-// Register Text
-.register-text {
-  font-size: $font-size-sm;
-  color: white;
-  text-align: center;
-  margin-top: $spacing-md;
-}
-
-.link-login {
-  color: $primary-color;
-  text-decoration: none;
-  font-weight: 500;
-  
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-// Right Panel
-.right-panel {
-  flex: 1;
-  position: relative;
-  background: $background-dark;
+.login-page {
   min-height: 100vh;
-  overflow: hidden;
+  background: $background;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: fixed; /* occupy entire viewport regardless of parent */
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto; /* allow vertical scroll when errors push content */
+
+  &__bg-gradient { position: absolute; border-radius: 50%; filter: blur(60px); }
+  &__bg-gradient--1 { top: 10%; left: 10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%); animation: float 8s ease-in-out infinite; }
+  &__bg-gradient--2 { bottom: 10%; right: 10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%); animation: float 10s ease-in-out infinite reverse; }
+
+  &__container { display: grid; grid-template-columns: 420px 1fr; width: 100vw; max-width: 100vw; min-height: 100vh; position: relative; z-index: 1; gap: 0; align-items: stretch; }
 }
 
-.astronaut-image {
-  width: 100%;
-  height: 100%;
-  @include flex-center;
+/* Estilos de recuperación se movieron a components/recover/Recover.scss */
+
+.login-form {
+  background: rgba(10, 14, 39, 0.94);
+  backdrop-filter: blur(12px);
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  justify-content: flex-start;
+  height: 100vh;
+  position: relative;
+  z-index: 2;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  overflow-y: auto; /* ensure register button stays visible when errors appear */
+  -webkit-overflow-scrolling: touch;
+
+  /* Entrada suave del panel */
+  opacity: 0;
+  animation: fade-up 420ms ease-out 60ms forwards;
+
+  &__logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 48px; }
+  &__logo-icon { width: 48px; height: 48px; background: linear-gradient(135deg, $primary 0%, $secondary 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(99,102,241,0.4); color: $text; }
+  &__logo-text { display: flex; flex-direction: column; }
+  &__logo-title { font-size: 24px; font-weight: 700; color: $text; line-height: 1; margin-bottom: 2px; }
+  &__logo-subtitle { font-size: 12px; color: $text-muted; line-height: 1; }
+
+  /* Imagen de logo en el login */
+  &__logo-img { height: 72px; width: auto; border-radius: 0; box-shadow: none; filter: none; background: transparent; display: block; }
+
+  &__title { font-size: 30px; font-weight: 700; color: $text; margin-bottom: 10px; letter-spacing: -0.5px; text-align: center; }
+  &__subtitle { color: $text-muted; margin-bottom: 24px; font-size: 14px; text-align: center; }
+  &__form { display: flex; flex-direction: column; gap: 16px; background: rgba(255,255,255,0.04); border: 1px solid $border; border-radius: 16px; padding: 18px; }
+  &__forgot { text-align: left; }
+  &__link { color: $primary; font-size: 14px; text-decoration: none; @include transition; font-weight: 500; }
+  &__link:hover { color: $primary-hover; text-decoration: underline; }
+  &__link--bold { font-weight: 600; }
+
+  &__button { width: 100%; padding: 14px; background: linear-gradient(135deg, $primary 0%, $secondary 100%); border: none; border-radius: 8px; color: $text; font-size: 16px; font-weight: 600; cursor: pointer; @include transition; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(99,102,241,0.4); font-family: inherit; }
+  &__button:hover:not(&--loading) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.6); }
+  &__button--loading { background: rgba(99,102,241,0.5); cursor: not-allowed; }
+  &__spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: $text; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  &__register { margin-top: 32px; text-align: center; font-size: 14px; padding-top: 24px; border-top: 1px solid $border; }
+  &__register-text { color: $text-muted; }
 }
 
-.astronaut-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.form-field { display: flex; flex-direction: column; }
+.form-field__label { display: block; color: $text; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
+.form-field__input-wrapper { position: relative; display: flex; align-items: center; }
+.form-field__icon { position: absolute; left: 16px; color: #ffffff; opacity: 1; filter: drop-shadow(0 0 4px rgba(0,0,0,0.35)); @include transition; z-index: 2; pointer-events: none; }
+.form-field__input-wrapper:focus-within .form-field__icon { color: $text; }
+.form-field__input { width: 100%; height: 44px; padding: 0 16px 0 48px; background: $glass-dark; border: 1px solid $border; border-radius: 12px; color: $text; font-size: 14px; outline: none; @include transition; font-family: inherit; }
+.form-field__input::placeholder { color: #6b7280; }
+.form-field__input:focus { background: $glass-focus; border-color: $primary; }
+.form-field__input--password { padding-right: 48px; }
+.form-field__input--error { border-color: $error; }
+.form-field__toggle { position: absolute; right: 16px; background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; @include transition; color: #ffffff; opacity: 1; filter: drop-shadow(0 0 4px rgba(0,0,0,0.35)); z-index: 2; }
+.form-field__toggle:hover { transform: scale(1.1); }
+.form-field__error { color: $error; font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
 
-// Responsive Design
-@include mobile {
-  .login-container {
-    @include flex-column;
-  }
-  
-  .left-panel {
-    width: 100%;
-    min-height: auto;
-    padding: $spacing-md;
-  }
-  
-  .right-panel {
-    display: none;
-  }
-  
-  .form-container {
-    padding: $spacing-md;
-  }
-}
+.login-hero { position: relative; width: 100%; height: 100vh; overflow: hidden; }
+.login-hero__image { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; --hero-scale: 1.15; transform: scale(var(--hero-scale)); animation: fade-in 500ms ease-out, hero-pan 24s ease-in-out infinite alternate; will-change: transform; }
 
-@include tablet {
-  .left-panel {
-    width: 100%;
-  }
-  
-  .right-panel {
-    display: none;
-  }
+@media (min-width: 1600px) {
+  .login-hero__image { --hero-scale: 1.25; }
 }
+.login-hero__overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(10,14,39,0.45), transparent 55%); }
 
-@include desktop {
-  .left-panel {
-    width: 536px;
-  }
-  
-  .right-panel {
-    display: block;
-  }
+@media (max-width: 1024px) {
+  .login-page__container { grid-template-columns: 1fr; }
+  .login-form { width: 100%; }
+  .login-hero { display: none; }
 }

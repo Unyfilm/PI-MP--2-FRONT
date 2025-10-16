@@ -1,7 +1,8 @@
 // Mixins SASS para UnyFilm
 // ================================
 
-@import 'variables';
+@use 'sass:color';
+@use 'variables' as *;
 
 // Mixin para flexbox centrado
 @mixin flex-center {
@@ -43,7 +44,11 @@
   color: white;
   
   &:hover {
-    background: linear-gradient(135deg, lighten($primary-color, 10%), lighten($secondary-color, 10%));
+    background: linear-gradient(
+      135deg,
+      color.adjust($primary-color, $lightness: 10%),
+      color.adjust($secondary-color, $lightness: 10%)
+    );
   }
 }
 

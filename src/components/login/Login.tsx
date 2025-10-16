@@ -1,131 +1,175 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import logo2 from '../../images/logo2.png';
+import collage from '../../images/collage.jpg';
 import './Login.scss';
-import type { LoginFormData, AuthProps, InputChangeEvent } from '../../types';
 
-// Interface específica para las props del componente Login
-interface LoginProps extends AuthProps {
-    className?: string;
-    id?: string;
+interface FormErrors {
+  email: string;
+  password: string;
 }
 
-export default function Login({ onLogin }: LoginProps = {}) {
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+interface TouchedFields {
+  email: boolean;
+  password: boolean;
+}
 
-    const handleLogin = (): void => {
-        const formData: LoginFormData = {
-            email,
-            password
-        };
-        
-        console.log('Login attempt:', formData);
-        
-        // Llamar a la función callback si existe
-        if (onLogin) {
-            onLogin(formData);
-        }
-    };
+export default function Login(): JSX.Element {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [errors, setErrors] = useState<FormErrors>({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [touched, setTouched] = useState<TouchedFields>({ email: false, password: false });
 
-    const handleInputChange = (e: InputChangeEvent): void => {
-        const { name, value } = e.target;
-        
-        switch (name) {
-            case 'email':
-                setEmail(value);
-                break;
-            case 'password':
-                setPassword(value);
-                break;
-            default:
-                break;
-        }
-    };
+  const validateEmail = (value: string): string => {
+    if (!value) return 'El correo electrónico es requerido';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return 'Correo electrónico inválido';
+    return '';
+  };
 
-    return (
-        <div className="login-container">
-            {/* Overlay blanco translúcido solo en la parte derecha */}
-            <div className="overlay"></div>
+  const validatePassword = (value: string): string => {
+    if (!value) return 'La contraseña es requerida';
+    if (value.length < 8) return 'Mínimo 8 caracteres';
+    if (!/[A-Z]/.test(value)) return 'Debe incluir al menos una mayúscula';
+    if (!/[a-z]/.test(value)) return 'Debe incluir al menos una minúscula';
+    if (!/[0-9]/.test(value)) return 'Debe incluir al menos un número';
+    if (!/[^A-Za-z0-9]/.test(value)) return 'Debe incluir al menos un carácter especial';
+    return '';
+  };
 
-            {/* Left Panel - Login Form */}
-            <div className="left-panel">
-                <div className="content-wrapper">
-                    {/* Logo */}
-                    <div className="logo-container">
-                        <img 
-                            src="/src/images/logo 3.png" 
-                            alt="UnyFilm Logo"
-                            className="logo-image"
-                        />
-                    </div>
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value;
+    setEmail(value);
+    if (touched.email) {
+      setErrors(prev => ({ ...prev, email: validateEmail(value) }));
+    }
+  };
 
-                    {/* Title */}
-                    <h2 className="title">Inicio de sesión</h2>
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value;
+    setPassword(value);
+    if (touched.password) {
+      setErrors(prev => ({ ...prev, password: validatePassword(value) }));
+    }
+  };
 
-                    {/* Form Container */}
-                    <div className="form-container">
-                        {/* Email Field */}
-                        <div className="input-field">
-                            <label className="label">Correo electrónico</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={email}
-                                onChange={handleInputChange}
-                                placeholder="example@correo.com"
-                                className="input email-input"
-                            />
-                        </div>
+  const handleBlur = (field: keyof TouchedFields): void => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    if (field === 'email') {
+      setErrors(prev => ({ ...prev, email: validateEmail(email) }));
+    } else if (field === 'password') {
+      setErrors(prev => ({ ...prev, password: validatePassword(password) }));
+    }
+  };
 
-                        {/* Password Field */}
-                        <div className="input-field">
-                            <label className="label">Contraseña</label>
-                            <input
-                                type="password"
-                                name="password"
-                                value={password}
-                                onChange={handleInputChange}
-                                placeholder="••••••••"
-                                className="input password-input"
-                            />
-                        </div>
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+    setErrors({ email: emailError, password: passwordError });
+    setTouched({ email: true, password: true });
+    if (!emailError && !passwordError) {
+      setIsLoading(true);
+      setTimeout(() => {
+        console.log('Login successful:', { email, password });
+        setIsLoading(false);
+      }, 1500);
+    }
+  };
 
-                        {/* Login Button */}
-                        <button onClick={handleLogin} className="btn btn-login">
-                            Iniciar Sesión
-                        </button>
+  return (
+    <div className="login-page">
+      <div className="login-page__bg-gradient login-page__bg-gradient--1" />
+      <div className="login-page__bg-gradient login-page__bg-gradient--2" />
 
-                        {/* Forgot Password */}
-                        <div className="forgot-password">
-                            <a href="#" className="link">
-                                ¿Olvidaste tu contraseña?
-                            </a>
-                        </div>
+      <div className="login-page__container">
+        <div className="login-form">
+          <div className="login-form__logo">
+            <img src={logo2} alt="UnyFilm" className="login-form__logo-img" />
+          </div>
 
-                        {/* Divider */}
-                        <div className="divider"></div>
+          <h1 className="login-form__title">Inicio de sesión</h1>
+          <p className="login-form__subtitle">Ingresa tus credenciales para continuar</p>
 
-                        {/* Register Section */}
-                        <div className="register-section">
-                            <p className="register-text">¿No tienes cuenta?</p>
-                            <button className="btn btn-register">
-                                Registrarse
-                            </button>
-                        </div>
-                    </div>
-                </div>
+          <form onSubmit={handleSubmit} className="login-form__form">
+            <div className="form-field">
+              <label className="form-field__label">Correo electrónico</label>
+              <div className="form-field__input-wrapper">
+                <Mail size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  onBlur={() => handleBlur('email')}
+                  placeholder="example@correo.com"
+                  className={`form-field__input ${errors.email && touched.email ? 'form-field__input--error' : ''}`}
+                />
+              </div>
+              {errors.email && touched.email && (
+                <p className="form-field__error">{errors.email}</p>
+              )}
             </div>
 
-            {/* Right Panel - Background image */}
-            <div className="right-panel">
-                {/* Imagen del astronauta */}
-                <div className="astronaut-image">
-                    <img 
-                        src="/src/images/astronaut.jpg" 
-                        alt="Astronauta observando la Tierra desde el espacio"
-                        className="astronaut-img"
-                    />
-                </div>
+            <div className="form-field">
+              <label className="form-field__label">Contraseña</label>
+              <div className="form-field__input-wrapper">
+                <Lock size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={handlePasswordChange}
+                  onBlur={() => handleBlur('password')}
+                  placeholder="••••••••"
+                  className={`form-field__input form-field__input--password ${errors.password && touched.password ? 'form-field__input--error' : ''}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="form-field__toggle">
+                  {showPassword ? <EyeOff size={22} strokeWidth={2.5} color="#ffffff" /> : <Eye size={22} strokeWidth={2.5} color="#ffffff" />}
+                </button>
+              </div>
+              {errors.password && touched.password && (
+                <p className="form-field__error">{errors.password}</p>
+              )}
             </div>
+
+          <div className="login-form__forgot">
+            <Link to="/recover" className="login-form__link">¿Olvidaste tu contraseña?</Link>
+          </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`login-form__button ${isLoading ? 'login-form__button--loading' : ''}`}>
+              {isLoading ? (
+                <>
+                  <div className="login-form__spinner" />
+                  Iniciando sesión...
+                </>
+              ) : (
+                <>
+                  <LogIn size={20} />
+                  Iniciar Sesión
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="login-form__register">
+            <span className="login-form__register-text">¿No tienes cuenta? </span>
+            <Link to="/register" className="login-form__link login-form__link--bold">Regístrate</Link>
+          </div>
         </div>
-    );
+
+        <div className="login-hero">
+          <img src={collage} alt="Collage" className="login-hero__image" />
+          <div className="login-hero__overlay" />
+        </div>
+      </div>
+    </div>
+  );
 }
