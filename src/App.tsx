@@ -1,7 +1,7 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router';
-import MovieApp from './components/MovieApp';
-import Login from './components/login/Login';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import MovieApp from './components/MovieApp.tsx';
+import Login from './components/login/Login.tsx';
+import Register from './components/register/Register.tsx';
 
 function App() {
   return (
@@ -13,6 +13,7 @@ function App() {
         <Route path="/about" element={<MovieApp />} />
         <Route path="/sitemap" element={<MovieApp />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

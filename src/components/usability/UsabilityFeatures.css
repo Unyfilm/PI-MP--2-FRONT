@@ -34,6 +34,37 @@
   box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
 }
 
+/* Variantes reutilizables del botón (mismo estilo) */
+.usability-help-btn--sm {
+  width: 36px;
+  height: 36px;
+  box-shadow: 0 3px 14px rgba(99, 102, 241, 0.45);
+}
+
+/* Para usar el botón dentro de cabeceras o contenedores (sin posición fija) */
+.usability-help-btn--inline {
+  position: static;
+  width: 36px;
+  height: 36px;
+  margin-left: 8px;
+}
+
+.usability-help-btn:focus-visible,
+.usability-help-btn--sm:focus-visible,
+.usability-help-btn--inline:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35), 0 6px 25px rgba(99, 102, 241, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usability-help-btn,
+  .usability-help-btn--sm,
+  .usability-help-btn--inline {
+    transition: none;
+    transform: none;
+  }
+}
+
 .usability-help-modal {
   position: fixed;
   top: 0;

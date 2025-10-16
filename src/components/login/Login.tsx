@@ -1,12 +1,44 @@
-import React, { useState } from 'react';
-import './Login.css';
+import { useState } from 'react';
+import './Login.scss';
+import type { LoginFormData, AuthProps, InputChangeEvent } from '../../types';
 
-export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+// Interface específica para las props del componente Login
+interface LoginProps extends AuthProps {
+    className?: string;
+    id?: string;
+}
 
-    const handleLogin = () => {
-        console.log('Login attempt:', { email, password });
+export default function Login({ onLogin }: LoginProps = {}) {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+
+    const handleLogin = (): void => {
+        const formData: LoginFormData = {
+            email,
+            password
+        };
+        
+        console.log('Login attempt:', formData);
+        
+        // Llamar a la función callback si existe
+        if (onLogin) {
+            onLogin(formData);
+        }
+    };
+
+    const handleInputChange = (e: InputChangeEvent): void => {
+        const { name, value } = e.target;
+        
+        switch (name) {
+            case 'email':
+                setEmail(value);
+                break;
+            case 'password':
+                setPassword(value);
+                break;
+            default:
+                break;
+        }
     };
 
     return (
@@ -36,8 +68,9 @@ export default function Login() {
                             <label className="label">Correo electrónico</label>
                             <input
                                 type="email"
+                                name="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={handleInputChange}
                                 placeholder="example@correo.com"
                                 className="input email-input"
                             />
@@ -48,8 +81,9 @@ export default function Login() {
                             <label className="label">Contraseña</label>
                             <input
                                 type="password"
+                                name="password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={handleInputChange}
                                 placeholder="••••••••"
                                 className="input password-input"
                             />

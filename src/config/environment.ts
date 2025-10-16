@@ -1,26 +1,31 @@
 /**
- * Environment configuration for UnyFilm
- * @fileoverview Centralized environment variables management
+ * Environment configuration for UnyFilm (TypeScript)
  */
 
-// API Configuration
-export const API_CONFIG = {
+export interface ApiConfig { BASE_URL: string; TIMEOUT: number; RETRY_ATTEMPTS: number; RETRY_DELAY: number; }
+export interface AppConfig { NAME: string; VERSION: string; DESCRIPTION: string; AUTHOR: string; }
+export interface VideoConfig { QUALITY: string; AUTOPLAY: boolean; CONTROLS: boolean; DEFAULT_VOLUME: number; SEEK_STEP: number; }
+export interface UiConfig { THEME: string; LANGUAGE: string; TIMEZONE: string; ANIMATIONS: boolean; TRANSITIONS: boolean; }
+export interface SecurityConfig { JWT_SECRET: string; ENCRYPTION_KEY: string; SESSION_TIMEOUT: number; MAX_LOGIN_ATTEMPTS: number; }
+export interface ExternalServices { GOOGLE_ANALYTICS_ID: string; SENTRY_DSN: string; GOOGLE_MAPS_API_KEY: string; }
+export interface DevConfig { DEBUG_MODE: boolean; LOG_LEVEL: string; MOCK_API: boolean; }
+export interface MovieUrls { [key: string]: string; }
+
+export const API_CONFIG: ApiConfig = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
-  TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT) || 10000,
+  TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 10000,
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000
 };
 
-// Application Configuration
-export const APP_CONFIG = {
+export const APP_CONFIG: AppConfig = {
   NAME: import.meta.env.VITE_APP_NAME || 'UnyFilm',
   VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
   DESCRIPTION: import.meta.env.VITE_APP_DESCRIPTION || 'Tu plataforma de streaming favorita',
   AUTHOR: 'UnyFilm Team'
 };
 
-// Video Configuration
-export const VIDEO_CONFIG = {
+export const VIDEO_CONFIG: VideoConfig = {
   QUALITY: import.meta.env.VITE_VIDEO_QUALITY || '1080p',
   AUTOPLAY: import.meta.env.VITE_VIDEO_AUTOPLAY === 'true',
   CONTROLS: import.meta.env.VITE_VIDEO_CONTROLS !== 'false',
@@ -28,8 +33,7 @@ export const VIDEO_CONFIG = {
   SEEK_STEP: 10
 };
 
-// UI Configuration
-export const UI_CONFIG = {
+export const UI_CONFIG: UiConfig = {
   THEME: import.meta.env.VITE_THEME || 'dark',
   LANGUAGE: import.meta.env.VITE_LANGUAGE || 'es',
   TIMEZONE: import.meta.env.VITE_TIMEZONE || 'America/Mexico_City',
@@ -37,30 +41,26 @@ export const UI_CONFIG = {
   TRANSITIONS: true
 };
 
-// Security Configuration
-export const SECURITY_CONFIG = {
+export const SECURITY_CONFIG: SecurityConfig = {
   JWT_SECRET: import.meta.env.VITE_JWT_SECRET || 'default-secret',
   ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || 'default-key',
-  SESSION_TIMEOUT: 3600000, // 1 hour
+  SESSION_TIMEOUT: 3600000,
   MAX_LOGIN_ATTEMPTS: 5
 };
 
-// External Services
-export const EXTERNAL_SERVICES = {
+export const EXTERNAL_SERVICES: ExternalServices = {
   GOOGLE_ANALYTICS_ID: import.meta.env.VITE_GOOGLE_ANALYTICS_ID || '',
   SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
   GOOGLE_MAPS_API_KEY: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
 };
 
-// Development Configuration
-export const DEV_CONFIG = {
+export const DEV_CONFIG: DevConfig = {
   DEBUG_MODE: import.meta.env.VITE_DEBUG_MODE === 'true',
   LOG_LEVEL: import.meta.env.VITE_LOG_LEVEL || 'info',
   MOCK_API: import.meta.env.VITE_MOCK_API === 'true'
 };
 
-// Default movie data URLs
-export const MOVIE_URLS = {
+export const MOVIE_URLS: MovieUrls = {
   BIG_BUCK_BUNNY: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
   ELEPHANTS_DREAM: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
   FOR_BIGGER_BLAZES: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
@@ -75,8 +75,7 @@ export const MOVIE_URLS = {
   WE_ARE_GOING_ON_BULLRUN: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4'
 };
 
-// Export all configurations
-export default {
+const environment = {
   API_CONFIG,
   APP_CONFIG,
   VIDEO_CONFIG,
@@ -86,3 +85,7 @@ export default {
   DEV_CONFIG,
   MOVIE_URLS
 };
+
+export default environment;
+
+
