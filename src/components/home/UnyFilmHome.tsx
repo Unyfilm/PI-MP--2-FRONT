@@ -86,7 +86,6 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
     console.log('Favorite clicked:', movie);
   };
 
-  // (eliminado) handleViewCatalog no se utiliza
 
   // Componente reutilizable para secciones de películas
   const MovieSection = ({ title, icon, movies, subtitle, startIndex = 0 }: { title: string; icon: React.ReactNode; movies: string[]; subtitle?: string; startIndex?: number }) => {
