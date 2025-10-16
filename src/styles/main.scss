@@ -1,0 +1,192 @@
+// Archivo principal SASS para UnyFilm
+// ====================================
+
+// Importar variables y mixins
+@import 'variables';
+@import 'mixins';
+
+// Estilos globales
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $font-family-primary;
+  @include gradient-bg($background-dark, $background-light);
+  color: white;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Utilidades
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: $primary-color;
+}
+
+.text-accent {
+  color: $accent-color;
+}
+
+// Botones
+.btn {
+  @include button-base;
+  
+  &--primary {
+    @include button-primary;
+  }
+  
+  &--secondary {
+    @include button-secondary;
+  }
+  
+  &--small {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-sm;
+  }
+  
+  &--large {
+    padding: $spacing-md $spacing-lg;
+    font-size: $font-size-lg;
+  }
+}
+
+// Inputs
+.input {
+  @include input-base;
+  
+  &--error {
+    border-color: $error-color;
+    
+    &:focus {
+      border-color: $error-color;
+      box-shadow: 0 0 0 2px rgba($error-color, 0.2);
+    }
+  }
+  
+  &--success {
+    border-color: $success-color;
+    
+    &:focus {
+      border-color: $success-color;
+      box-shadow: 0 0 0 2px rgba($success-color, 0.2);
+    }
+  }
+}
+
+// Cards
+.card {
+  @include card-base;
+  
+  &--hover {
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $shadow-xl;
+    }
+  }
+}
+
+// Grid system
+.grid {
+  display: grid;
+  gap: $spacing-md;
+  
+  &--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  &--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  &--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  @include mobile {
+    &--2,
+    &--3,
+    &--4 {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Responsive utilities
+@include mobile {
+  .mobile-hidden {
+    display: none;
+  }
+}
+
+@include tablet {
+  .tablet-hidden {
+    display: none;
+  }
+}
+
+@include desktop {
+  .desktop-hidden {
+    display: none;
+  }
+}
+
+// Animaciones
+.fade-in {
+  @include fade-in;
+}
+
+.slide-up {
+  animation: slideUp $transition-normal ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Estados de carga
+.loading {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -1,7 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { Play, Heart, Star, Flame, ArrowRight, TrendingUp, Users, Baby, Zap, Smile, Drama } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Heart, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
 import './UnyFilmHome.css';
+
+type Movie = {
+  title: string;
+  videoUrl: string;
+  rating?: number;
+  year?: number;
+  genre?: string;
+  description?: string;
+  image?: string;
+  duration?: string | number;
+};
+
+type MovieClickData = {
+  title: string;
+  index: number;
+  videoUrl: string;
+  rating: number;
+  year: number;
+  genre: string;
+  description: string;
+};
+
+interface HomeProps {
+  favorites: number[];
+  toggleFavorite: (index: number) => void;
+  movieTitles: string[];
+  movieData: Movie[];
+  onMovieClick: (movie: MovieClickData) => void;
+}
 
 /**
  * Home page component with hero section and trending movies
@@ -10,15 +39,15 @@ import './UnyFilmHome.css';
  * @param {Function} props.toggleFavorite - Function to toggle favorite
  * @param {Array} props.movieTitles - Array of movie titles
  */
-export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, movieData, onMovieClick }) {
-  const [featuredMovie, setFeaturedMovie] = useState(null);
-  const [trendingMovies, setTrendingMovies] = useState([]);
-  const [popularMovies, setPopularMovies] = useState([]);
-  const [kidsMovies, setKidsMovies] = useState([]);
-  const [actionMovies, setActionMovies] = useState([]);
-  const [comedyMovies, setComedyMovies] = useState([]);
-  const [dramaMovies, setDramaMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, movieData, onMovieClick }: HomeProps) {
+  const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null);
+  const [trendingMovies, setTrendingMovies] = useState<string[]>([]);
+  const [popularMovies, setPopularMovies] = useState<string[]>([]);
+  const [kidsMovies, setKidsMovies] = useState<string[]>([]);
+  const [actionMovies, setActionMovies] = useState<string[]>([]);
+  const [comedyMovies, setComedyMovies] = useState<string[]>([]);
+  const [dramaMovies, setDramaMovies] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Simulate loading
@@ -30,7 +59,8 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         rating: 4.8,
         duration: 120,
         description: "Una aventura épica en el espacio donde un grupo de piratas espaciales debe salvar la galaxia de una amenaza alienígena.",
-        image: "/images/space-pirates.jpg"
+        image: "/images/space-pirates.jpg",
+        videoUrl: ''
       });
       
       // Cargar diferentes secciones
@@ -46,22 +76,20 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
     return () => clearTimeout(timer);
   }, [movieTitles]);
 
-  const handleMovieClick = (movie) => {
+  const handleMovieClick = (movie: MovieClickData) => {
     if (onMovieClick) {
       onMovieClick(movie);
     }
   };
 
-  const handleFavoriteClick = (movie) => {
+  const handleFavoriteClick = (movie: Movie | null) => {
     console.log('Favorite clicked:', movie);
   };
 
-  const handleViewCatalog = () => {
-    console.log('View catalog clicked');
-  };
+  // (eliminado) handleViewCatalog no se utiliza
 
   // Componente reutilizable para secciones de películas
-  const MovieSection = ({ title, icon, movies, subtitle, startIndex = 0 }) => {
+  const MovieSection = ({ title, icon, movies, subtitle, startIndex = 0 }: { title: string; icon: React.ReactNode; movies: string[]; subtitle?: string; startIndex?: number }) => {
     const descriptions = [
       "Una épica aventura espacial llena de acción y misterio que te mantendrá al borde del asiento.",
       "Un viaje emocionante a través de galaxias desconocidas donde cada planeta guarda secretos increíbles.",
@@ -92,7 +120,7 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         </div>
         
         <div className="unyfilm-home__section-grid">
-          {movies.map((title, index) => {
+          {movies.map((title: string, index: number) => {
             const movieIndex = startIndex + index;
             const movieInfo = movieData[movieIndex] || { title, videoUrl: '' };
             return (
@@ -192,7 +220,18 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
           <div className="unyfilm-home__hero-actions">
             <button 
               className="unyfilm-home__hero-button unyfilm-home__hero-button--primary"
-              onClick={() => handleMovieClick(featuredMovie)}
+              onClick={() => {
+                if (!featuredMovie) return;
+                handleMovieClick({
+                  title: featuredMovie.title,
+                  index: 0,
+                  videoUrl: featuredMovie.videoUrl || '',
+                  rating: Number(featuredMovie.rating ?? 0),
+                  year: Number(featuredMovie.year ?? new Date().getFullYear()),
+                  genre: featuredMovie.genre ?? '',
+                  description: featuredMovie.description ?? ''
+                });
+              }}
             >
               <Play size={20} />
               Ver ahora

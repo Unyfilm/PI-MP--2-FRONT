@@ -1,0 +1,259 @@
+// Register Component Styles con SASS
+// ===================================
+
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+// Global styles to prevent scroll
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+// Register Container
+.register-container {
+  height: 100vh;
+  width: 100vw;
+  @include flex-center;
+  position: relative;
+  overflow: hidden;
+  background: white;
+  box-shadow: $shadow-lg;
+  margin: 0;
+  padding: 0;
+}
+
+// Overlay
+.overlay-register {
+  position: absolute;
+  inset: 0;
+  left: 594px;
+  background: rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+}
+
+// Logo Container
+.logo-container-register {
+  @include flex-center;
+  margin-bottom: $spacing-md;
+}
+
+.logo-image-register {
+  max-width: 180px;
+  max-height: 80px;
+  object-fit: contain;
+}
+
+// Right Panel
+.right-panel-register {
+  background-color: $background-dark;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.astronaut-image-register {
+  width: 100%;
+  height: 100%;
+  @include flex-center;
+}
+
+.astronaut-img-register {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// Left Panel
+.left-panel-register {
+  @include flex-column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: $spacing-md;
+  overflow-y: auto;
+  background: rgb(0, 0, 21);
+  flex: 1;
+}
+
+.content-wrapper-register {
+  @include flex-column;
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+  flex: 1;
+  max-width: 400px;
+  width: 100%;
+}
+
+// Title
+.title-register {
+  font-size: $font-size-2xl;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: left;
+  margin-bottom: $spacing-md;
+}
+
+// Form Container
+.form-container-register {
+  @include flex-column;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  border: 2px solid $primary-color;
+  border-radius: $border-radius-xl;
+  box-shadow: $shadow-lg;
+  background: rgb(10, 10, 46);
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: $spacing-md;
+  overflow: hidden;
+  max-width: 380px;
+  max-height: calc(100vh - 8rem);
+  overflow: hidden;
+  justify-content: space-between;
+  margin: $spacing-md 0;
+}
+
+// Divider
+.divider-register {
+  height: 1px;
+  background: $secondary-color;
+  margin: $spacing-sm 0;
+}
+
+// Input Fields
+.input-field-register {
+  @include flex-column;
+  gap: $spacing-xs;
+}
+
+.label-register {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 110%;
+}
+
+// Input Wrapper
+.input-wrapper-register {
+  position: relative;
+  @include flex-center;
+  width: 100%;
+}
+
+// Input Icon
+.input-icon-register {
+  position: absolute;
+  left: $spacing-sm;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $accent-color;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.input-register {
+  @include input-base;
+  padding: $spacing-sm $spacing-sm $spacing-sm 2.5rem;
+  font-size: $font-size-sm;
+  height: 36px;
+  width: 100%;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: $border-radius-md;
+  caret-color: #6a8cff;
+
+  &::placeholder {
+    color: $accent-color;
+  }
+
+  &:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(106, 140, 255, 0.6);
+    box-shadow: 0 0 0 3px rgba(106, 140, 255, 0.25);
+  }
+
+  &::selection {
+    background: rgba(106, 140, 255, 0.35);
+    color: #ffffff;
+  }
+}
+
+/* Estilos para inputs numéricos (evitar spinners blancos) */
+input.input-register[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+input.input-register[type='number']::-webkit-outer-spin-button,
+input.input-register[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none; /* Chrome/Safari */
+  margin: 0;
+}
+
+// Submit Button
+.btn-register-submit {
+  @include button-primary;
+  font-size: $font-size-sm;
+  height: 36px;
+  padding: 6px;
+  width: 100%;
+  margin-top: $spacing-sm;
+}
+
+// Login Text
+.login-text {
+  font-size: $font-size-sm;
+  line-height: 120%;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  margin-top: $spacing-sm;
+}
+
+.link-register {
+  color: $accent-color;
+  text-decoration: none;
+  font-size: $font-size-sm;
+  line-height: 120%;
+  
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+// Responsive Design
+@include mobile {
+  .register-container {
+    @include flex-column;
+  }
+  
+  .right-panel-register {
+    display: none;
+  }
+  
+  .left-panel-register {
+    width: 100%;
+  }
+  
+  .form-container-register {
+    max-width: 100%;
+    margin: $spacing-sm;
+  }
+}
+
+@include tablet {
+  .form-container-register {
+    max-width: 350px;
+  }
+}
+
+@include desktop {
+  .form-container-register {
+    max-width: 380px;
+  }
+}

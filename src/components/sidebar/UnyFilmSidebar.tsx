@@ -1,16 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Home, Film, Heart, Users, Settings, LogOut } from 'lucide-react';
 import logoImage from '../../images/logo 3.png';
 import './UnyFilmSidebar.css';
+import type { ViewType } from '../../types';
+
+// Interface específica para el sidebar
+interface UnyFilmSidebarProps {
+  currentView: ViewType;
+}
 
 /**
  * Sidebar component with fixed navigation
- * @param {Object} props - Component props
- * @param {string} props.currentView - Current active view
- * @param {Function} props.setCurrentView - Function to change view
  */
-export default function UnyFilmSidebar({ currentView, setCurrentView }) {
+export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
   return (
     <div className="unyfilm-sidebar">
       <div className="unyfilm-sidebar__logo">
@@ -68,7 +71,13 @@ export default function UnyFilmSidebar({ currentView, setCurrentView }) {
  * @param {React.ReactNode} props.icon - Icon component
  * @param {string} props.label - Accessibility label
  */
-function NavIcon({ active = false, icon, label }) {
+interface SidebarItemProps {
+  active?: boolean;
+  icon: React.ReactNode;
+  label: string;
+}
+
+function NavIcon({ active = false, icon, label }: SidebarItemProps) {
   const [isHover, setIsHover] = React.useState(false);
   
   return (
