@@ -283,19 +283,15 @@
   outline-offset: 2px;
 }
 
-/* Responsive */
+/* Responsive - Hide on mobile, show in sidebar instead */
 @media (max-width: 768px) {
   .accessibility-panel {
-    top: 10px;
-    left: 10px;
+    display: none; /* Hide the floating accessibility panel on mobile */
   }
-  
-  .accessibility-controls {
-    min-width: 200px;
-    padding: 15px;
-  }
-  
-  .accessibility-controls h3 {
-    font-size: 16px;
+}
+
+@media (min-width: 769px) {
+  .accessibility-panel {
+    display: block; /* Show the floating accessibility panel on desktop */
   }
 }

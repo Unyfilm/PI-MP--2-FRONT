@@ -9,8 +9,8 @@ import UnyFilmSitemap from './sitemap/UnyFilmSitemap';
 import UnyFilmPlayer from './player/UnyFilmPlayer';
 import UsabilityFeatures from './usability/UsabilityFeatures';
 import AccessibilityFeatures from './accessibility/AccessibilityFeatures';
-// import UserAuth from './auth/UserAuth';
 import Footer from './footer/Footer';
+// import UserAuth from './auth/UserAuth';
 import './MovieApp.css';
 // import Login from './login/Login';
 import type { MovieData, MovieClickData, ViewType } from '../types';
@@ -43,6 +43,8 @@ export default function MovieApp() {
       default:
         setCurrentView('home');
     }
+    // Always scroll to top when route changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location]);
   
   const movieTitles: string[] = [
@@ -105,8 +107,25 @@ export default function MovieApp() {
     setCurrentView(view);
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (sidebarOpen) {
+        const sidebar = document.querySelector('.unyfilm-sidebar');
+        const toggleBtn = document.querySelector('.sidebar-toggle');
+        if (sidebar && !sidebar.contains(target) && toggleBtn && !toggleBtn.contains(target)) {
+          setSidebarOpen(false);
+        }
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [sidebarOpen]);
+
   return (
-    <div className="movie-app-container">
+    <div className={`movie-app-container ${sidebarOpen ? 'movie-app-container--sidebar-open' : ''}`}>
       {/* Fixed Sidebar */}
       <UnyFilmSidebar currentView={currentView} />
 
@@ -116,6 +135,11 @@ export default function MovieApp() {
         onSearch={handleSearch}
         onSearchSubmit={handleSearchSubmit}
       />
+      {/* Toggle Sidebar Button (mobile) */}
+      {!sidebarOpen && (
+        <button className="sidebar-toggle" aria-label="Abrir menú" onClick={() => setSidebarOpen(true)}></button>
+      )}
+      {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden="true"></div>}
 
       {/* User Authentication - Disabled */}
       {/* <UserAuth /> */}
@@ -163,7 +187,8 @@ export default function MovieApp() {
       <AccessibilityFeatures />
 
       {/* Global Footer */}
-      <Footer setCurrentView={handleViewChange} />
+      <Footer />
+
     </div>
   );
 }

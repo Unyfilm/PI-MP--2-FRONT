@@ -75,41 +75,27 @@ export default function UnyFilmHeader({
 
         {/* Right Section */}
         <div className="unyfilm-header__right">
-          {/* Notifications */}
-          <div className="unyfilm-header__notifications">
-            <button
-              onClick={handleNotificationClick}
-              className="unyfilm-header__notification-btn"
-              aria-label="Notifications"
-            >
-              <Bell size={20} />
-              <span className="unyfilm-header__notification-badge">3</span>
-            </button>
-          </div>
-
           {/* Profile Dropdown */}
           <div className="unyfilm-header__profile">
             <button
               onClick={handleProfileClick}
-              className="unyfilm-header__profile-btn"
+              className={`unyfilm-header__profile-btn ${showProfileMenu ? 'unyfilm-header__profile-btn--active' : ''}`}
               aria-label="User profile"
+              aria-expanded={showProfileMenu}
             >
               <div className="unyfilm-header__profile-avatar">
                 <User size={20} />
               </div>
-              <div className="unyfilm-header__profile-info">
-                <span className="unyfilm-header__profile-name">Usuario</span>
-                <span className="unyfilm-header__profile-email">usuario@unyfilm.com</span>
-              </div>
-              <div className={`unyfilm-header__profile-arrow ${showProfileMenu ? 'unyfilm-header__profile-arrow--open' : ''}`}>
-                ▼
-              </div>
+              {/* Only the icon is displayed inside the circular button */}
             </button>
 
-            {/* Profile Dropdown Menu */}
-            {showProfileMenu && (
+          {/* Profile Dropdown Menu */}
+          {showProfileMenu && (
+            <>
+              <div className="unyfilm-profile-backdrop" onClick={() => setShowProfileMenu(false)} aria-hidden="true"></div>
               <UnyFilmDropdown onClose={() => setShowProfileMenu(false)} />
-            )}
+            </>
+          )}
           </div>
         </div>
       </div>
@@ -143,6 +129,10 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
   }, [onClose]);
 
   const handleMenuClick = (action: 'profile' | 'notifications' | 'settings' | 'help' | 'logout') => {
+    if (action === 'profile') {
+      window.location.assign('/profile');
+      return;
+    }
     console.log(`Menu clicked: ${action}`);
     onClose();
   };

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Film, Heart, Users, Settings, LogOut } from 'lucide-react';
-import logoImage from '../../images/logo 3.png';
+import { Home, Film, Heart, Users, Settings, LogOut, Eye } from 'lucide-react';
+import logoImage from '../../images/logo3.png';
 import './UnyFilmSidebar.css';
 import type { ViewType } from '../../types';
 
@@ -14,9 +14,24 @@ interface UnyFilmSidebarProps {
  * Sidebar component with fixed navigation
  */
 export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
+  const [showAccessibility, setShowAccessibility] = useState(false);
+
+  const toggleAccessibility = () => {
+    setShowAccessibility(!showAccessibility);
+  };
+
   return (
     <div className="unyfilm-sidebar">
-      <div className="unyfilm-sidebar__logo">
+      <div className="unyfilm-sidebar__logo" onClick={() => {
+        // Cerrar sidebar en móvil si existe el contenedor con clase abierta
+        const container = document.querySelector('.movie-app-container') as HTMLElement | null;
+        if (container && container.classList.contains('movie-app-container--sidebar-open')) {
+          container.classList.remove('movie-app-container--sidebar-open');
+          // Re-mostrar botón toggle si estaba oculto
+          const toggleBtn = document.querySelector('.sidebar-toggle') as HTMLElement | null;
+          if (toggleBtn) toggleBtn.style.display = 'block';
+        }
+      }} role="button" aria-label="Cerrar menú">
         <img 
           src={logoImage} 
           alt="UnyFilm Logo" 
@@ -54,6 +69,34 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
       </nav>
       
       <div className="unyfilm-sidebar__bottom">
+        {/* Accessibility button - only visible on mobile */}
+        <div className="unyfilm-sidebar__accessibility">
+          <NavIcon 
+            icon={<Eye size={24} strokeWidth={2} />}
+            label="Accesibilidad"
+            onClick={toggleAccessibility}
+          />
+          {showAccessibility && (
+            <div className="unyfilm-sidebar__accessibility-panel">
+              <h4>Opciones de Accesibilidad</h4>
+              <div className="unyfilm-sidebar__accessibility-controls">
+                <label>
+                  <input type="checkbox" />
+                  <span>Alto contraste</span>
+                </label>
+                <label>
+                  <input type="checkbox" />
+                  <span>Reducir animaciones</span>
+                </label>
+                <label>
+                  <input type="checkbox" />
+                  <span>Mostrar foco</span>
+                </label>
+              </div>
+            </div>
+          )}
+        </div>
+        
         <NavIcon 
           icon={<LogOut size={24} strokeWidth={2} />}
           label="Cerrar Sesión"
@@ -75,18 +118,21 @@ interface SidebarItemProps {
   active?: boolean;
   icon: React.ReactNode;
   label: string;
+  onClick?: () => void;
 }
 
-function NavIcon({ active = false, icon, label }: SidebarItemProps) {
+function NavIcon({ active = false, icon, label, onClick }: SidebarItemProps) {
   const [isHover, setIsHover] = React.useState(false);
   
   return (
     <div 
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
+      onClick={onClick}
       className={`unyfilm-sidebar__nav-icon ${active ? 'unyfilm-sidebar__nav-icon--active' : ''} ${isHover ? 'unyfilm-sidebar__nav-icon--hover' : ''}`}
       title={label}
       aria-label={label}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
       {icon}
     </div>

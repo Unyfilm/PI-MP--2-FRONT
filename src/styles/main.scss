@@ -45,27 +45,7 @@ body {
 }
 
 // Botones
-.btn {
-  @include button-base;
-  
-  &--primary {
-    @include button-primary;
-  }
-  
-  &--secondary {
-    @include button-secondary;
-  }
-  
-  &--small {
-    padding: $spacing-xs $spacing-sm;
-    font-size: $font-size-sm;
-  }
-  
-  &--large {
-    padding: $spacing-md $spacing-lg;
-    font-size: $font-size-lg;
-  }
-}
+// Nota: los botones deben definirse en los SCSS específicos de cada vista
 
 // Inputs
 .input {

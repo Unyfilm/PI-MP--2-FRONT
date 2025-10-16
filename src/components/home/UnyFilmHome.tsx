@@ -301,30 +301,7 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         startIndex={5}
       />
 
-      {/* Site Map Section */}
-      <div className="unyfilm-home__sitemap">
-        <div className="unyfilm-home__sitemap-content">
-          <h2 className="unyfilm-home__sitemap-title">Explora UnyFilm</h2>
-          <div className="unyfilm-home__sitemap-links">
-            <button className="unyfilm-home__sitemap-link">
-              <Play size={20} />
-              Catálogo de Películas
-            </button>
-            <button className="unyfilm-home__sitemap-link">
-              <Heart size={20} />
-              Mis Favoritos
-            </button>
-            <button className="unyfilm-home__sitemap-link">
-              <Star size={20} />
-              Sobre Nosotros
-            </button>
-            <button className="unyfilm-home__sitemap-link">
-              <Star size={20} />
-              Configuración
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Removed "Explora UnyFilm" quick links as requested */}
     </div>
   );
 }
