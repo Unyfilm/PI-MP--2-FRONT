@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';
 import UnyFilmHeader from './header/UnyFilmHeader';
 import UnyFilmHome from './home/UnyFilmHome';
@@ -9,50 +9,51 @@ import UnyFilmSitemap from './sitemap/UnyFilmSitemap';
 import UnyFilmPlayer from './player/UnyFilmPlayer';
 import UsabilityFeatures from './usability/UsabilityFeatures';
 import AccessibilityFeatures from './accessibility/AccessibilityFeatures';
-import UserAuth from './auth/UserAuth';
 import Footer from './footer/Footer';
+// import UserAuth from './auth/UserAuth';
 import './MovieApp.css';
+// import Login from './login/Login';
+import type { MovieData, MovieClickData, ViewType } from '../types';
 
 export default function MovieApp() {
   const location = useLocation();
-  const navigate = useNavigate();
-  const [currentView, setCurrentView] = useState('home');
-  const [favorites, setFavorites] = useState([0, 4, 8]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentMovie, setCurrentMovie] = useState(null);
-  const [showPlayer, setShowPlayer] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewType>('home');
+  const [favorites, setFavorites] = useState<number[]>([0, 4, 8]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [currentMovie, setCurrentMovie] = useState<MovieData | null>(null);
+  const [showPlayer, setShowPlayer] = useState<boolean>(false);
 
-  // Sync URL with current view
+  // Detectar la ruta actual y actualizar currentView
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/' || path === '/home') {
-      setCurrentView('home');
-    } else if (path === '/catalog') {
-      setCurrentView('catalog');
-    } else if (path === '/about') {
-      setCurrentView('about');
-    } else if (path === '/sitemap') {
-      setCurrentView('sitemap');
+    switch (path) {
+      case '/':
+      case '/home':
+        setCurrentView('home');
+        break;
+      case '/catalog':
+        setCurrentView('catalog');
+        break;
+      case '/about':
+        setCurrentView('about');
+        break;
+      case '/sitemap':
+        setCurrentView('sitemap');
+        break;
+      default:
+        setCurrentView('home');
     }
-  }, [location.pathname]);
-
-  // Handle view changes with navigation
-  const handleViewChange = (view) => {
-    setCurrentView(view);
-    if (view === 'home') {
-      navigate('/');
-    } else {
-      navigate(`/${view}`);
-    }
-  };
+    // Always scroll to top when route changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location]);
   
-  const movieTitles = [
+  const movieTitles: string[] = [
     'Piratas Espaciales', 'Galaxia Perdida', 'Aventura Cósmica', 'Misterio Estelar',
     'Amor en las Estrellas', 'Batalla Galáctica', 'Viaje Temporal', 'Nebulosa Oscura',
     'Planeta Desconocido', 'Fuerza Espacial', 'Cristal Mágico', 'Dimensión Paralela'
   ];
 
-  const movieData = [
+  const movieData: MovieData[] = [
     { title: 'Piratas Espaciales', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
     { title: 'Galaxia Perdida', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
     { title: 'Aventura Cósmica', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
@@ -67,7 +68,7 @@ export default function MovieApp() {
     { title: 'Dimensión Paralela', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4' }
   ];
 
-  const toggleFavorite = (index) => {
+  const toggleFavorite = (index: number): void => {
     setFavorites(prev => 
       prev.includes(index) 
         ? prev.filter(i => i !== index)
@@ -75,17 +76,17 @@ export default function MovieApp() {
     );
   };
 
-  const handleSearch = (query) => {
+  const handleSearch = (query: string): void => {
     setSearchQuery(query);
   };
 
-  const handleSearchSubmit = (query) => {
+  const handleSearchSubmit = (query: string): void => {
     console.log('Search submitted:', query);
   };
 
-  const handleMovieClick = (movie) => {
+  const handleMovieClick = (movie: MovieClickData): void => {
     // Buscar los datos completos de la película
-    const fullMovieData = movieData.find(m => m.title === movie.title) || {
+    const fullMovieData: MovieData = movieData.find(m => m.title === movie.title) || {
       title: movie.title,
       videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       rating: movie.rating || 4.5,
@@ -97,19 +98,36 @@ export default function MovieApp() {
     setShowPlayer(true);
   };
 
-  const handleClosePlayer = () => {
+  const handleClosePlayer = (): void => {
     setShowPlayer(false);
     setCurrentMovie(null);
   };
 
+  const handleViewChange = (view: ViewType): void => {
+    setCurrentView(view);
+  };
+
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (sidebarOpen) {
+        const sidebar = document.querySelector('.unyfilm-sidebar');
+        const toggleBtn = document.querySelector('.sidebar-toggle');
+        if (sidebar && !sidebar.contains(target) && toggleBtn && !toggleBtn.contains(target)) {
+          setSidebarOpen(false);
+        }
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [sidebarOpen]);
+
   return (
-    <div className="movie-app-container">
+    <div className={`movie-app-container ${sidebarOpen ? 'movie-app-container--sidebar-open' : ''}`}>
       {/* Fixed Sidebar */}
-      <UnyFilmSidebar 
-        currentView={currentView} 
-        setCurrentView={handleViewChange} 
-        id="navigation"
-      />
+      <UnyFilmSidebar currentView={currentView} />
 
       {/* Fixed Header */}
       <UnyFilmHeader 
@@ -117,12 +135,17 @@ export default function MovieApp() {
         onSearch={handleSearch}
         onSearchSubmit={handleSearchSubmit}
       />
+      {/* Toggle Sidebar Button (mobile) */}
+      {!sidebarOpen && (
+        <button className="sidebar-toggle" aria-label="Abrir menú" onClick={() => setSidebarOpen(true)}></button>
+      )}
+      {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden="true"></div>}
 
       {/* User Authentication - Disabled */}
       {/* <UserAuth /> */}
 
       {/* Main Content */}
-      <div className="main-content" id="main-content" tabIndex="-1">
+      <div className="main-content" id="main-content" tabIndex={-1}>
         {currentView === 'home' && (
           <UnyFilmHome 
             favorites={favorites} 
@@ -164,8 +187,8 @@ export default function MovieApp() {
       <AccessibilityFeatures />
 
       {/* Global Footer */}
-      <Footer setCurrentView={handleViewChange} />
+      <Footer />
+
     </div>
   );
 }
-

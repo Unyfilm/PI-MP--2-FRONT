@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Eye, EyeOff, Volume2, VolumeX, Keyboard, Mouse, Sun, Moon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Eye, EyeOff, Keyboard, Mouse, Sun } from 'lucide-react';
 import './AccessibilityFeatures.css';
 
 /**
@@ -78,7 +78,7 @@ export default function AccessibilityFeatures() {
    * Handle keyboard navigation
    */
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       // Prevent default for our custom shortcuts
       if (e.altKey || e.ctrlKey) {
         e.preventDefault();
@@ -86,7 +86,7 @@ export default function AccessibilityFeatures() {
 
       // Skip to main content
       if (e.key === 'Tab' && e.target === document.body) {
-        const mainContent = document.querySelector('.main-content');
+        const mainContent = document.querySelector('.main-content') as HTMLElement;
         if (mainContent) {
           mainContent.focus();
         }
@@ -94,7 +94,7 @@ export default function AccessibilityFeatures() {
 
       // Skip to navigation
       if (e.altKey && e.key === 'n') { // Alt + N
-        const sidebar = document.querySelector('.unyfilm-sidebar');
+        const sidebar = document.querySelector('.unyfilm-sidebar') as HTMLElement;
         if (sidebar) {
           sidebar.focus();
         }
@@ -102,7 +102,7 @@ export default function AccessibilityFeatures() {
 
       // Skip to search
       if (e.altKey && e.key === 's') { // Alt + S
-        const searchInput = document.querySelector('#search-input');
+        const searchInput = document.querySelector('#search-input') as HTMLElement;
         if (searchInput) {
           searchInput.focus();
         }
@@ -115,7 +115,7 @@ export default function AccessibilityFeatures() {
 
       // Toggle help panel
       if (e.altKey && e.key === 'h') { // Alt + H
-        const helpBtn = document.querySelector('.usability-help-btn');
+        const helpBtn = document.querySelector('.usability-help-btn') as HTMLElement;
         if (helpBtn) {
           helpBtn.click();
         }
@@ -132,7 +132,7 @@ export default function AccessibilityFeatures() {
         // Close help modal
         const helpModal = document.querySelector('.usability-help-modal');
         if (helpModal) {
-          const closeBtn = helpModal.querySelector('.usability-help-close');
+          const closeBtn = helpModal.querySelector('.usability-help-close') as HTMLElement;
           if (closeBtn) {
             closeBtn.click();
           }
@@ -141,7 +141,7 @@ export default function AccessibilityFeatures() {
         // Close video player
         const player = document.querySelector('.unyfilm-player-page');
         if (player) {
-          const closeBtn = player.querySelector('.unyfilm-player-close-btn');
+          const closeBtn = player.querySelector('.unyfilm-player-close-btn') as HTMLElement;
           if (closeBtn) {
             closeBtn.click();
           }
@@ -150,7 +150,7 @@ export default function AccessibilityFeatures() {
         // Close profile dropdown
         const profileDropdown = document.querySelector('.unyfilm-dropdown--visible');
         if (profileDropdown) {
-          const profileBtn = document.querySelector('.unyfilm-header__profile-btn');
+          const profileBtn = document.querySelector('.unyfilm-header__profile-btn') as HTMLElement;
           if (profileBtn) {
             profileBtn.click();
           }
@@ -159,7 +159,7 @@ export default function AccessibilityFeatures() {
 
       // Video player controls
       if (e.altKey && e.key === 'p') { // Alt + P - Play/Pause
-        const video = document.querySelector('.unyfilm-video-element');
+        const video = document.querySelector('.unyfilm-video-element') as HTMLVideoElement;
         if (video) {
           if (video.paused) {
             video.play();
@@ -172,7 +172,7 @@ export default function AccessibilityFeatures() {
       if (e.altKey && e.key === 'f') { // Alt + F - Fullscreen
         const videoContainer = document.querySelector('.unyfilm-video-container');
         if (videoContainer) {
-          const fullscreenBtn = videoContainer.querySelector('button[aria-label*="pantalla completa"]');
+          const fullscreenBtn = videoContainer.querySelector('button[aria-label*="pantalla completa"]') as HTMLElement;
           if (fullscreenBtn) {
             fullscreenBtn.click();
           }
@@ -181,7 +181,7 @@ export default function AccessibilityFeatures() {
 
       // Filter controls
       if (e.altKey && e.key === 'r') { // Alt + R - Reset filters
-        const resetBtn = document.querySelector('.unyfilm-catalog__reset-btn');
+        const resetBtn = document.querySelector('.unyfilm-catalog__reset-btn') as HTMLElement;
         if (resetBtn) {
           resetBtn.click();
         }
@@ -189,7 +189,7 @@ export default function AccessibilityFeatures() {
 
       // View mode toggle
       if (e.altKey && e.key === 'v') { // Alt + V - Toggle view mode
-        const viewToggle = document.querySelector('.unyfilm-catalog__view-toggle');
+        const viewToggle = document.querySelector('.unyfilm-catalog__view-toggle') as HTMLElement;
         if (viewToggle) {
           viewToggle.click();
         }
@@ -197,7 +197,7 @@ export default function AccessibilityFeatures() {
 
       // Sort controls
       if (e.altKey && e.key === 'o') { // Alt + O - Sort options
-        const sortBtn = document.querySelector('.unyfilm-catalog__sort-btn');
+        const sortBtn = document.querySelector('.unyfilm-catalog__sort-btn') as HTMLElement;
         if (sortBtn) {
           sortBtn.click();
         }
@@ -228,7 +228,7 @@ export default function AccessibilityFeatures() {
             className="skip-link"
             onClick={(e) => {
               e.preventDefault();
-              const mainContent = document.querySelector('.main-content');
+              const mainContent = document.querySelector('.main-content') as HTMLElement;
               if (mainContent) {
                 mainContent.focus();
                 mainContent.scrollIntoView({ behavior: 'smooth' });
@@ -242,7 +242,7 @@ export default function AccessibilityFeatures() {
             className="skip-link"
             onClick={(e) => {
               e.preventDefault();
-              const sidebar = document.querySelector('.unyfilm-sidebar');
+              const sidebar = document.querySelector('.unyfilm-sidebar') as HTMLElement;
               if (sidebar) {
                 sidebar.focus();
                 sidebar.scrollIntoView({ behavior: 'smooth' });
@@ -256,7 +256,7 @@ export default function AccessibilityFeatures() {
             className="skip-link"
             onClick={(e) => {
               e.preventDefault();
-              const searchInput = document.querySelector('.unyfilm-header__search input');
+              const searchInput = document.querySelector('.unyfilm-header__search input') as HTMLElement;
               if (searchInput) {
                 searchInput.focus();
                 searchInput.scrollIntoView({ behavior: 'smooth' });
@@ -379,7 +379,7 @@ export default function AccessibilityFeatures() {
  * Announce changes to screen readers
  * @param {string} message - Message to announce
  */
-export const announceToScreenReader = (message) => {
+export const announceToScreenReader = (message: string) => {
   const announcements = document.getElementById('accessibility-announcements');
   if (announcements) {
     announcements.textContent = message;
