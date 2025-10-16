@@ -48,7 +48,7 @@ export default function UsabilityFeatures() {
     // Prevent accidental navigation
     const beforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = '';
+      e.returnValue = '¿Estás seguro de que quieres salir?';
     };
     window.addEventListener('beforeunload', beforeUnload);
 
