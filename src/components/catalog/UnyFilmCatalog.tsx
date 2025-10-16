@@ -1,16 +1,41 @@
-import React, { useState } from 'react';
-import { Filter, Grid, List } from 'lucide-react';
+import { useState } from 'react';
+import { Filter, Grid, List, Search } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
 import './UnyFilmCatalog.css';
 
+// Interfaces para el catálogo
+interface MovieData {
+  title: string;
+  videoUrl: string;
+  rating?: number;
+  year?: number;
+  genre?: string;
+  description?: string;
+  image?: string;
+}
+
+interface MovieClickData {
+  title: string;
+  index: number;
+  videoUrl: string;
+  rating: number;
+  year: number;
+  genre: string;
+  description: string;
+}
+
+interface UnyFilmCatalogProps {
+  favorites: number[];
+  toggleFavorite: (index: number) => void;
+  movieTitles: string[];
+  movieData: MovieData[];
+  onMovieClick: (movie: MovieClickData) => void;
+}
+
 /**
  * Catalog page component with movie grid and filters
- * @param {Object} props - Component props
- * @param {Array} props.favorites - Array of favorite movie indices
- * @param {Function} props.toggleFavorite - Function to toggle favorite
- * @param {Array} props.movieTitles - Array of movie titles
  */
-export default function UnyFilmCatalog({ favorites, toggleFavorite, movieTitles, movieData, onMovieClick }) {
+export default function UnyFilmCatalog({ favorites, toggleFavorite, movieTitles, movieData, onMovieClick }: UnyFilmCatalogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
@@ -18,7 +43,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, movieTitles,
 
   const genres = ['all', 'Acción', 'Comedia', 'Drama', 'Ciencia Ficción', 'Romance', 'Terror'];
 
-  const filteredMovies = movieTitles.filter(title => {
+  const filteredMovies = movieTitles.filter((title: string) => {
     const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGenre = selectedGenre === 'all' || title.includes(selectedGenre);
     return matchesSearch && matchesGenre;
@@ -37,21 +62,21 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, movieTitles,
     }
   });
 
-  const handleMovieClick = (movie) => {
+  const handleMovieClick = (movie: MovieClickData) => {
     if (onMovieClick) {
       onMovieClick(movie);
     }
   };
 
-  const handleGenreFilter = (genre) => {
+  const handleGenreFilter = (genre: string) => {
     setSelectedGenre(genre);
   };
 
-  const handleViewModeChange = (mode) => {
+  const handleViewModeChange = (mode: string) => {
     setViewMode(mode);
   };
 
-  const handleSortChange = (sort) => {
+  const handleSortChange = (sort: string) => {
     setSortBy(sort);
   };
 

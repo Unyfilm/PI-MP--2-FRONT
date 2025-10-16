@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
+import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { Search, Bell, User, Settings, HelpCircle, LogOut } from 'lucide-react';
-import './UnyFilmHeader.css';
+import './UnyFilmHeader.scss';
+
+// Tipos locales para el header
+type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
+
+interface UnyFilmHeaderProps {
+  searchQuery: string;
+  onSearch: (query: string) => void;
+  onSearchSubmit: (query: string) => void;
+}
 
 /**
  * Header component with fixed search and profile
- * @param {Object} props - Component props
- * @param {string} props.searchQuery - Current search query
- * @param {Function} props.onSearch - Search handler
- * @param {Function} props.onSearchSubmit - Search submit handler
  */
-export default function UnyFilmHeader({ searchQuery, onSearch, onSearchSubmit }) {
+export default function UnyFilmHeader({ 
+  searchQuery, 
+  onSearch, 
+  onSearchSubmit
+}: UnyFilmHeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = (e: InputChangeEvent): void => {
     if (onSearch) {
       onSearch(e.target.value);
     }
   };
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (onSearchSubmit) {
       onSearchSubmit(searchQuery);
@@ -113,13 +122,18 @@ export default function UnyFilmHeader({ searchQuery, onSearch, onSearchSubmit })
  * @param {Object} props - Component props
  * @param {Function} props.onClose - Close handler
  */
-function UnyFilmDropdown({ onClose }) {
+interface DropdownProps {
+  onClose: () => void;
+}
+
+function UnyFilmDropdown({ onClose }: DropdownProps) {
   const [isVisible, setIsVisible] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsVisible(true);
-    const handleClickOutside = (event) => {
-      if (!event.target.closest('.unyfilm-header__profile')) {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest('.unyfilm-header__profile')) {
         onClose();
       }
     };
@@ -128,7 +142,7 @@ function UnyFilmDropdown({ onClose }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
-  const handleMenuClick = (action) => {
+  const handleMenuClick = (action: 'profile' | 'notifications' | 'settings' | 'help' | 'logout') => {
     console.log(`Menu clicked: ${action}`);
     onClose();
   };
@@ -190,7 +204,14 @@ function UnyFilmDropdown({ onClose }) {
  * @param {boolean} props.danger - Whether it's a danger action
  * @param {Function} props.onClick - Click handler
  */
-function MenuItem({ icon, text, danger = false, onClick }) {
+interface MenuItemProps {
+  icon: ReactNode;
+  text: string;
+  danger?: boolean;
+  onClick: () => void;
+}
+
+function MenuItem({ icon, text, danger = false, onClick }: MenuItemProps) {
   const [isHover, setIsHover] = useState(false);
   
   return (

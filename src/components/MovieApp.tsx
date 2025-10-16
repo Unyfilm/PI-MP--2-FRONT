@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';
 import UnyFilmHeader from './header/UnyFilmHeader';
 import UnyFilmHome from './home/UnyFilmHome';
@@ -9,18 +9,19 @@ import UnyFilmSitemap from './sitemap/UnyFilmSitemap';
 import UnyFilmPlayer from './player/UnyFilmPlayer';
 import UsabilityFeatures from './usability/UsabilityFeatures';
 import AccessibilityFeatures from './accessibility/AccessibilityFeatures';
-import UserAuth from './auth/UserAuth';
+// import UserAuth from './auth/UserAuth';
 import Footer from './footer/Footer';
 import './MovieApp.css';
-import Login from './login/Login';
+// import Login from './login/Login';
+import type { MovieData, MovieClickData, ViewType } from '../types';
 
 export default function MovieApp() {
   const location = useLocation();
-  const [currentView, setCurrentView] = useState('home');
-  const [favorites, setFavorites] = useState([0, 4, 8]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentMovie, setCurrentMovie] = useState(null);
-  const [showPlayer, setShowPlayer] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewType>('home');
+  const [favorites, setFavorites] = useState<number[]>([0, 4, 8]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [currentMovie, setCurrentMovie] = useState<MovieData | null>(null);
+  const [showPlayer, setShowPlayer] = useState<boolean>(false);
 
   // Detectar la ruta actual y actualizar currentView
   useEffect(() => {
@@ -44,13 +45,13 @@ export default function MovieApp() {
     }
   }, [location]);
   
-  const movieTitles = [
+  const movieTitles: string[] = [
     'Piratas Espaciales', 'Galaxia Perdida', 'Aventura Cósmica', 'Misterio Estelar',
     'Amor en las Estrellas', 'Batalla Galáctica', 'Viaje Temporal', 'Nebulosa Oscura',
     'Planeta Desconocido', 'Fuerza Espacial', 'Cristal Mágico', 'Dimensión Paralela'
   ];
 
-  const movieData = [
+  const movieData: MovieData[] = [
     { title: 'Piratas Espaciales', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
     { title: 'Galaxia Perdida', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
     { title: 'Aventura Cósmica', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
@@ -65,7 +66,7 @@ export default function MovieApp() {
     { title: 'Dimensión Paralela', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4' }
   ];
 
-  const toggleFavorite = (index) => {
+  const toggleFavorite = (index: number): void => {
     setFavorites(prev => 
       prev.includes(index) 
         ? prev.filter(i => i !== index)
@@ -73,17 +74,17 @@ export default function MovieApp() {
     );
   };
 
-  const handleSearch = (query) => {
+  const handleSearch = (query: string): void => {
     setSearchQuery(query);
   };
 
-  const handleSearchSubmit = (query) => {
+  const handleSearchSubmit = (query: string): void => {
     console.log('Search submitted:', query);
   };
 
-  const handleMovieClick = (movie) => {
+  const handleMovieClick = (movie: MovieClickData): void => {
     // Buscar los datos completos de la película
-    const fullMovieData = movieData.find(m => m.title === movie.title) || {
+    const fullMovieData: MovieData = movieData.find(m => m.title === movie.title) || {
       title: movie.title,
       videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       rating: movie.rating || 4.5,
@@ -95,20 +96,19 @@ export default function MovieApp() {
     setShowPlayer(true);
   };
 
-  const handleClosePlayer = () => {
+  const handleClosePlayer = (): void => {
     setShowPlayer(false);
     setCurrentMovie(null);
   };
 
+  const handleViewChange = (view: ViewType): void => {
+    setCurrentView(view);
+  };
 
   return (
     <div className="movie-app-container">
       {/* Fixed Sidebar */}
-      <UnyFilmSidebar 
-        currentView={currentView} 
-        setCurrentView={handleViewChange} 
-        id="navigation"
-      />
+      <UnyFilmSidebar currentView={currentView} />
 
       {/* Fixed Header */}
       <UnyFilmHeader 
@@ -121,7 +121,7 @@ export default function MovieApp() {
       {/* <UserAuth /> */}
 
       {/* Main Content */}
-      <div className="main-content" id="main-content" tabIndex="-1">
+      <div className="main-content" id="main-content" tabIndex={-1}>
         {currentView === 'home' && (
           <UnyFilmHome 
             favorites={favorites} 
@@ -167,4 +167,3 @@ export default function MovieApp() {
     </div>
   );
 }
-

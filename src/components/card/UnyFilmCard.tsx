@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Heart, Play, Star } from 'lucide-react';
 import './UnyFilmCard.css';
 
+interface MovieClickData {
+  title: string;
+  index?: number;
+  videoUrl?: string;
+  rating?: number;
+  year?: number;
+  genre?: string;
+  description?: string;
+  image?: string;
+}
+
+interface UnyFilmCardProps {
+  title: string;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
+  onMovieClick: (movie: MovieClickData) => void;
+  image?: string;
+  genre?: string;
+  rating?: number;
+  year?: number;
+  description?: string;
+}
+
 /**
- * Movie card component
- * @param {Object} props - Component props
- * @param {string} props.title - Movie title
- * @param {boolean} props.isFavorite - Whether the movie is favorited
- * @param {Function} props.onToggleFavorite - Function to toggle favorite
- * @param {Function} props.onMovieClick - Function to handle movie click
- * @param {string} props.image - Movie image URL
- * @param {string} props.genre - Movie genre
- * @param {number} props.rating - Movie rating
- * @param {string} props.year - Movie year
+ * Movie card component with TypeScript types
  */
 export default function UnyFilmCard({ 
   title, 
@@ -24,7 +38,7 @@ export default function UnyFilmCard({
   rating,
   year,
   description
-}) {
+}: UnyFilmCardProps) {
   const [isHover, setIsHover] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -32,14 +46,14 @@ export default function UnyFilmCard({
     setImageError(true);
   };
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (onToggleFavorite) {
       onToggleFavorite();
     }
   };
 
-  const handleCardClick = (e) => {
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (onMovieClick) {
@@ -54,10 +68,10 @@ export default function UnyFilmCard({
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      handleCardClick(e);
+      handleCardClick(e as any);
     }
   };
 
@@ -123,17 +137,17 @@ export default function UnyFilmCard({
           <h3 className="unyfilm-card__overlay-title">{title}</h3>
           
           <div className="unyfilm-card__overlay-meta">
-            {rating >= 4.5 && (
+            {rating && rating >= 4.5 && (
               <span className="unyfilm-card__overlay-badge unyfilm-card__overlay-badge--trending">
                 Trending
               </span>
             )}
-            {rating >= 4.8 && (
+            {rating && rating >= 4.8 && (
               <span className="unyfilm-card__overlay-badge unyfilm-card__overlay-badge--top">
                 Top 10
               </span>
             )}
-            {year >= 2023 && (
+            {year && year >= 2023 && (
               <span className="unyfilm-card__overlay-badge unyfilm-card__overlay-badge--new">
                 Nuevo
               </span>

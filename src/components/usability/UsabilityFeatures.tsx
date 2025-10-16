@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { HelpCircle, AlertTriangle, CheckCircle, Info, Zap, Shield, Eye } from 'lucide-react';
 import './UsabilityFeatures.css';
 
@@ -7,10 +7,13 @@ import './UsabilityFeatures.css';
  * @component
  * @returns {JSX.Element} Usability features with heuristics implementation
  */
+type Notification = { id: number; type: 'info' | 'success' | 'error'; message: string; duration: number };
+type Shortcut = { key: string; description: string; action: () => void };
+
 export default function UsabilityFeatures() {
-  const [showHelp, setShowHelp] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [shortcuts, setShortcuts] = useState([]);
+  const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
 
   useEffect(() => {
     // Initialize usability features
@@ -43,10 +46,11 @@ export default function UsabilityFeatures() {
    */
   const initializeErrorPrevention = () => {
     // Prevent accidental navigation
-    window.addEventListener('beforeunload', (e) => {
+    const beforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       e.returnValue = '¿Estás seguro de que quieres salir?';
-    });
+    };
+    window.addEventListener('beforeunload', beforeUnload);
 
     // Auto-save user preferences
     const savePreferences = () => {
@@ -59,8 +63,13 @@ export default function UsabilityFeatures() {
       localStorage.setItem('unyfilm-preferences', JSON.stringify(preferences));
     };
 
-    // Save preferences every 30 seconds
-    setInterval(savePreferences, 30000);
+    const intervalId = window.setInterval(savePreferences, 30000);
+
+    // Provide cleanup function for caller
+    return () => {
+      window.removeEventListener('beforeunload', beforeUnload);
+      clearInterval(intervalId);
+    };
   };
 
   /**
@@ -83,7 +92,7 @@ export default function UsabilityFeatures() {
   /**
    * Show contextual help
    */
-  const showContextualHelp = (context) => {
+  const showContextualHelp = (context: 'home' | 'catalog' | 'player' | 'search') => {
     const helpMessages = {
       home: 'En la página de inicio puedes ver las películas en tendencia y populares.',
       catalog: 'En el catálogo puedes filtrar y buscar películas por género.',
@@ -103,7 +112,7 @@ export default function UsabilityFeatures() {
    * Handle keyboard shortcuts
    */
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: KeyboardEvent) => {
       const shortcut = shortcuts.find(s => s.key.toLowerCase() === e.key.toLowerCase());
       if (shortcut) {
         e.preventDefault();
@@ -115,6 +124,15 @@ export default function UsabilityFeatures() {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [shortcuts]);
 
+  // Ensure initializeErrorPrevention cleanup runs
+  useEffect(() => {
+    const cleanup = initializeErrorPrevention();
+    return () => {
+      if (typeof cleanup === 'function') cleanup();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="usability-features">
       {/* Help Button */}
@@ -122,19 +140,22 @@ export default function UsabilityFeatures() {
         className="usability-help-btn"
         onClick={() => setShowHelp(!showHelp)}
         title="Mostrar ayuda (?)"
+        aria-pressed={showHelp}
+        aria-label="Mostrar u ocultar ayuda"
       >
         <HelpCircle size={20} />
       </button>
 
       {/* Help Modal */}
       {showHelp && (
-        <div className="usability-help-modal">
+        <div className="usability-help-modal" role="dialog" aria-modal="true" aria-labelledby="usability-help-title">
           <div className="usability-help-content">
             <div className="usability-help-header">
-              <h2>Guía de Usabilidad</h2>
+              <h2 id="usability-help-title">Guía de Usabilidad</h2>
               <button 
                 onClick={() => setShowHelp(false)}
                 className="usability-help-close"
+                aria-label="Cerrar ayuda"
               >
                 ×
               </button>

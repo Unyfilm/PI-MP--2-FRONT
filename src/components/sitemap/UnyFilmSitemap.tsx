@@ -1,5 +1,4 @@
-import React from 'react';
-import { Home, Film, User, Info, Map, Mail, Phone, Globe } from 'lucide-react';
+import { Home, Film, User, Info, Mail, Phone, Globe } from 'lucide-react';
 import './UnyFilmSitemap.css';
 
 /**
