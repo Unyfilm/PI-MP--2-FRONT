@@ -2,14 +2,51 @@
  * Environment configuration for UnyFilm (TypeScript)
  */
 
-export interface ApiConfig { BASE_URL: string; TIMEOUT: number; RETRY_ATTEMPTS: number; RETRY_DELAY: number; }
-export interface AppConfig { NAME: string; VERSION: string; DESCRIPTION: string; AUTHOR: string; }
-export interface VideoConfig { QUALITY: string; AUTOPLAY: boolean; CONTROLS: boolean; DEFAULT_VOLUME: number; SEEK_STEP: number; }
-export interface UiConfig { THEME: string; LANGUAGE: string; TIMEZONE: string; ANIMATIONS: boolean; TRANSITIONS: boolean; }
-export interface SecurityConfig { JWT_SECRET: string; ENCRYPTION_KEY: string; SESSION_TIMEOUT: number; MAX_LOGIN_ATTEMPTS: number; }
-export interface ExternalServices { GOOGLE_ANALYTICS_ID: string; SENTRY_DSN: string; GOOGLE_MAPS_API_KEY: string; }
-export interface DevConfig { DEBUG_MODE: boolean; LOG_LEVEL: string; MOCK_API: boolean; }
-export interface MovieUrls { [key: string]: string; }
+export interface ApiConfig {
+  BASE_URL: string;
+  TIMEOUT: number;
+  RETRY_ATTEMPTS: number;
+  RETRY_DELAY: number;
+}
+export interface AppConfig {
+  NAME: string;
+  VERSION: string;
+  DESCRIPTION: string;
+  AUTHOR: string;
+}
+export interface VideoConfig {
+  QUALITY: string;
+  AUTOPLAY: boolean;
+  CONTROLS: boolean;
+  DEFAULT_VOLUME: number;
+  SEEK_STEP: number;
+}
+export interface UiConfig {
+  THEME: string;
+  LANGUAGE: string;
+  TIMEZONE: string;
+  ANIMATIONS: boolean;
+  TRANSITIONS: boolean;
+}
+export interface SecurityConfig {
+  JWT_SECRET: string;
+  ENCRYPTION_KEY: string;
+  SESSION_TIMEOUT: number;
+  MAX_LOGIN_ATTEMPTS: number;
+}
+export interface ExternalServices {
+  GOOGLE_ANALYTICS_ID: string;
+  SENTRY_DSN: string;
+  GOOGLE_MAPS_API_KEY: string;
+}
+export interface DevConfig {
+  DEBUG_MODE: boolean;
+  LOG_LEVEL: string;
+  MOCK_API: boolean;
+}
+export interface MovieUrls {
+  [key: string]: string;
+}
 
 export const API_CONFIG: ApiConfig = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
