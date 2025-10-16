@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, Save, Trash2, LogOut, Key } from 'lucide-react';
 import './UserAuth.css';
+
+// User interface
+interface UserData {
+  id: number;
+  firstName: string;
+  lastName: string;
+  age: number;
+  email: string;
+  avatar: string;
+}
 
 /**
  * User authentication component with mock functionality
@@ -14,7 +24,7 @@ export default function UserAuth() {
   const [showProfile, setShowProfile] = useState(false);
   const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserData | null>(null);
 
   // Form states
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -38,7 +48,7 @@ export default function UserAuth() {
   /**
    * Handle user login
    */
-  const handleLogin = (e) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // Mock login - in real app, this would call API
     const mockUser = {
@@ -63,7 +73,7 @@ export default function UserAuth() {
   /**
    * Handle user registration
    */
-  const handleRegister = (e) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     if (registerForm.password !== registerForm.confirmPassword) {
       alert('Las contraseñas no coinciden');
@@ -100,9 +110,13 @@ export default function UserAuth() {
   /**
    * Handle profile update
    */
-  const handleProfileUpdate = (e) => {
+  const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedUser = { ...user, ...profileForm };
+    const updatedUser: UserData = { 
+      ...user!, 
+      ...profileForm,
+      age: parseInt(profileForm.age) || user?.age || 0
+    };
     setUser(updatedUser);
     setShowProfile(false);
     
@@ -113,7 +127,7 @@ export default function UserAuth() {
   /**
    * Handle password recovery
    */
-  const handlePasswordRecovery = (e) => {
+  const handlePasswordRecovery = (e: React.FormEvent) => {
     e.preventDefault();
     // Mock password recovery
     alert(`Se ha enviado un enlace de recuperación a ${recoveryForm.email}`);
@@ -198,7 +212,7 @@ export default function UserAuth() {
                   type="email"
                   placeholder="Correo electrónico"
                   value={loginForm.email}
-                  onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLoginForm({...loginForm, email: e.target.value})}
                   required
                 />
               </div>
@@ -209,7 +223,7 @@ export default function UserAuth() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Contraseña"
                   value={loginForm.password}
-                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLoginForm({...loginForm, password: e.target.value})}
                   required
                 />
                 <button
@@ -261,7 +275,7 @@ export default function UserAuth() {
                   type="text"
                   placeholder="Nombres"
                   value={registerForm.firstName}
-                  onChange={(e) => setRegisterForm({...registerForm, firstName: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRegisterForm({...registerForm, firstName: e.target.value})}
                   required
                 />
               </div>
@@ -272,7 +286,7 @@ export default function UserAuth() {
                   type="text"
                   placeholder="Apellidos"
                   value={registerForm.lastName}
-                  onChange={(e) => setRegisterForm({...registerForm, lastName: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRegisterForm({...registerForm, lastName: e.target.value})}
                   required
                 />
               </div>
@@ -283,7 +297,7 @@ export default function UserAuth() {
                   type="number"
                   placeholder="Edad"
                   value={registerForm.age}
-                  onChange={(e) => setRegisterForm({...registerForm, age: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRegisterForm({...registerForm, age: e.target.value})}
                   required
                   min="13"
                   max="120"
@@ -296,7 +310,7 @@ export default function UserAuth() {
                   type="email"
                   placeholder="Correo electrónico"
                   value={registerForm.email}
-                  onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRegisterForm({...registerForm, email: e.target.value})}
                   required
                 />
               </div>
@@ -307,9 +321,9 @@ export default function UserAuth() {
                   type="password"
                   placeholder="Contraseña"
                   value={registerForm.password}
-                  onChange={(e) => setRegisterForm({...registerForm, password: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRegisterForm({...registerForm, password: e.target.value})}
                   required
-                  minLength="6"
+                  minLength={6}
                 />
               </div>
               
@@ -319,7 +333,7 @@ export default function UserAuth() {
                   type="password"
                   placeholder="Confirmar contraseña"
                   value={registerForm.confirmPassword}
-                  onChange={(e) => setRegisterForm({...registerForm, confirmPassword: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRegisterForm({...registerForm, confirmPassword: e.target.value})}
                   required
                 />
               </div>
@@ -353,7 +367,7 @@ export default function UserAuth() {
                   type="text"
                   placeholder="Nombres"
                   value={profileForm.firstName || user?.firstName}
-                  onChange={(e) => setProfileForm({...profileForm, firstName: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProfileForm({...profileForm, firstName: e.target.value})}
                   required
                 />
               </div>
@@ -364,7 +378,7 @@ export default function UserAuth() {
                   type="text"
                   placeholder="Apellidos"
                   value={profileForm.lastName || user?.lastName}
-                  onChange={(e) => setProfileForm({...profileForm, lastName: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProfileForm({...profileForm, lastName: e.target.value})}
                   required
                 />
               </div>
@@ -374,8 +388,8 @@ export default function UserAuth() {
                 <input
                   type="number"
                   placeholder="Edad"
-                  value={profileForm.age || user?.age}
-                  onChange={(e) => setProfileForm({...profileForm, age: e.target.value})}
+                  value={profileForm.age || user?.age?.toString() || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProfileForm({...profileForm, age: e.target.value})}
                   required
                   min="13"
                   max="120"
@@ -388,7 +402,7 @@ export default function UserAuth() {
                   type="email"
                   placeholder="Correo electrónico"
                   value={profileForm.email || user?.email}
-                  onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProfileForm({...profileForm, email: e.target.value})}
                   required
                 />
               </div>
@@ -399,7 +413,7 @@ export default function UserAuth() {
                   type="password"
                   placeholder="Nueva contraseña (opcional)"
                   value={profileForm.password}
-                  onChange={(e) => setProfileForm({...profileForm, password: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProfileForm({...profileForm, password: e.target.value})}
                 />
               </div>
               
@@ -453,7 +467,7 @@ export default function UserAuth() {
                   type="email"
                   placeholder="Correo electrónico"
                   value={recoveryForm.email}
-                  onChange={(e) => setRecoveryForm({...recoveryForm, email: e.target.value})}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRecoveryForm({...recoveryForm, email: e.target.value})}
                   required
                 />
               </div>

@@ -1,20 +1,24 @@
-import React from 'react';
 import { Home, Film, User, Info, Map, Mail, Phone, Globe } from 'lucide-react';
 import './Footer.css';
 
+// Tipos locales para el footer
+type ViewType = 'home' | 'catalog' | 'about' | 'sitemap';
+
+interface FooterProps {
+  setCurrentView: (view: ViewType) => void;
+}
+
 /**
  * Global Footer component that appears on all pages
- * @component
- * @param {Object} props - Component props
- * @param {Function} props.setCurrentView - Function to change current view
- * @returns {JSX.Element} Global footer with navigation
  */
-export default function Footer({ setCurrentView }) {
+export default function Footer({ 
+  setCurrentView
+}: FooterProps) {
   /**
    * Handle navigation click with scroll to top
    * @param {string} view - View to navigate to
    */
-  const handleNavigation = (view) => {
+  const handleNavigation = (view: ViewType): void => {
     setCurrentView(view);
     // Scroll to top of page
     window.scrollTo({ top: 0, behavior: 'smooth' });

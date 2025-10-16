@@ -1,6 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, Settings, SkipBack, SkipForward, X } from 'lucide-react';
 import './UnyFilmPlayer.css';
+
+type Movie = {
+  title: string;
+  videoUrl: string;
+  rating?: number;
+  year?: number;
+  genre?: string;
+  description?: string;
+};
+
+interface PlayerProps {
+  movie: Movie;
+  onClose: () => void;
+}
 
 /**
  * Video Player component for playing movies
@@ -8,17 +22,17 @@ import './UnyFilmPlayer.css';
  * @param {Object} props.movie - Movie data to play
  * @param {Function} props.onClose - Function to close the player
  */
-export default function UnyFilmPlayer({ movie, onClose }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const [showControls, setShowControls] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const videoRef = useRef(null);
-  const containerRef = useRef(null);
-  const controlsTimeoutRef = useRef(null);
+export default function UnyFilmPlayer({ movie, onClose }: PlayerProps) {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+  const [volume, setVolume] = useState<number>(1);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [showControls, setShowControls] = useState<boolean>(true);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const controlsTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -48,7 +62,7 @@ export default function UnyFilmPlayer({ movie, onClose }) {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  const togglePlay = () => {
+  const togglePlay = (): void => {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
@@ -59,7 +73,7 @@ export default function UnyFilmPlayer({ movie, onClose }) {
     }
   };
 
-  const handleSeek = (e) => {
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>): void => {
     const rect = e.currentTarget.getBoundingClientRect();
     const pos = (e.clientX - rect.left) / rect.width;
     const newTime = pos * duration;
@@ -69,7 +83,7 @@ export default function UnyFilmPlayer({ movie, onClose }) {
     }
   };
 
-  const handleVolumeChange = (e) => {
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     if (videoRef.current) {
@@ -82,14 +96,14 @@ export default function UnyFilmPlayer({ movie, onClose }) {
     }
   };
 
-  const toggleMute = () => {
+  const toggleMute = (): void => {
     if (videoRef.current) {
       videoRef.current.muted = !isMuted;
       setIsMuted(!isMuted);
     }
   };
 
-  const toggleFullscreen = async () => {
+  const toggleFullscreen = async (): Promise<void> => {
     if (!document.fullscreenElement) {
       await containerRef.current?.requestFullscreen();
     } else {
@@ -97,25 +111,25 @@ export default function UnyFilmPlayer({ movie, onClose }) {
     }
   };
 
-  const skipTime = (seconds) => {
+  const skipTime = (seconds: number): void => {
     if (videoRef.current) {
       videoRef.current.currentTime = Math.max(0, Math.min(duration, currentTime + seconds));
     }
   };
 
-  const formatTime = (time) => {
+  const formatTime = (time: number): string => {
     if (isNaN(time)) return '0:00';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleMouseMove = () => {
+  const handleMouseMove = (): void => {
     setShowControls(true);
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
     }
-    controlsTimeoutRef.current = setTimeout(() => {
+    controlsTimeoutRef.current = window.setTimeout(() => {
       if (isPlaying) {
         setShowControls(false);
       }

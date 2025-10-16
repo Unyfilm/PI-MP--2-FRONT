@@ -1,0 +1,247 @@
+// UnyFilm Header Component Styles con SASS
+// =========================================
+
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+// Header Container
+.unyfilm-header {
+  position: fixed;
+  top: 0;
+  left: 120px;
+  right: 0;
+  height: 80px;
+  background: transparent;
+  z-index: 999;
+  transition: all $transition-normal cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.unyfilm-header__container {
+  @include flex-center;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 0 $spacing-xl;
+  max-width: 100%;
+  gap: $spacing-md;
+}
+
+// Search Section
+.unyfilm-header__search {
+  max-width: 300px;
+}
+
+.unyfilm-header__search-form {
+  width: 100%;
+  @include flex-center;
+  gap: $spacing-sm;
+}
+
+.unyfilm-header__search-input {
+  @include input-base;
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-sm;
+  height: 40px;
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+  }
+}
+
+.unyfilm-header__search-button {
+  @include button-primary;
+  padding: $spacing-sm;
+  height: 40px;
+  width: 40px;
+  @include flex-center;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+// Actions Section
+.unyfilm-header__actions {
+  @include flex-center;
+  gap: $spacing-sm;
+}
+
+.unyfilm-header__action-button {
+  @include button-base;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: $spacing-sm;
+  height: 40px;
+  width: 40px;
+  @include flex-center;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+}
+
+// Profile Section
+.unyfilm-header__profile {
+  position: relative;
+}
+
+.unyfilm-header__profile-button {
+  @include button-base;
+  background: transparent;
+  color: white;
+  border: none;
+  padding: $spacing-sm;
+  @include flex-center;
+  gap: $spacing-xs;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.unyfilm-header__profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid $primary-color;
+}
+
+.unyfilm-header__profile-name {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: white;
+}
+
+// Dropdown Menu
+.unyfilm-header__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-lg;
+  min-width: 200px;
+  z-index: 1000;
+  @include fade-in;
+}
+
+.unyfilm-header__dropdown-item {
+  @include button-base;
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  text-align: left;
+  color: $background-dark;
+  border: none;
+  background: transparent;
+  
+  &:hover {
+    background: rgba($primary-color, 0.1);
+    color: $primary-color;
+  }
+}
+
+// Notifications
+.unyfilm-header__notifications {
+  position: relative;
+}
+
+.unyfilm-header__notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: $error-color;
+  color: white;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  @include flex-center;
+}
+
+// Responsive Design
+@include mobile {
+  .unyfilm-header {
+    left: 0;
+    height: 60px;
+  }
+  
+  .unyfilm-header__container {
+    padding: 0 $spacing-md;
+    gap: $spacing-sm;
+  }
+  
+  .unyfilm-header__search {
+    max-width: 200px;
+  }
+  
+  .unyfilm-header__profile-name {
+    display: none;
+  }
+  
+  .unyfilm-header__actions {
+    gap: $spacing-xs;
+  }
+}
+
+@include tablet {
+  .unyfilm-header {
+    left: 80px;
+  }
+  
+  .unyfilm-header__search {
+    max-width: 250px;
+  }
+}
+
+@include desktop {
+  .unyfilm-header {
+    left: 120px;
+  }
+  
+  .unyfilm-header__search {
+    max-width: 300px;
+  }
+}
+
+// Animation States
+.unyfilm-header--scrolled {
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.unyfilm-header--hidden {
+  transform: translateY(-100%);
+}
+
+// Loading State
+.unyfilm-header--loading {
+  .unyfilm-header__search-button {
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid transparent;
+      border-top: 2px solid $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+// Animación spin para loading
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
