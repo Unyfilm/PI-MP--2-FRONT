@@ -19,6 +19,7 @@ interface UnyFilmCardProps {
   onToggleFavorite: () => void;
   onMovieClick: (movie: MovieClickData) => void;
   image?: string;
+  fallbackImage?: string;
   genre?: string;
   rating?: number;
   year?: number;
@@ -34,6 +35,7 @@ export default function UnyFilmCard({
   onToggleFavorite, 
   onMovieClick,
   image,
+  fallbackImage,
   genre,
   rating,
   year,
@@ -41,8 +43,14 @@ export default function UnyFilmCard({
 }: UnyFilmCardProps) {
   const [isHover, setIsHover] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
 
   const handleImageError = () => {
+    if (!imageError && fallbackImage) {
+      setCurrentSrc(fallbackImage);
+      setImageError(true);
+      return;
+    }
     setImageError(true);
   };
 
@@ -87,9 +95,9 @@ export default function UnyFilmCard({
       className={`unyfilm-card ${isHover ? 'unyfilm-card--hover' : ''}`}
     >
       <div className="unyfilm-card__image-container">
-        {!imageError && image ? (
+        {!imageError && currentSrc ? (
           <img
-            src={image}
+            src={currentSrc}
             alt={title}
             className="unyfilm-card__image"
             onError={handleImageError}
