@@ -143,7 +143,7 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
                   cloudinaryUrl: movie.cloudinaryUrl
                 })}
                 description={movie.description || ''}
-                image={toGFolder(movie.image) || movie.image}
+                image={movie.image}
                 fallbackImage={movie.thumbnailUrl || movie.cloudinaryUrl?.replace('/video/upload/','/image/upload/').replace('.mp4','.jpg')}
                 year={movie.year || 2024}
                 genre={movie.genre || 'Acción'}
@@ -180,7 +180,9 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
           <img
             className="unyfilm-home__hero-poster"
             src={(() => {
-              // 1) SIEMPRE usar local en carpeta G si existe
+              // 1) SIEMPRE usar local en carpeta G si existe (imageG)
+              if (featuredMovie.imageG) return featuredMovie.imageG;
+              // Fallback por si solo existe image en P
               const local = (featuredMovie.image || '')
                 .replace('/pelis%20P/', '/pelis%20G/')
                 .replace('/pelis P/', '/pelis G/');
