@@ -87,7 +87,7 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
         setFeaturedIndex(next);
         setIsFading(true);
       }, 800); // duración del fade-out (debe empatar con CSS)
-    }, 10000); // cada 7s
+    }, 1000); // cada 7s
 
     return () => clearInterval(interval);
   }, [featuredIndex, isLoading]);
@@ -105,6 +105,12 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
 
   // Componente reutilizable para secciones de películas
   const MovieSection = ({ title, icon, movies, subtitle }: { title: string; icon: React.ReactNode; movies: Movie[]; subtitle?: string }) => {
+    const toGFolder = (path?: string): string => {
+      if (!path) return '';
+      return path
+        .replace('/pelis%20P/', '/pelis%20G/')
+        .replace('/pelis P/', '/pelis G/');
+    };
     return (
       <div className="unyfilm-home__section">
         <div className="unyfilm-home__section-header">
@@ -137,7 +143,7 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
                   cloudinaryUrl: movie.cloudinaryUrl
                 })}
                 description={movie.description || ''}
-                image={movie.image}
+                image={toGFolder(movie.image) || movie.image}
                 fallbackImage={movie.thumbnailUrl || movie.cloudinaryUrl?.replace('/video/upload/','/image/upload/').replace('.mp4','.jpg')}
                 year={movie.year || 2024}
                 genre={movie.genre || 'Acción'}
@@ -173,33 +179,47 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
         {featuredMovie && (
           <img
             className="unyfilm-home__hero-poster"
-            src={(
-              () => {
-                const local = featuredMovie.image || '';
-                if (local) {
-                  // usar misma imagen pero en carpeta pelis G
-                  const swapped = local
-                    .replace('/pelis%20P/', '/pelis%20G/')
-                    .replace('/pelis P/', '/pelis G/');
-                  return swapped;
-                }
-                if (featuredMovie.thumbnailUrl) return featuredMovie.thumbnailUrl;
-                if (featuredMovie.cloudinaryUrl) {
-                  return featuredMovie.cloudinaryUrl
-                    .replace('/video/upload/', '/image/upload/')
-                    .replace('.mp4', '.jpg');
-                }
-                return '';
+            src={(() => {
+              // 1) SIEMPRE usar local en carpeta G si existe
+              const local = (featuredMovie.image || '')
+                .replace('/pelis%20P/', '/pelis%20G/')
+                .replace('/pelis P/', '/pelis G/');
+              if (local) return local;
+              // 2) Fallback: thumbnail
+              if (featuredMovie.thumbnailUrl) return featuredMovie.thumbnailUrl;
+              // 3) Fallback: derivado de Cloudinary
+              if (featuredMovie.cloudinaryUrl) {
+                return featuredMovie.cloudinaryUrl
+                  .replace('/video/upload/', '/image/upload/')
+                  .replace('.mp4', '.jpg');
               }
-            )()}
+              return '';
+            })()}
             alt={featuredMovie.title}
+            loading="eager"
             onError={(e) => {
-              const target = e.currentTarget as HTMLImageElement;
-              if (featuredMovie?.thumbnailUrl) {
-                target.src = featuredMovie.thumbnailUrl;
+              const img = e.currentTarget as HTMLImageElement;
+              const movie = featuredMovie;
+              // Si falla el local G o el actual, prueba thumbnail
+              if (movie?.thumbnailUrl && !img.dataset.fallbackThumb) {
+                img.dataset.fallbackThumb = '1';
+                img.src = movie.thumbnailUrl;
+                return;
+              }
+              // Luego intenta derivado de cloudinary
+              if (movie?.cloudinaryUrl && !img.dataset.fallbackCloudinary) {
+                img.dataset.fallbackCloudinary = '1';
+                img.src = movie.cloudinaryUrl
+                  .replace('/video/upload/', '/image/upload/')
+                  .replace('.mp4', '.jpg');
+                return;
+              }
+              // Último recurso: placeholder
+              if (!img.dataset.fallbackPlaceholder) {
+                img.dataset.fallbackPlaceholder = '1';
+                img.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 450%22%3E%3Crect width=%22800%22 height=%22450%22 fill=%22%23222b3a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%239ca3af%22 font-size=%2236%22 font-family=%22Arial%2C%20sans-serif%22%3EImagen no disponible%3C/text%3E%3C/svg%3E';
               }
             }}
-            loading="eager"
           />
         )}
 

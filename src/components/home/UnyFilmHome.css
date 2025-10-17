@@ -70,7 +70,8 @@
   top: 0;
   width: 60%;
   height: 100%;
-  background: linear-gradient(90deg, #0f172a 0%, transparent 30%, transparent 100%);
+  /* Suavizar borde para evitar línea visible en el límite del 40% */
+  background: linear-gradient(90deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.0) 35%, rgba(15,23,42,0.25) 100%);
   z-index: 2;
 }
 
@@ -81,13 +82,13 @@
   position: absolute;
   top: 0px;
   bottom: 0px;
-  right: 16px;
+  right: 0;
   left: 40%;
-  width: 60%; /* ancho flexible según left */
+  width: auto; /* ancho calculado entre left y right */
   height: calc(100% - 0px);
   object-fit: cover; /* llena sin deformar */
   object-position: center;
-  margin-left: -60px;
+  margin-left: 0;
   
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   z-index: 3;
@@ -133,10 +134,17 @@
   position: relative;
   z-index: 4;
   max-width: 520px;
-  width: min(52ch, 45vw);
+  width: min(52ch, 40vw);
   padding-right: 12px;
-  max-height: 100%;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  max-height: calc(100% - 24px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
   overflow: hidden; /* el texto se adapta al contenedor */
+  overflow-y: auto; /* permite desplazamiento si el texto excede la altura */
   animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -182,16 +190,14 @@
 }
 
 .unyfilm-home__hero-title {
-  font-size: 48px;
+  font-size: clamp(28px, 3.6vw, 36px);
   font-weight: bold;
-  margin: 0 0 15px 0;
-  line-height: 1.2;
+  margin: 0 0 10px 0;
+  line-height: 1.15;
   word-break: break-word;
   overflow-wrap: anywhere;
-  display: -webkit-box;
-  -webkit-line-clamp: 3; /* limitar líneas del título */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: block; /* sin clamp para evitar cortes */
+  overflow: visible;
   background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -201,8 +207,8 @@
 .unyfilm-home__hero-meta {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 12px;
   font-size: 16px;
   color: #9ca3af;
 }
@@ -218,15 +224,20 @@
   font-size: 16px;
   line-height: 1.6;
   color: #d1d5db;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   max-width: 52ch;
   overflow-wrap: anywhere;
   word-break: break-word;
-  display: -webkit-box;
-  -webkit-line-clamp: 4; /* limitar líneas de la descripción */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  /* Scroll vertical para leer más sin desbordar el panel */
+  display: block;
+  max-height: calc(1.6em * 6); /* ~6 líneas visibles */
+  overflow-y: auto;
 }
+
+/* Estilos suaves para el scrollbar de la sinopsis */
+.unyfilm-home__hero-description::-webkit-scrollbar { width: 6px; }
+.unyfilm-home__hero-description::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 6px; }
+.unyfilm-home__hero-description:hover::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.35); }
 
 .unyfilm-home__hero-actions {
   display: flex;
