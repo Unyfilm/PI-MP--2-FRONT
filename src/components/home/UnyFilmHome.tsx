@@ -87,7 +87,7 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
         setFeaturedIndex(next);
         setIsFading(true);
       }, 800); // duración del fade-out (debe empatar con CSS)
-    }, 1000); // cada 7s
+    }, 10000); // cada 7s
 
     return () => clearInterval(interval);
   }, [featuredIndex, isLoading]);
