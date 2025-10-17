@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { User as UserIcon, Mail, Calendar } from 'lucide-react';
 import './Profile.scss';
 
-export default function ProfileEdit(): JSX.Element {
+export default function ProfileEdit() {
   const [name, setName] = useState('Usuario UnyFilm');
   const [lastName, setLastName] = useState('Apellido de Ejemplo');
   const [age, setAge] = useState('28');

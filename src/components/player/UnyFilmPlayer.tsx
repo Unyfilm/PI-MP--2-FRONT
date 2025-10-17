@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, Settings, SkipBack, SkipForward, X } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
-import type { EnhancedPlayerProps, Movie } from '../../types';
+import type { EnhancedPlayerProps } from '../../types';
 import './UnyFilmPlayer.css';
 
 export default function UnyFilmPlayer({ 
@@ -10,7 +10,6 @@ export default function UnyFilmPlayer({
   cloudinaryPublicId,
   quality = 'auto',
   showSubtitles = false,
-  subtitleLanguage = 'es',
   onQualityChange,
   onSubtitleToggle
 }: EnhancedPlayerProps) {
@@ -195,7 +194,7 @@ export default function UnyFilmPlayer({
             onClick={togglePlay}
             className="unyfilm-video-element"
             poster={
-              movie.thumbnailUrl ||
+              movie.image ||
               "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%2334495e'/%3E%3C/svg%3E"
             }
           >
@@ -265,7 +264,7 @@ export default function UnyFilmPlayer({
                   value={currentQuality}
                   onChange={(e) => handleQualityChange(e.target.value)}
                   className="unyfilm-quality-selector"
-                  disabled={!cloudinaryPublicId && !movie.cloudinaryUrl}
+                  disabled={!cloudinaryPublicId}
                 >
                   <option value="auto">Auto</option>
                   <option value="high">Alta (1080p)</option>

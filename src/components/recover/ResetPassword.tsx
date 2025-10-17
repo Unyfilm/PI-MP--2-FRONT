@@ -4,7 +4,7 @@ import './Recover.scss';
 import './ResetPassword.scss';
 import collage from '../../images/collage.jpg';
 
-export default function ResetPassword(): JSX.Element {
+export default function ResetPassword() {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
