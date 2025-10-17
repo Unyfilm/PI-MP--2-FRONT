@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo2 from '../../images/logo2.png';
 import collage from '../../images/collage.jpg';
 import type { RegisterFormData, AuthProps, InputChangeEvent } from '../../types';
-import apiService from '../../services/apiService';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Interface específica para las props del componente Register
 interface RegisterProps extends AuthProps {
@@ -28,6 +28,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [apiError, setApiError] = useState<string>('');
     const navigate = useNavigate();
+    const { register } = useAuth();
 
     // Checklist visual para contraseña
     const passwordChecks = {
@@ -70,19 +71,19 @@ export default function Register({ onRegister }: RegisterProps = {}) {
         setApiError('');
         try {
             setIsLoading(true);
-            const res = await apiService.register({
+            const result = await register({
                 nombres,
                 apellidos,
                 edad,
                 email,
                 password
             });
-            if (res.success) {
-                // Registro exitoso: redirigir a home o login
+            if (result.success) {
+                // Registro exitoso: redirigir a home
                 navigate('/home');
                 if (onRegister) onRegister(formData);
             } else {
-                setApiError(res.message || 'Error al registrarse');
+                setApiError(result.message || 'Error al registrarse');
             }
         } catch (err: any) {
             setApiError(err?.message || 'Error de red');
