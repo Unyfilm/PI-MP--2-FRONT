@@ -1,37 +1,108 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User as UserIcon, Mail, Calendar } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import './Profile.scss';
 
 /**
  * ProfileEdit
  *
- * Edit profile form with minimal local state. On save/cancel it navigates back
- * to the Profile page. Replace demo logic with real API integration.
+ * Edit profile form with real backend integration. On save it updates
+ * the user profile via API and navigates back to the Profile page.
+ * On cancel it navigates back without saving changes.
  *
  * @returns {JSX.Element} Profile edit UI
  */
 export default function ProfileEdit() {
   const navigate = useNavigate();
-  const [name, setName] = useState('Usuario UnyFilm');
-  const [lastName, setLastName] = useState('Apellido de Ejemplo');
-  const [age, setAge] = useState('28');
-  const [email, setEmail] = useState('usuario@unyfilm.com');
+  const { user, updateProfile } = useAuth();
+  
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [age, setAge] = useState('');
+  const [email, setEmail] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  // Cargar datos del usuario cuando el componente se monta
+  useEffect(() => {
+    if (user) {
+      setName(user.firstName || '');
+      setLastName(user.lastName || '');
+      setAge(user.age ? user.age.toString() : '');
+      setEmail(user.email || '');
+    }
+  }, [user]);
 
   const handleSave = async () => {
     setIsSaving(true);
-    // Simular guardado
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // Aquí iría la llamada a la API para guardar los cambios
-    console.log('Guardando cambios:', { name, lastName, age, email });
-    setIsSaving(false);
-    navigate('/profile');
+    setError('');
+    
+    // Validaciones básicas
+    if (!name.trim()) {
+      setError('El nombre es requerido');
+      setIsSaving(false);
+      return;
+    }
+    
+    if (!lastName.trim()) {
+      setError('Los apellidos son requeridos');
+      setIsSaving(false);
+      return;
+    }
+    
+    if (!email.trim()) {
+      setError('El correo es requerido');
+      setIsSaving(false);
+      return;
+    }
+    
+    const ageNumber = parseInt(age) || 0;
+    if (ageNumber < 13 || ageNumber > 120) {
+      setError('La edad debe estar entre 13 y 120 años');
+      setIsSaving(false);
+      return;
+    }
+
+    try {
+      const result = await updateProfile({
+        firstName: name.trim(),
+        lastName: lastName.trim(),
+        age: ageNumber,
+        email: email.trim()
+      });
+
+      if (result.success) {
+        navigate('/profile');
+      } else {
+        setError(result.message || 'Error al actualizar el perfil');
+      }
+    } catch (error: any) {
+      setError(error?.message || 'Error de red al actualizar el perfil');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
     navigate('/profile');
   };
+
+  // Si no hay usuario, mostrar loading
+  if (!user) {
+    return (
+      <div className="profile-page">
+        <div className="profile-mosaic" aria-hidden="true">
+          {Array.from({ length: 200 }).map((_, i) => (
+            <span key={i} className="profile-mosaic__tile" />
+          ))}
+        </div>
+        <div className="profile-card">
+          <h1 className="profile-card__title">Cargando...</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-page">
@@ -42,6 +113,13 @@ export default function ProfileEdit() {
       </div>
       <div className="profile-card">
         <h1 className="profile-card__title">Editar perfil</h1>
+        
+        {error && (
+          <div className="form-field__error" style={{ marginBottom: 16, padding: 12, backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 8 }}>
+            {error}
+          </div>
+        )}
+        
         <div className="form-field">
           <label className="form-field__label">Nombre</label>
           <div className="form-field__input-wrapper">
