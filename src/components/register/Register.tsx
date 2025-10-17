@@ -3,10 +3,11 @@ import { useState } from 'react';
 import '../login/Login.scss';
 import '../recover/ResetPassword.scss';
 import { Mail, Lock, User, Eye, EyeOff, Calendar, UserPlus, CheckCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo2 from '../../images/logo2.png';
 import collage from '../../images/collage.jpg';
 import type { RegisterFormData, AuthProps, InputChangeEvent } from '../../types';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Interface específica para las props del componente Register
 interface RegisterProps extends AuthProps {
@@ -24,6 +25,10 @@ export default function Register({ onRegister }: RegisterProps = {}) {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [touched, setTouched] = useState<Record<string, boolean>>({});
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [apiError, setApiError] = useState<string>('');
+    const navigate = useNavigate();
+    const { register } = useAuth();
 
     // Checklist visual para contraseña
     const passwordChecks = {
@@ -34,7 +39,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
         special: /[^A-Za-z0-9]/.test(password),
     };
 
-    const handleRegister = (): void => {
+    const handleRegister = async (): Promise<void> => {
         const formData: RegisterFormData = {
             nombres,
             apellidos,
@@ -63,11 +68,27 @@ export default function Register({ onRegister }: RegisterProps = {}) {
         setTouched({ nombres: true, apellidos: true, edad: true, email: true, password: true, confirmPassword: true });
         if (Object.keys(newErrors).length) return;
 
-        console.log('Register attempt:', formData);
-
-        // Llamar a la función callback si existe
-        if (onRegister) {
-            onRegister(formData);
+        setApiError('');
+        try {
+            setIsLoading(true);
+            const result = await register({
+                nombres,
+                apellidos,
+                edad,
+                email,
+                password
+            });
+            if (result.success) {
+                // Registro exitoso: redirigir a home
+                navigate('/home');
+                if (onRegister) onRegister(formData);
+            } else {
+                setApiError(result.message || 'Error al registrarse');
+            }
+        } catch (err: any) {
+            setApiError(err?.message || 'Error de red');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -194,9 +215,15 @@ export default function Register({ onRegister }: RegisterProps = {}) {
                             {touched.confirmPassword && errors.confirmPassword && <p className="form-field__error">{errors.confirmPassword}</p>}
                         </div>
 
-                        <button onClick={handleRegister} className="login-form__button">
+                        {apiError && (
+                            <div className="form-field__error" role="alert" style={{ marginBottom: '8px' }}>
+                                {apiError}
+                            </div>
+                        )}
+
+                        <button onClick={handleRegister} disabled={isLoading} className={`login-form__button ${isLoading ? 'login-form__button--loading' : ''}`}>
                             <UserPlus size={18} />
-                            Registrarse
+                            {isLoading ? 'Registrando...' : 'Registrarse'}
                         </button>
 
                     </div>

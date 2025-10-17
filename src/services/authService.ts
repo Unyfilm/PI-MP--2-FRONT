@@ -1,0 +1,165 @@
+/**
+ * Auth Service - integra con el backend real
+ * Endpoints: /api/auth/login, /api/auth/register, /api/auth/logout
+ */
+import { API_CONFIG } from '../config/environment';
+
+// Derivar raíz del backend (sin /api) para componer rutas como /api/*
+const ENV_BASE = (API_CONFIG.BASE_URL || 'http://localhost:5000').replace(/\/$/, '');
+const ROOT_URL = ENV_BASE.replace(/\/api$/, '');
+
+// Headers por defecto
+const defaultHeaders: HeadersInit = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+};
+
+const authHeaders = (): HeadersInit => ({
+  ...defaultHeaders,
+  Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+});
+
+// Tipos específicos del backend para auth
+export interface BackendUser {
+  _id: string;
+  username: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  profilePicture?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BackendSuccessResponse<T> {
+  success: true;
+  message: string;
+  data: T;
+  timestamp?: string;
+}
+
+export interface BackendErrorResponse {
+  success: false;
+  message: string;
+  error?: string;
+  details?: unknown;
+  timestamp?: string;
+}
+
+export type BackendResponse<T> = BackendSuccessResponse<T> | BackendErrorResponse;
+
+export interface LoginInput { email: string; password: string; }
+export interface RegisterInput {
+  nombres: string;
+  apellidos: string;
+  email: string;
+  password: string;
+  edad?: string;
+}
+
+export interface AuthData { user: BackendUser; token: string; }
+
+const handleJson = async <T>(res: Response): Promise<BackendResponse<T>> => {
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    return res.json();
+  }
+  // Si no es JSON, crear un error genérico
+  const text = await res.text();
+  return { success: false, message: text || `HTTP ${res.status}`, error: text } as BackendErrorResponse;
+};
+
+const request = async <T>(path: string, init?: RequestInit): Promise<BackendResponse<T>> => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), Number(import.meta.env.VITE_API_TIMEOUT) || 30000);
+  try {
+    const res = await fetch(`${ROOT_URL}${path}`, { ...init, signal: controller.signal });
+    const data = await handleJson<T>(res);
+    clearTimeout(timeout);
+    return data;
+  } catch (err: any) {
+    clearTimeout(timeout);
+    return { success: false, message: 'Error de red', error: err?.message || String(err) } as BackendErrorResponse;
+  }
+};
+
+export const authService = {
+  async login(input: LoginInput) {
+    console.debug('[Auth] POST', `${ROOT_URL}/api/auth/login`, { email: input.email });
+    const res = await request<AuthData>('/api/auth/login', {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify({ email: input.email, password: input.password })
+    });
+    if (res.success) {
+      const { token, user } = res.data;
+      // Guardar token según guía
+      localStorage.setItem('token', token);
+      // Compatibilidad con código existente
+      localStorage.setItem('unyfilm-token', token);
+      localStorage.setItem('auth:user', JSON.stringify(user));
+      localStorage.setItem('unyfilm-logged-in', 'true');
+    }
+    return res;
+  },
+
+  async register(input: RegisterInput) {
+    // Mapear campos del formulario (español) al backend (inglés)
+    const age = parseInt(input.edad || '0', 10);
+    
+    // Validar campos requeridos
+    if (!input.email || !input.password || !input.nombres || !input.apellidos || !age || age < 13 || age > 120) {
+      return {
+        success: false,
+        message: 'Email, contraseña, nombre, apellido y edad son requeridos',
+        error: 'Validation error'
+      } as BackendErrorResponse;
+    }
+
+    // PAYLOAD EXACTO QUE ESPERA EL BACKEND (incluyendo confirmPassword)
+    const payload = {
+      email: input.email.trim().toLowerCase(),
+      password: input.password,
+      confirmPassword: input.password, // ← OBLIGATORIO: mismo valor que password
+      firstName: input.nombres.trim(),
+      lastName: input.apellidos.trim(),
+      age: age  // debe ser NUMBER no string
+    };
+
+    console.debug('[Auth] POST', `${ROOT_URL}/api/auth/register`, payload);
+    console.debug('[Auth] URL completa:', `${ROOT_URL}/api/auth/register`);
+    console.debug('[Auth] Headers:', defaultHeaders);
+    console.debug('[Auth] Body stringified:', JSON.stringify(payload));
+    
+    const res = await request<AuthData>('/api/auth/register', {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify(payload)
+    });
+    if (res.success) {
+      const { token, user } = res.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('unyfilm-token', token);
+      localStorage.setItem('auth:user', JSON.stringify(user));
+      localStorage.setItem('unyfilm-logged-in', 'true');
+    }
+    return res;
+  },
+
+  async logout() {
+    const res = await request<void>('/api/auth/logout', {
+      method: 'POST',
+      headers: authHeaders()
+    });
+    // Limpiar siempre el almacenamiento
+    localStorage.removeItem('token');
+    localStorage.removeItem('unyfilm-token');
+    localStorage.removeItem('auth:user');
+    localStorage.removeItem('unyfilm-logged-in');
+    return res;
+  },
+
+  authHeaders
+};
+
+export default authService;
