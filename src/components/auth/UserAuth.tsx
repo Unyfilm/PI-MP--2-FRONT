@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, Save, Trash2, LogOut, Key } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './UserAuth.css';
 
 // User interface
@@ -135,15 +137,15 @@ export default function UserAuth() {
     setRecoveryForm({ email: '' });
   };
 
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   /**
    * Handle user logout
    */
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUser(null);
-    setShowProfile(false);
-    localStorage.removeItem('unyfilm-user');
-    localStorage.removeItem('unyfilm-logged-in');
+    logout();
+    navigate('/login');
   };
 
   /**
