@@ -104,17 +104,33 @@ export const authService = {
   },
 
   async register(input: RegisterInput) {
-    // Mapear a payload del backend
-    const age = Number.parseInt(input.edad || '', 10);
-    const payload: Record<string, any> = {
-      email: input.email,
+    // Mapear campos del formulario (español) al backend (inglés)
+    const age = parseInt(input.edad || '0', 10);
+    
+    // Validar campos requeridos
+    if (!input.email || !input.password || !input.nombres || !input.apellidos || !age || age < 13 || age > 120) {
+      return {
+        success: false,
+        message: 'Email, contraseña, nombre, apellido y edad son requeridos',
+        error: 'Validation error'
+      } as BackendErrorResponse;
+    }
+
+    // PAYLOAD EXACTO QUE ESPERA EL BACKEND (incluyendo confirmPassword)
+    const payload = {
+      email: input.email.trim().toLowerCase(),
       password: input.password,
-      firstName: input.nombres,
-      lastName: input.apellidos,
-      age: Number.isFinite(age) ? age : undefined
+      confirmPassword: input.password, // ← OBLIGATORIO: mismo valor que password
+      firstName: input.nombres.trim(),
+      lastName: input.apellidos.trim(),
+      age: age  // debe ser NUMBER no string
     };
 
     console.debug('[Auth] POST', `${ROOT_URL}/api/auth/register`, payload);
+    console.debug('[Auth] URL completa:', `${ROOT_URL}/api/auth/register`);
+    console.debug('[Auth] Headers:', defaultHeaders);
+    console.debug('[Auth] Body stringified:', JSON.stringify(payload));
+    
     const res = await request<AuthData>('/api/auth/register', {
       method: 'POST',
       headers: defaultHeaders,
