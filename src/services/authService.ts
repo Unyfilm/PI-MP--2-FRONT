@@ -33,6 +33,7 @@ export interface BackendUser {
   email: string;
   firstName?: string;
   lastName?: string;
+  age?: number;
   profilePicture?: string;
   createdAt?: string;
   updatedAt?: string;

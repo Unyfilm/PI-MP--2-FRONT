@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Lock } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import './Profile.scss';
 
 /**
@@ -8,13 +9,31 @@ import './Profile.scss';
  *
  * User profile summary page with basic information and actions
  * (edit profile, navigate home, and delete account modal).
+ * Uses real user data from AuthContext.
  *
  * @returns {JSX.Element} Profile page UI
  */
 export default function Profile() {
+  const { user } = useAuth();
   const [showDelete, setShowDelete] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  // Mostrar loading si no hay usuario cargado
+  if (!user) {
+    return (
+      <div className="profile-page">
+        <div className="profile-mosaic" aria-hidden="true">
+          {Array.from({ length: 200 }).map((_, i) => (
+            <span key={i} className="profile-mosaic__tile" />
+          ))}
+        </div>
+        <div className="profile-card">
+          <h1 className="profile-card__title">Cargando perfil...</h1>
+        </div>
+      </div>
+    );
+  }
 
   const handleConfirmDelete = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,19 +59,19 @@ export default function Profile() {
         <h1 className="profile-card__title">Mi perfil</h1>
         <div className="profile-card__row">
           <span className="profile-card__label">Nombre</span>
-          <span className="profile-card__value">Usuario UnyFilm</span>
+          <span className="profile-card__value">{user.firstName || 'No especificado'}</span>
         </div>
         <div className="profile-card__row">
           <span className="profile-card__label">Apellidos</span>
-          <span className="profile-card__value">Apellido de Ejemplo</span>
+          <span className="profile-card__value">{user.lastName || 'No especificado'}</span>
         </div>
         <div className="profile-card__row">
           <span className="profile-card__label">Edad</span>
-          <span className="profile-card__value">28</span>
+          <span className="profile-card__value">{user.age ? user.age.toString() : 'No especificado'}</span>
         </div>
         <div className="profile-card__row">
           <span className="profile-card__label">Correo</span>
-          <span className="profile-card__value">usuario@unyfilm.com</span>
+          <span className="profile-card__value">{user.email}</span>
         </div>
 
         <div className="profile-card__actions">

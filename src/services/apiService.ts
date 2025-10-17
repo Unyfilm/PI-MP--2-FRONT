@@ -175,6 +175,16 @@ export const apiService: ApiService = {
       body: JSON.stringify({ id })
     }),
 
+  // Profile API
+  getProfile: (): Promise<ApiResponse<User>> => 
+    makeRequest<User>(`${API_CONFIG.BASE_URL}/users/profile`, { method: 'GET' }),
+  
+  updateProfile: (profileData: { firstName: string; lastName: string; age: number; email: string }): Promise<ApiResponse<User>> => 
+    makeRequest<User>(`${API_CONFIG.BASE_URL}/users/profile`, {
+      method: 'PUT',
+      body: JSON.stringify(profileData)
+    }),
+
   // Authentication API
   login: (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
     // Delegar a authService para mapear correctamente y persistir token
