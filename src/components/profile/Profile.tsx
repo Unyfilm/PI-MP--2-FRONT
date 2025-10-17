@@ -48,7 +48,7 @@ export default function Profile() {
         </div>
 
         <div className="profile-card__actions">
-          <Link to="/home" className="profile-card__button" style={{ background: 'rgba(255,255,255,0.1)' }}>Volver a inicio</Link>
+          <Link to="/home" className="profile-card__button" style={{ background: 'rgba(255,255,255,0.1)' }}>Volver al inicio</Link>
           <Link to="/profile/edit" className="profile-card__button">Editar perfil</Link>
           <button className="profile-card__button profile-card__button--danger" onClick={() => setShowDelete(true)}>Eliminar cuenta</button>
         </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, Settings, HelpCircle, LogOut } from 'lucide-react';
 import './UnyFilmHeader.scss';
 
@@ -114,9 +115,14 @@ interface DropdownProps {
 
 function UnyFilmDropdown({ onClose }: DropdownProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setIsVisible(true);
+    // Pequeño delay para asegurar que el DOM esté listo
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 10);
+
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
       if (!target?.closest('.unyfilm-header__profile')) {
@@ -125,12 +131,22 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [onClose]);
 
   const handleMenuClick = (action: 'profile' | 'notifications' | 'settings' | 'help' | 'logout') => {
     if (action === 'profile') {
-      window.location.assign('/profile');
+      navigate('/profile');
+      onClose();
+      return;
+    }
+    if (action === 'logout') {
+      // Aquí puedes agregar lógica de logout
+      console.log('Logout clicked');
+      onClose();
       return;
     }
     console.log(`Menu clicked: ${action}`);
@@ -138,7 +154,15 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
   };
 
   return (
-    <div className={`unyfilm-dropdown ${isVisible ? 'unyfilm-dropdown--visible' : ''}`}>
+    <div 
+      className={`unyfilm-dropdown ${isVisible ? 'unyfilm-dropdown--visible' : ''}`}
+      style={{
+        position: 'absolute',
+        zIndex: 9999,
+        top: '50px',
+        right: '0'
+      }}
+    >
       <div className="unyfilm-dropdown__header">
         <div className="unyfilm-dropdown__user-info">
           <div className="unyfilm-dropdown__avatar">
