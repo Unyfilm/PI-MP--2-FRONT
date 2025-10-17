@@ -234,6 +234,7 @@ export interface ApiService {
   // Profile API
   getProfile: () => Promise<ApiResponse<User>>;
   updateProfile: (profileData: { firstName: string; lastName: string; age: number; email: string }) => Promise<ApiResponse<User>>;
+  deleteAccount: (password: string) => Promise<ApiResponse<void>>;
 
   // Authentication API
   login: (credentials: LoginCredentials) => Promise<ApiResponse<AuthResponse>>;
