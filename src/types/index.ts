@@ -241,6 +241,7 @@ export interface ApiService {
   register: (userData: RegisterData) => Promise<ApiResponse<AuthResponse>>;
   logout: () => Promise<ApiResponse<void>>;
   recoverPassword: (email: string) => Promise<ApiResponse<void>>;
+  resetPassword: (token: string, newPassword: string, confirmPassword: string) => Promise<ApiResponse<void>>;
 }
 
 // Tipos para request options
