@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import authService from '../services/authService';
+import { apiService } from '../services/apiService';
 import type { BackendUser } from '../services/authService';
 
 /**
@@ -24,6 +25,13 @@ interface AuthContextType {
     password: string;
     edad: string;
   }) => Promise<{ success: boolean; message?: string }>;
+  updateProfile: (profileData: {
+    firstName: string;
+    lastName: string;
+    age: number;
+    email: string;
+  }) => Promise<{ success: boolean; message?: string; user?: BackendUser }>;
+  refreshProfile: () => Promise<{ success: boolean; message?: string; user?: BackendUser }>;
 }
 
 /**
@@ -119,6 +127,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (isValidUser && !isBlockedEmail) {
             setToken(storedToken);
             setUser(parsedUser as BackendUser);
+            // Refrescar perfil desde el backend para obtener datos actualizados
+            setTimeout(() => {
+              refreshProfile().catch(console.error);
+            }, 100);
           } else {
             console.warn('[Auth] Invalid stored user detected. Clearing auth storage.');
             localStorage.removeItem('token');
@@ -199,6 +211,129 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   /**
+   * updateProfile
+   *
+   * Updates user profile information using the backend API
+   * and updates the local user state if successful.
+   *
+   * @param {Object} profileData - Profile data to update
+   * @returns {Promise<Object>} Update result with success status
+   */
+  const updateProfile = async (profileData: {
+    firstName: string;
+    lastName: string;
+    age: number;
+    email: string;
+  }) => {
+    try {
+      const response = await apiService.updateProfile(profileData);
+      
+      if (response.success && response.data) {
+        // En lugar de mapear manualmente, vamos a refrescar el perfil completo desde el backend
+        // para asegurarnos de que tenemos los datos más actuales
+        const refreshResult = await refreshProfile();
+        
+        if (refreshResult.success) {
+          return { 
+            success: true, 
+            message: 'Perfil actualizado exitosamente',
+            user: refreshResult.user
+          };
+        } else {
+          // Si falla el refresh, usar el mapeo manual como fallback
+          const updatedUser: BackendUser = {
+            _id: user?._id || '',
+            username: user?.username || '',
+            email: profileData.email,
+            firstName: profileData.firstName,
+            lastName: profileData.lastName,
+            age: profileData.age,
+            profilePicture: user?.profilePicture || '',
+            createdAt: user?.createdAt || '',
+            updatedAt: new Date().toISOString()
+          };
+          
+          setUser(updatedUser);
+          localStorage.setItem('auth:user', JSON.stringify(updatedUser));
+          
+          return { 
+            success: true, 
+            message: 'Perfil actualizado exitosamente',
+            user: updatedUser
+          };
+        }
+      } else {
+        return { 
+          success: false, 
+          message: response.message || 'Error al actualizar el perfil' 
+        };
+      }
+    } catch (error: any) {
+      return { 
+        success: false, 
+        message: error?.message || 'Error de red al actualizar el perfil' 
+      };
+    }
+  };
+
+  /**
+   * refreshProfile
+   *
+   * Loads the user profile from the backend to ensure we have the latest data
+   *
+   * @returns {Promise<{success: boolean, message?: string, user?: BackendUser}>}
+   */
+  const refreshProfile = async () => {
+    try {
+      if (!token) {
+        return { success: false, message: 'No hay token de autenticación' };
+      }
+      
+      const response = await apiService.getProfile();
+      
+      if (response.success && response.data) {
+        // Mapear la respuesta del backend al formato BackendUser
+        // Según README, el backend devuelve firstName, lastName, age
+        const backendData = response.data;
+        const refreshedUser: BackendUser = {
+          _id: backendData.id?.toString() || user?._id || '',
+          username: backendData.username || user?.username || '',
+          email: backendData.email || user?.email || '',
+          firstName: backendData.firstName || backendData.nombres || user?.firstName || '',
+          lastName: backendData.lastName || backendData.apellidos || user?.lastName || '',
+          age: backendData.age || (backendData.edad ? parseInt(backendData.edad) : user?.age),
+          profilePicture: backendData.profilePicture || user?.profilePicture || '',
+          createdAt: backendData.createdAt || user?.createdAt || '',
+          updatedAt: backendData.updatedAt || new Date().toISOString()
+        };
+        
+        // Actualizar el estado local del usuario
+        setUser(refreshedUser);
+        
+        // Actualizar el usuario en localStorage
+        localStorage.setItem('auth:user', JSON.stringify(refreshedUser));
+        
+        return { 
+          success: true, 
+          message: 'Perfil actualizado desde el servidor',
+          user: refreshedUser
+        };
+      } else {
+        return { 
+          success: false, 
+          message: response.message || 'Error al cargar el perfil'
+        };
+      }
+    } catch (error: any) {
+      console.error('[Auth] Error refreshing profile:', error);
+      return { 
+        success: false, 
+        message: error?.message || 'Error de red al cargar el perfil'
+      };
+    }
+  };
+
+  /**
    * logout
    *
    * Clears in-memory auth state, removes persisted tokens, and
@@ -231,6 +366,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     register,
+    updateProfile,
+    refreshProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

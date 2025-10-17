@@ -164,12 +164,18 @@ export interface ApiResponse<T = any> {
 
 export interface User {
   id: number;
-  nombres: string;
-  apellidos: string;
-  edad: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  nombres?: string;     // Compatibilidad con formato de registro
+  apellidos?: string;   // Compatibilidad con formato de registro
+  edad?: string;        // Compatibilidad con formato de registro
+  age?: number;         // Campo real del backend
   email: string;
   password?: string;
+  profilePicture?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface AuthResponse {
@@ -224,6 +230,10 @@ export interface ApiService {
   createUser: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<ApiResponse<User>>;
   updateUser: (id: number, userData: Partial<User>) => Promise<ApiResponse<User>>;
   deleteUser: (id: number) => Promise<ApiResponse<void>>;
+
+  // Profile API
+  getProfile: () => Promise<ApiResponse<User>>;
+  updateProfile: (profileData: { firstName: string; lastName: string; age: number; email: string }) => Promise<ApiResponse<User>>;
 
   // Authentication API
   login: (credentials: LoginCredentials) => Promise<ApiResponse<AuthResponse>>;
