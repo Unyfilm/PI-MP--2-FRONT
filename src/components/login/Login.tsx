@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo2 from '../../images/logo2.png';
 import collage from '../../images/collage.jpg';
 import './Login.scss';
+import apiService from '../../services/apiService';
 
 interface FormErrors {
   email: string;
@@ -15,13 +16,15 @@ interface TouchedFields {
   password: boolean;
 }
 
-export default function Login(): JSX.Element {
+export default function Login() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormErrors>({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [touched, setTouched] = useState<TouchedFields>({ email: false, password: false });
+  const [apiError, setApiError] = useState<string>('');
+  const navigate = useNavigate();
 
   const validateEmail = (value: string): string => {
     if (!value) return 'El correo electrónico es requerido';
@@ -65,18 +68,27 @@ export default function Login(): JSX.Element {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
     setErrors({ email: emailError, password: passwordError });
     setTouched({ email: true, password: true });
+    setApiError('');
     if (!emailError && !passwordError) {
-      setIsLoading(true);
-      setTimeout(() => {
-        console.log('Login successful:', { email, password });
+      try {
+        setIsLoading(true);
+        const res = await apiService.login({ email, password });
+        if (res.success) {
+          navigate('/home');
+        } else {
+          setApiError(res.message || 'Error al iniciar sesión');
+        }
+      } catch (err: any) {
+        setApiError(err?.message || 'Error de red');
+      } finally {
         setIsLoading(false);
-      }, 1500);
+      }
     }
   };
 
@@ -95,6 +107,11 @@ export default function Login(): JSX.Element {
           <p className="login-form__subtitle">Ingresa tus credenciales para continuar</p>
 
           <form onSubmit={handleSubmit} className="login-form__form">
+            {apiError && (
+              <div className="form-field__error" role="alert" style={{ marginBottom: '8px' }}>
+                {apiError}
+              </div>
+            )}
             <div className="form-field">
               <label className="form-field__label">Correo electrónico</label>
               <div className="form-field__input-wrapper">
