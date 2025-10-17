@@ -22,26 +22,28 @@
 .footer__content {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px 220px; /* increase horizontal separation */
+  gap: 30px 300px; /* increase horizontal separation */
   padding: 40px 20px;
   max-width: 1400px; /* allow more width so columns spread */
   margin: 0 auto;
-  margin-left: 130px !important;
-  width: calc(100% - 130px);
+  justify-items: center;
+  text-align: center;
+  width: 100%;
   box-sizing: border-box;
+  margin-left: 130px !important;
 }
 
 /* Wide screens tuning */
 @media (max-width: 1440px) {
   .footer__content {
     max-width: 1280px;
-    gap: 30px 140px;
+    gap: 30px 200px;
   }
 }
 
 @media (max-width: 1280px) {
   .footer__content {
-    gap: 24px 80px;
+    gap: 24px 120px;
   }
 }
 
@@ -49,7 +51,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .footer__title {
@@ -60,14 +62,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  text-align: left;
+  justify-content: center;
+  text-align: center;
 }
 
 .footer__links {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .footer__link {
@@ -83,8 +86,8 @@
   cursor: pointer;
   padding: 6px 0;
   transition: all 0.3s ease;
-  text-align: left;
-  justify-content: flex-start;
+  text-align: center;
+  justify-content: center;
 }
 
 .footer__link:hover {
@@ -96,7 +99,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .footer__contact-item {
@@ -106,15 +109,15 @@
   color: #9ca3af;
   font-size: 14px;
   font-weight: 400;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 /* Horizontal Bottom Bar */
 .footer__bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 12px 20px;
-  margin-left: 180px;
-  width: calc(100% - 180px);
+  margin-left: 180px !important;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
