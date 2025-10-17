@@ -167,9 +167,12 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
     );
   }
 
+  const SHOW_HERO = false; // ocultar temporalmente la card grande
+
   return (
     <div className="unyfilm-home">
       {/* Hero Section */}
+      {SHOW_HERO && (
       <div className={`unyfilm-home__hero ${isFading ? 'is-fade-in' : 'is-fade-out'}`}>
         <div className="unyfilm-home__hero-background">
           <div className="unyfilm-home__hero-overlay"></div>
@@ -287,6 +290,7 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
           </div>
         </div>
       </div>
+      )}
 
       {/* Trending Movies Section */}
       <MovieSection
