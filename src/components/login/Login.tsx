@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo2 from '../../images/logo2.png';
 import collage from '../../images/collage.jpg';
 import './Login.scss';
-import apiService from '../../services/apiService';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface FormErrors {
   email: string;
@@ -25,6 +25,7 @@ export default function Login() {
   const [touched, setTouched] = useState<TouchedFields>({ email: false, password: false });
   const [apiError, setApiError] = useState<string>('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const validateEmail = (value: string): string => {
     if (!value) return 'El correo electrónico es requerido';
@@ -78,11 +79,11 @@ export default function Login() {
     if (!emailError && !passwordError) {
       try {
         setIsLoading(true);
-        const res = await apiService.login({ email, password });
-        if (res.success) {
+        const result = await login(email, password);
+        if (result.success) {
           navigate('/home');
         } else {
-          setApiError(res.message || 'Error al iniciar sesión');
+          setApiError(result.message || 'Error al iniciar sesión');
         }
       } catch (err: any) {
         setApiError(err?.message || 'Error de red');

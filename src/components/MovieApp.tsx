@@ -103,9 +103,7 @@ export default function MovieApp() {
     setCurrentMovie(null);
   };
 
-  const handleViewChange = (view: ViewType): void => {
-    setCurrentView(view);
-  };
+  // View changes are handled via route path in useEffect
 
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
