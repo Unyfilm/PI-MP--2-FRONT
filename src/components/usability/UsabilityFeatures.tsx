@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HelpCircle, AlertTriangle, CheckCircle, Info, Zap, Shield, Eye } from 'lucide-react';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import './UsabilityFeatures.css';
 
 /**
@@ -13,6 +14,9 @@ type Shortcut = { key: string; description: string; action: () => void };
 export default function UsabilityFeatures() {
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  
+  // Hook para cerrar el modal de ayuda al hacer clic fuera
+  const helpModalRef = useClickOutside(() => setShowHelp(false));
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
 
   useEffect(() => {
@@ -149,7 +153,8 @@ export default function UsabilityFeatures() {
       {/* Help Modal */}
       {showHelp && (
         <div className="usability-help-modal" role="dialog" aria-modal="true" aria-labelledby="usability-help-title">
-          <div className="usability-help-content">
+          <div className="usability-help-backdrop" onClick={() => setShowHelp(false)}></div>
+          <div className="usability-help-content" ref={helpModalRef}>
             <div className="usability-help-header">
               <h2 id="usability-help-title">Guía de Usabilidad</h2>
               <button 

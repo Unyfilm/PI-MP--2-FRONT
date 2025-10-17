@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Home, Film, Heart, Users, Settings, LogOut, Eye } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import logoImage from '../../images/logo3.png';
 import './UnyFilmSidebar.css';
 import type { ViewType } from '../../types';
@@ -18,6 +19,11 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
   const [showAccessibility, setShowAccessibility] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
+  
+  // Hook para cerrar el panel de accesibilidad al hacer clic fuera
+  const accessibilityRef = useClickOutside(() => {
+    setShowAccessibility(false);
+  });
 
   const toggleAccessibility = () => {
     setShowAccessibility(!showAccessibility);
@@ -85,23 +91,26 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
             onClick={toggleAccessibility}
           />
           {showAccessibility && (
-            <div className="unyfilm-sidebar__accessibility-panel">
-              <h4>Opciones de Accesibilidad</h4>
-              <div className="unyfilm-sidebar__accessibility-controls">
-                <label>
-                  <input type="checkbox" />
-                  <span>Alto contraste</span>
-                </label>
-                <label>
-                  <input type="checkbox" />
-                  <span>Reducir animaciones</span>
-                </label>
-                <label>
-                  <input type="checkbox" />
-                  <span>Mostrar foco</span>
-                </label>
+            <>
+              <div className="unyfilm-sidebar__accessibility-backdrop" onClick={() => setShowAccessibility(false)}></div>
+              <div className="unyfilm-sidebar__accessibility-panel" ref={accessibilityRef}>
+                <h4>Opciones de Accesibilidad</h4>
+                <div className="unyfilm-sidebar__accessibility-controls">
+                  <label>
+                    <input type="checkbox" />
+                    <span>Alto contraste</span>
+                  </label>
+                  <label>
+                    <input type="checkbox" />
+                    <span>Reducir animaciones</span>
+                  </label>
+                  <label>
+                    <input type="checkbox" />
+                    <span>Mostrar foco</span>
+                  </label>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
         
