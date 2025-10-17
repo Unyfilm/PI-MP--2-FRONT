@@ -56,12 +56,28 @@ export interface MovieUrls {
   [key: string]: string;
 }
 
+// Detect environment and set default API URL
+const isProduction = import.meta.env.PROD || import.meta.env.VITE_NODE_ENV === 'production';
+const defaultApiUrl = isProduction 
+  ? 'https://pi-mp-2-back-prod.onrender.com/api' 
+  : 'http://localhost:5000/api';
+
 export const API_CONFIG: ApiConfig = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
-  TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 10000,
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || defaultApiUrl,
+  TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || (isProduction ? 30000 : 10000),
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000
 };
+
+// Debug logging for environment detection
+if (import.meta.env.DEV) {
+  console.log('🔧 Environment Debug:', {
+    isProd: isProduction,
+    apiUrl: API_CONFIG.BASE_URL,
+    nodeEnv: import.meta.env.VITE_NODE_ENV,
+    mode: import.meta.env.MODE
+  });
+}
 
 export const APP_CONFIG: AppConfig = {
   NAME: import.meta.env.VITE_APP_NAME || 'UnyFilm',
