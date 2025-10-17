@@ -6,6 +6,7 @@
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
   color: white;
   font-family: system-ui, -apple-system, sans-serif;
+  overflow-x: hidden; /* evita desplazamiento horizontal */
 }
 
 /* Loading State */
@@ -35,12 +36,23 @@
 /* Hero Section */
 .unyfilm-home__hero {
   position: relative;
-  height: 500px;
+  height: min(520px, 70vh);
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   display: flex;
   align-items: center;
   padding: 0 60px;
   overflow: hidden;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.unyfilm-home__hero.is-fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.unyfilm-home__hero.is-fade-out {
+  opacity: 0;
+  transform: translateY(6px);
 }
 
 .unyfilm-home__hero-background {
@@ -62,16 +74,50 @@
   z-index: 2;
 }
 
-.unyfilm-home__spaceship {
+/* Nave eliminada */
+
+/* Póster de la película destacada (derecha) */
+.unyfilm-home__hero-poster {
   position: absolute;
-  right: 5%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 500px;
-  height: 400px;
-  opacity: 0.6;
+  top: 0px;
+  bottom: 0px;
+  right: 16px;
+  left: 40%;
+  width: 60%; /* ancho flexible según left */
+  height: calc(100% - 0px);
+  object-fit: cover; /* llena sin deformar */
+  object-position: center;
+  margin-left: -60px;
+  
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   z-index: 3;
-  animation: float 6s ease-in-out infinite;
+}
+
+/* Ajustes responsivos para la tarjeta grande del hero */
+@media (max-width: 1400px) {
+  .unyfilm-home__hero-poster { left: 45%; }
+}
+
+@media (max-width: 1200px) {
+  .unyfilm-home__hero-poster { left: 40%; }
+}
+
+@media (max-width: 1024px) {
+  .unyfilm-home__hero-poster { left: 50%; }
+}
+
+@media (max-width: 900px) {
+  .unyfilm-home__hero-poster { left: 52%; }
+}
+
+/* En móviles usamos la imagen como fondo suavizado para evitar desbordes */
+@media (max-width: 768px) {
+  .unyfilm-home__hero-poster {
+    top: 0; right: 0; bottom: 0; left: 0;
+    width: 100%; height: 100%; border-radius: 0;
+    filter: blur(1px) brightness(0.8);
+    opacity: 0.25; pointer-events: none;
+  }
 }
 
 @keyframes float {
@@ -86,7 +132,11 @@
 .unyfilm-home__hero-content {
   position: relative;
   z-index: 4;
-  max-width: 500px;
+  max-width: 520px;
+  width: min(52ch, 45vw);
+  padding-right: 12px;
+  max-height: 100%;
+  overflow: hidden; /* el texto se adapta al contenedor */
   animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -136,6 +186,12 @@
   font-weight: bold;
   margin: 0 0 15px 0;
   line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* limitar líneas del título */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -163,7 +219,13 @@
   line-height: 1.6;
   color: #d1d5db;
   margin-bottom: 30px;
-  max-width: 450px;
+  max-width: 52ch;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* limitar líneas de la descripción */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .unyfilm-home__hero-actions {
@@ -393,6 +455,8 @@
     width: 350px;
     height: 280px;
   }
+
+  .unyfilm-home__hero-poster { width: 380px; height: 210px; right: 5%; }
 }
 
 @media (max-width: 768px) {
@@ -409,6 +473,7 @@
   .unyfilm-home__spaceship {
     display: none;
   }
+  .unyfilm-home__hero-poster { display: none; }
   
   .unyfilm-home__hero-overlay {
     display: none;
@@ -417,6 +482,8 @@
   .unyfilm-home__hero-title {
     font-size: 28px;
   }
+  .unyfilm-home__hero-content { width: 100%; max-width: 100%; padding-right: 0; }
+  .unyfilm-home__hero-description { max-width: 100%; }
   
   .unyfilm-home__trending,
   .unyfilm-home__section,

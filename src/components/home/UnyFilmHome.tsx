@@ -1,18 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Play, Heart, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
+import { moviesData } from '../../data/moviesData';
+import type { Movie } from '../../types';
 import './UnyFilmHome.css';
-
-type Movie = {
-  title: string;
-  videoUrl: string;
-  rating?: number;
-  year?: number;
-  genre?: string;
-  description?: string;
-  image?: string;
-  duration?: string | number;
-};
 
 type MovieClickData = {
   title: string;
@@ -22,13 +13,15 @@ type MovieClickData = {
   year: number;
   genre: string;
   description: string;
+  synopsis?: string;
+  genres?: string[];
+  cloudinaryPublicId?: string;
+  cloudinaryUrl?: string;
 };
 
 interface HomeProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
-  movieTitles: string[];
-  movieData: Movie[];
   onMovieClick: (movie: MovieClickData) => void;
 }
 
@@ -39,42 +32,65 @@ interface HomeProps {
  * @param {Function} props.toggleFavorite - Function to toggle favorite
  * @param {Array} props.movieTitles - Array of movie titles
  */
-export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, movieData, onMovieClick }: HomeProps) {
+export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }: HomeProps) {
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null);
-  const [trendingMovies, setTrendingMovies] = useState<string[]>([]);
-  const [popularMovies, setPopularMovies] = useState<string[]>([]);
-  const [kidsMovies, setKidsMovies] = useState<string[]>([]);
-  const [actionMovies, setActionMovies] = useState<string[]>([]);
-  const [comedyMovies, setComedyMovies] = useState<string[]>([]);
-  const [dramaMovies, setDramaMovies] = useState<string[]>([]);
+  const [featuredIndex, setFeaturedIndex] = useState<number>(0);
+  const [isFading, setIsFading] = useState<boolean>(true);
+  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
+  const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
+  const [kidsMovies, setKidsMovies] = useState<Movie[]>([]);
+  const [actionMovies, setActionMovies] = useState<Movie[]>([]);
+  const [comedyMovies, setComedyMovies] = useState<Movie[]>([]);
+  const [dramaMovies, setDramaMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Simulate loading
     const timer = setTimeout(() => {
-      setFeaturedMovie({
-        title: "Piratas Espaciales",
-        year: 2023,
-        genre: "Comedia / Acción",
-        rating: 4.8,
-        duration: 120,
-        description: "Una aventura épica en el espacio donde un grupo de piratas espaciales debe salvar la galaxia de una amenaza alienígena.",
-        image: "/images/space-pirates.jpg",
-        videoUrl: ''
-      });
+      // Featured movie (first movie from our data)
+      setFeaturedMovie(moviesData[0]);
+      setFeaturedIndex(0);
       
-      // Cargar diferentes secciones
-      setTrendingMovies(movieTitles.slice(0, 6));
-      setPopularMovies(movieTitles.slice(1, 7));
-      setKidsMovies(movieTitles.slice(2, 8));
-      setActionMovies(movieTitles.slice(3, 9));
-      setComedyMovies(movieTitles.slice(4, 10));
-      setDramaMovies(movieTitles.slice(5, 11));
+      // Cargar diferentes secciones basadas en géneros
+      setTrendingMovies(moviesData.slice(0, 6));
+      setPopularMovies(moviesData.slice(1, 7));
+      setKidsMovies(moviesData.filter(movie => 
+        movie.genres?.includes('Animación') || 
+        movie.genres?.includes('Aventura')
+      ).slice(0, 6));
+      setActionMovies(moviesData.filter(movie => 
+        movie.genres?.includes('Acción') || 
+        movie.genres?.includes('Aventura')
+      ).slice(0, 6));
+      setComedyMovies(moviesData.filter(movie => 
+        movie.genres?.includes('Comedia')
+      ).slice(0, 6));
+      setDramaMovies(moviesData.filter(movie => 
+        movie.genres?.includes('Drama')
+      ).slice(0, 6));
       setIsLoading(false);
-    }, 1000);
+    }, 7000);
 
     return () => clearTimeout(timer);
-  }, [movieTitles]);
+  }, []);
+
+  // Auto-rotación del hero
+  useEffect(() => {
+    if (isLoading || moviesData.length === 0) return;
+
+    const interval = setInterval(() => {
+      setIsFading(false);
+      // Esperar a que haga fade-out y luego cambiar el contenido
+      const next = (featuredIndex + 1) % moviesData.length;
+      setTimeout(() => {
+        setFeaturedMovie(moviesData[next]);
+        setFeaturedIndex(next);
+        setIsFading(true);
+      }, 800); // duración del fade-out (debe empatar con CSS)
+    }, 10000); // cada 7s
+
+    return () => clearInterval(interval);
+  }, [featuredIndex, isLoading]);
 
   const handleMovieClick = (movie: MovieClickData) => {
     if (onMovieClick) {
@@ -88,26 +104,7 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
 
 
   // Componente reutilizable para secciones de películas
-  const MovieSection = ({ title, icon, movies, subtitle, startIndex = 0 }: { title: string; icon: React.ReactNode; movies: string[]; subtitle?: string; startIndex?: number }) => {
-    const descriptions = [
-      "Una épica aventura espacial llena de acción y misterio que te mantendrá al borde del asiento.",
-      "Un viaje emocionante a través de galaxias desconocidas donde cada planeta guarda secretos increíbles.",
-      "Una historia de amor que trasciende el tiempo y el espacio, demostrando que el amor es universal.",
-      "Una batalla épica entre el bien y el mal en el cosmos, donde el destino de la galaxia está en juego.",
-      "Un thriller psicológico ambientado en el futuro que explora los límites de la mente humana.",
-      "Una comedia espacial llena de aventuras y risas que te hará reír hasta las lágrimas.",
-      "Un drama emocional sobre la supervivencia humana en un universo hostil y desconocido.",
-      "Una aventura de ciencia ficción que combina tecnología avanzada con emociones humanas.",
-      "Un misterio cósmico que desafía las leyes de la física y la realidad tal como la conocemos.",
-      "Una odisea espacial que sigue a un grupo de héroes en su misión de salvar la humanidad.",
-      "Un romance intergaláctico que demuestra que el amor puede florecer en cualquier lugar del universo.",
-      "Una saga épica que abarca generaciones y civilizaciones enteras en el cosmos."
-    ];
-    
-    const genres = ["Acción", "Ciencia Ficción", "Aventura", "Drama", "Comedia", "Romance", "Terror", "Thriller", "Misterio", "Fantasía", "Romance", "Épico"];
-    const years = [2020, 2021, 2022, 2023, 2024];
-    const ratings = [4.0, 4.2, 4.5, 4.7, 4.8, 4.9, 5.0];
-
+  const MovieSection = ({ title, icon, movies, subtitle }: { title: string; icon: React.ReactNode; movies: Movie[]; subtitle?: string }) => {
     return (
       <div className="unyfilm-home__section">
         <div className="unyfilm-home__section-header">
@@ -119,28 +116,32 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         </div>
         
         <div className="unyfilm-home__section-grid">
-          {movies.map((title: string, index: number) => {
-            const movieIndex = startIndex + index;
-            const movieInfo = movieData[movieIndex] || { title, videoUrl: '' };
+          {movies.map((movie, index) => {
             return (
               <UnyFilmCard
-                key={movieIndex}
-                title={title}
-                isFavorite={favorites.includes(movieIndex)}
-                onToggleFavorite={() => toggleFavorite(movieIndex)}
+                key={movie.id}
+                title={movie.title}
+                isFavorite={favorites.includes(movie.id)}
+                onToggleFavorite={() => toggleFavorite(movie.id)}
                 onMovieClick={() => handleMovieClick({ 
-                  title, 
-                  index: movieIndex,
-                  videoUrl: movieInfo.videoUrl,
-                  rating: ratings[movieIndex % ratings.length],
-                  year: years[movieIndex % years.length],
-                  genre: genres[movieIndex % genres.length],
-                  description: descriptions[movieIndex % descriptions.length]
+                  title: movie.title, 
+                  index: movie.id,
+                  videoUrl: movie.videoUrl,
+                  rating: movie.rating || 4.0,
+                  year: movie.year || 2024,
+                  genre: movie.genre || 'Acción',
+                  description: movie.description || '',
+                  synopsis: movie.synopsis,
+                  genres: movie.genres,
+                  cloudinaryPublicId: movie.cloudinaryPublicId,
+                  cloudinaryUrl: movie.cloudinaryUrl
                 })}
-                description={descriptions[movieIndex % descriptions.length]}
-                year={years[movieIndex % years.length]}
-                genre={genres[movieIndex % genres.length]}
-                rating={ratings[movieIndex % ratings.length]}
+                description={movie.description || ''}
+                image={movie.image}
+                fallbackImage={movie.thumbnailUrl || movie.cloudinaryUrl?.replace('/video/upload/','/image/upload/').replace('.mp4','.jpg')}
+                year={movie.year || 2024}
+                genre={movie.genre || 'Acción'}
+                rating={movie.rating || 4.0}
               />
             );
           })}
@@ -163,28 +164,46 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
   return (
     <div className="unyfilm-home">
       {/* Hero Section */}
-      <div className="unyfilm-home__hero">
+      <div className={`unyfilm-home__hero ${isFading ? 'is-fade-in' : 'is-fade-out'}`}>
         <div className="unyfilm-home__hero-background">
           <div className="unyfilm-home__hero-overlay"></div>
         </div>
         
-        <svg className="unyfilm-home__spaceship" viewBox="0 0 500 400">
-          <defs>
-            <linearGradient id="shipGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#1e40af" stopOpacity="0.9" />
-            </linearGradient>
-          </defs>
-          <ellipse cx="250" cy="200" rx="180" ry="60" fill="url(#shipGradient)" />
-          <path d="M 100,200 L 70,220 L 100,210 Z" fill="#1e40af" />
-          <path d="M 400,200 L 430,220 L 400,210 Z" fill="#1e40af" />
-          <ellipse cx="250" cy="180" rx="50" ry="30" fill="#60a5fa" opacity="0.6" />
-          <path d="M 150,200 L 50,160 L 120,195 Z" fill="#2563eb" opacity="0.7" />
-          <path d="M 350,200 L 450,160 L 380,195 Z" fill="#2563eb" opacity="0.7" />
-          <rect x="220" y="210" width="60" height="8" fill="#1e40af" opacity="0.8" />
-          <circle cx="200" cy="200" r="8" fill="#60a5fa" />
-          <circle cx="300" cy="200" r="8" fill="#60a5fa" />
-        </svg>
+        {/* Imagen/Póster de la película destacada (lado derecho) */}
+        {featuredMovie && (
+          <img
+            className="unyfilm-home__hero-poster"
+            src={(
+              () => {
+                const local = featuredMovie.image || '';
+                if (local) {
+                  // usar misma imagen pero en carpeta pelis G
+                  const swapped = local
+                    .replace('/pelis%20P/', '/pelis%20G/')
+                    .replace('/pelis P/', '/pelis G/');
+                  return swapped;
+                }
+                if (featuredMovie.thumbnailUrl) return featuredMovie.thumbnailUrl;
+                if (featuredMovie.cloudinaryUrl) {
+                  return featuredMovie.cloudinaryUrl
+                    .replace('/video/upload/', '/image/upload/')
+                    .replace('.mp4', '.jpg');
+                }
+                return '';
+              }
+            )()}
+            alt={featuredMovie.title}
+            onError={(e) => {
+              const target = e.currentTarget as HTMLImageElement;
+              if (featuredMovie?.thumbnailUrl) {
+                target.src = featuredMovie.thumbnailUrl;
+              }
+            }}
+            loading="eager"
+          />
+        )}
+
+        {/* Nave eliminada */}
 
         <div className="unyfilm-home__hero-content">
           <div className="unyfilm-home__hero-badges">
@@ -253,7 +272,6 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         icon={<Flame size={24} />}
         movies={trendingMovies}
         subtitle="Descubre las películas más populares del momento"
-        startIndex={0}
       />
 
       {/* Popular Movies Section */}
@@ -262,7 +280,6 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         icon={<TrendingUp size={24} />}
         movies={popularMovies}
         subtitle="Las películas más vistas por nuestros usuarios"
-        startIndex={1}
       />
 
       {/* Kids Movies Section */}
@@ -271,7 +288,6 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         icon={<Baby size={24} />}
         movies={kidsMovies}
         subtitle="Contenido perfecto para disfrutar en familia"
-        startIndex={2}
       />
 
       {/* Action Movies Section */}
@@ -280,7 +296,6 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         icon={<Zap size={24} />}
         movies={actionMovies}
         subtitle="Películas llenas de adrenalina y emociones"
-        startIndex={3}
       />
 
       {/* Comedy Movies Section */}
@@ -289,7 +304,6 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         icon={<Smile size={24} />}
         movies={comedyMovies}
         subtitle="Ríe a carcajadas con nuestras mejores comedias"
-        startIndex={4}
       />
 
       {/* Drama Movies Section */}
@@ -298,7 +312,6 @@ export default function UnyFilmHome({ favorites, toggleFavorite, movieTitles, mo
         icon={<Drama size={24} />}
         movies={dramaMovies}
         subtitle="Historias profundas que tocarán tu corazón"
-        startIndex={5}
       />
 
       {/* Removed "Explora UnyFilm" quick links as requested */}

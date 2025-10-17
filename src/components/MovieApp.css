@@ -8,12 +8,14 @@
   display: grid;
   grid-template-columns: 120px 1fr;
   gap: 0; /* eliminar gap entre sidebar y contenido */
+  overflow-x: hidden; /* evita scroll horizontal */
 }
 
 /* Main Content */
 .main-content {
   min-height: calc(100vh - 80px);
   overflow-y: auto;
+  overflow-x: hidden;
   grid-column: 2 / -1;
   margin-bottom: 0; /* Remove any bottom margin */
   margin-left: 0; /* eliminar margen izquierdo */

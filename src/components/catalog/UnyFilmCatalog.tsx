@@ -1,19 +1,11 @@
 import { useState } from 'react';
 import { Filter, Grid, List, Search } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
+import { moviesData, availableGenres } from '../../data/moviesData';
+import type { Movie } from '../../types';
 import './UnyFilmCatalog.css';
 
 // Interfaces para el catálogo
-interface MovieData {
-  title: string;
-  videoUrl: string;
-  rating?: number;
-  year?: number;
-  genre?: string;
-  description?: string;
-  image?: string;
-}
-
 interface MovieClickData {
   title: string;
   index: number;
@@ -22,41 +14,45 @@ interface MovieClickData {
   year: number;
   genre: string;
   description: string;
+  synopsis?: string;
+  genres?: string[];
+  cloudinaryPublicId?: string;
+  cloudinaryUrl?: string;
 }
 
 interface UnyFilmCatalogProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
-  movieTitles: string[];
-  movieData: MovieData[];
   onMovieClick: (movie: MovieClickData) => void;
 }
 
 /**
  * Catalog page component with movie grid and filters
  */
-export default function UnyFilmCatalog({ favorites, toggleFavorite, movieTitles, movieData, onMovieClick }: UnyFilmCatalogProps) {
+export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick }: UnyFilmCatalogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('title');
 
-  const genres = ['all', 'Acción', 'Comedia', 'Drama', 'Ciencia Ficción', 'Romance', 'Terror'];
+  const genres = ['all', ...availableGenres];
 
-  const filteredMovies = movieTitles.filter((title: string) => {
-    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesGenre = selectedGenre === 'all' || title.includes(selectedGenre);
+  const filteredMovies = moviesData.filter((movie: Movie) => {
+    const matchesSearch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesGenre = selectedGenre === 'all' || 
+      movie.genres?.includes(selectedGenre) || 
+      movie.genre === selectedGenre;
     return matchesSearch && matchesGenre;
   });
 
   const sortedMovies = [...filteredMovies].sort((a, b) => {
     switch (sortBy) {
       case 'title':
-        return a.localeCompare(b);
+        return a.title.localeCompare(b.title);
       case 'year':
-        return b.localeCompare(a); // Assuming newer first
+        return (b.year || 0) - (a.year || 0);
       case 'rating':
-        return b.localeCompare(a); // Assuming higher rating first
+        return (b.rating || 0) - (a.rating || 0);
       default:
         return 0;
     }
@@ -162,47 +158,32 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, movieTitles,
 
       {/* Movie Grid */}
       <div className={`unyfilm-catalog__grid unyfilm-catalog__grid--${viewMode}`}>
-        {sortedMovies.map((title, index) => {
-          const descriptions = [
-            "Una épica aventura espacial llena de acción y misterio que te mantendrá al borde del asiento.",
-            "Un viaje emocionante a través de galaxias desconocidas donde cada planeta guarda secretos increíbles.",
-            "Una historia de amor que trasciende el tiempo y el espacio, demostrando que el amor es universal.",
-            "Una batalla épica entre el bien y el mal en el cosmos, donde el destino de la galaxia está en juego.",
-            "Un thriller psicológico ambientado en el futuro que explora los límites de la mente humana.",
-            "Una comedia espacial llena de aventuras y risas que te hará reír hasta las lágrimas.",
-            "Un drama emocional sobre la supervivencia humana en un universo hostil y desconocido.",
-            "Una aventura de ciencia ficción que combina tecnología avanzada con emociones humanas.",
-            "Un misterio cósmico que desafía las leyes de la física y la realidad tal como la conocemos.",
-            "Una odisea espacial que sigue a un grupo de héroes en su misión de salvar la humanidad.",
-            "Un romance intergaláctico que demuestra que el amor puede florecer en cualquier lugar del universo.",
-            "Una saga épica que abarca generaciones y civilizaciones enteras en el cosmos."
-          ];
-          
-          const genres = ["Acción", "Ciencia Ficción", "Aventura", "Drama", "Comedia", "Romance", "Terror", "Thriller", "Misterio", "Fantasía", "Romance", "Épico"];
-          const years = [2020, 2021, 2022, 2023, 2024];
-          const ratings = [4.0, 4.2, 4.5, 4.7, 4.8, 4.9, 5.0];
-          
-          const movieInfo = movieData[index] || { title, videoUrl: '' };
+        {sortedMovies.map((movie, index) => {
           return (
             <UnyFilmCard
-              key={index}
-              title={title}
-              isFavorite={favorites.includes(index)}
-              onToggleFavorite={() => toggleFavorite(index)}
+              key={movie.id}
+              title={movie.title}
+              isFavorite={favorites.includes(movie.id)}
+              onToggleFavorite={() => toggleFavorite(movie.id)}
               onMovieClick={() => handleMovieClick({ 
-                title, 
-                index,
-                videoUrl: movieInfo.videoUrl,
-                rating: ratings[index % ratings.length],
-                year: years[index % years.length],
-                genre: genres[index % genres.length],
-                description: descriptions[index] || "Una increíble aventura cinematográfica que no te puedes perder."
+                title: movie.title, 
+                index: movie.id,
+                videoUrl: movie.videoUrl,
+                rating: movie.rating || 4.0,
+                year: movie.year || 2024,
+                genre: movie.genre || 'Acción',
+                description: movie.description || '',
+                synopsis: movie.synopsis,
+                genres: movie.genres,
+                cloudinaryPublicId: movie.cloudinaryPublicId,
+                cloudinaryUrl: movie.cloudinaryUrl
               })}
-              description={descriptions[index] || "Una increíble aventura cinematográfica que no te puedes perder."}
-              image={`/images/movie-${index + 1}.jpg`}
-              genre={genres[index % genres.length]}
-              rating={ratings[index % ratings.length]}
-              year={years[index % years.length]}
+              description={movie.description || ''}
+              image={movie.image}
+              fallbackImage={movie.thumbnailUrl || movie.cloudinaryUrl?.replace('/video/upload/','/image/upload/').replace('.mp4','.jpg')}
+              genre={movie.genre || 'Acción'}
+              rating={movie.rating || 4.0}
+              year={movie.year || 2024}
             />
           );
         })}
