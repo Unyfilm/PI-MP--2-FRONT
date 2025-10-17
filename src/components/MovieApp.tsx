@@ -86,14 +86,14 @@ export default function MovieApp() {
     const full = moviesData.find(m => m.title === movie.title);
     const fullMovieData: MovieData = full ? {
       title: full.title,
-      videoUrl: full.videoUrl,
+      videoUrl: full.videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       rating: full.rating ?? movie.rating ?? 4.5,
       year: full.year ?? movie.year ?? 2023,
       genre: full.genre ?? movie.genre ?? 'Drama',
       description: full.description ?? movie.description ?? ''
     } : {
       title: movie.title,
-      videoUrl: movie.videoUrl,
+      videoUrl: movie.videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       rating: movie.rating || 4.5,
       year: movie.year || 2023,
       genre: movie.genre || 'Drama',

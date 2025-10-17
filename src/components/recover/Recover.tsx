@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Mail, ArrowLeft, Send } from 'lucide-react';
+import { Mail, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../login/Login.scss';
 import './Recover.scss';
 import collage from '../../images/collage.jpg';
 
-export default function Recover(): JSX.Element {
+export default function Recover() {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [touched, setTouched] = useState<boolean>(false);

@@ -1,71 +1,32 @@
 /**
- * Cloudinary Video Player Component
- * @fileoverview Enhanced video player using @cloudinary/react
+ * CloudinaryVideoPlayer - Simplified working version
  */
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Video, CloudinaryContext } from '@cloudinary/react';
-import { Cloudinary } from '@cloudinary/url-gen';
-import { CLOUDINARY_CONFIG } from '../../config/environment';
-import type { Movie } from '../../types';
+import { Play, Pause, Volume2, VolumeX, Maximize, X } from 'lucide-react';
+import type { MovieData } from '../../types';
 import './CloudinaryVideoPlayer.css';
 
 interface CloudinaryVideoPlayerProps {
-  movie: Movie;
+  movie: MovieData;
   onClose: () => void;
-  quality?: 'auto' | 'high' | 'medium' | 'low';
+  quality?: string;
   showSubtitles?: boolean;
-  subtitleLanguage?: 'es' | 'en';
 }
 
-/**
- * Enhanced video player using Cloudinary's React components
- */
 const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
   movie,
-  onClose,
-  quality = 'auto',
-  showSubtitles = false,
-  subtitleLanguage = 'es'
+  onClose
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   const [volume, setVolume] = useState<number>(1);
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [showControls, setShowControls] = useState<boolean>(true);
+  const [showControls] = useState<boolean>(true);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-  const [currentQuality, setCurrentQuality] = useState<string>(quality);
-  
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const controlsTimeoutRef = useRef<number | null>(null);
-
-  // Initialize Cloudinary instance
-  const cloudinary = new Cloudinary({
-    cloud: {
-      cloudName: CLOUDINARY_CONFIG.CLOUD_NAME
-    }
-  });
-
-  // Get video public ID from movie
-  const getVideoPublicId = (): string => {
-    if (movie.cloudinaryPublicId) {
-      return movie.cloudinaryPublicId;
-    }
-    
-    // Extract public ID from Cloudinary URL if available
-    if (movie.cloudinaryUrl) {
-      const urlParts = movie.cloudinaryUrl.split('/');
-      const publicIdIndex = urlParts.findIndex(part => part === 'upload') + 1;
-      return urlParts[publicIdIndex] || movie.title.toLowerCase().replace(/\s+/g, '_');
-    }
-    
-    // Fallback to movie title
-    return movie.title.toLowerCase().replace(/\s+/g, '_');
-  };
-
-  const videoPublicId = getVideoPublicId();
 
   useEffect(() => {
     const video = videoRef.current;
@@ -92,15 +53,6 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     };
   }, []);
 
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
-
   const togglePlay = (): void => {
     if (videoRef.current) {
       if (isPlaying) {
@@ -117,20 +69,6 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     const newTime = pos * duration;
     if (videoRef.current) {
       videoRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
-    }
-  };
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    if (videoRef.current) {
-      videoRef.current.volume = newVolume;
-    }
-    if (newVolume === 0) {
-      setIsMuted(true);
-    } else {
-      setIsMuted(false);
     }
   };
 
@@ -141,175 +79,91 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     }
   };
 
-  const toggleFullscreen = async (): Promise<void> => {
-    if (!document.fullscreenElement) {
-      await containerRef.current?.requestFullscreen();
-    } else {
-      await document.exitFullscreen();
-    }
-  };
-
-  const skipTime = (seconds: number): void => {
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
     if (videoRef.current) {
-      videoRef.current.currentTime = Math.max(0, Math.min(duration, currentTime + seconds));
+      videoRef.current.volume = newVolume;
     }
   };
 
-  const formatTime = (time: number): string => {
-    if (isNaN(time)) return '0:00';
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const handleMouseMove = (): void => {
-    setShowControls(true);
-    if (controlsTimeoutRef.current) {
-      clearTimeout(controlsTimeoutRef.current);
+  const toggleFullscreen = (): void => {
+    if (!containerRef.current) return;
+    
+    if (!isFullscreen) {
+      containerRef.current.requestFullscreen();
+    } else {
+      document.exitFullscreen();
     }
-    controlsTimeoutRef.current = window.setTimeout(() => {
-      if (isPlaying) {
-        setShowControls(false);
-      }
-    }, 3000);
+    setIsFullscreen(!isFullscreen);
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="cloudinary-video-player">
-      {/* Close Button */}
-      <button 
-        onClick={onClose}
-        className="cloudinary-player-close-btn"
-        aria-label="Cerrar reproductor"
-      >
-        ✕
-      </button>
-
-      {/* Video Container */}
+    <div className="cloudinary-player-overlay" onClick={onClose}>
       <div 
+        className="cloudinary-player-container" 
         ref={containerRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => isPlaying && setShowControls(false)}
-        className={`cloudinary-video-container ${isFullscreen ? 'fullscreen' : ''}`}
+        onClick={(e) => e.stopPropagation()}
       >
-        <CloudinaryContext cloudName={CLOUDINARY_CONFIG.CLOUD_NAME}>
-          <Video
-            publicId={videoPublicId}
-            className="cloudinary-video-element"
-            controls={false}
+        <button className="cloudinary-player-close" onClick={onClose}>
+          <X size={24} />
+        </button>
+
+        <div className="cloudinary-video-wrapper">
+          <video
             ref={videoRef}
-            poster={movie.thumbnailUrl}
-            onLoadStart={() => console.log('Video loading started')}
-            onLoadedData={() => console.log('Video loaded')}
-            onError={(e) => console.error('Video error:', e)}
+            src={movie.videoUrl}
+            className="cloudinary-video"
+            onClick={togglePlay}
           />
-        </CloudinaryContext>
 
-        {/* Video Controls */}
-        <div className={`cloudinary-video-controls ${showControls ? 'show' : ''}`}>
-          {/* Progress Bar */}
-          <div onClick={handleSeek} className="cloudinary-progress-container">
-            <div className="cloudinary-progress-bar">
-              <div 
-                className="cloudinary-progress-filled"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Control Buttons */}
-          <div className="cloudinary-controls-bottom">
-            <div className="cloudinary-controls-left">
-              <button onClick={togglePlay} className="cloudinary-control-btn">
-                {isPlaying ? '⏸️' : '▶️'}
-              </button>
-
-              <button onClick={() => skipTime(-10)} className="cloudinary-control-btn">
-                ⏪
-              </button>
-
-              <button onClick={() => skipTime(10)} className="cloudinary-control-btn">
-                ⏩
-              </button>
-
-              <div className="cloudinary-volume-control">
-                <button onClick={toggleMute} className="cloudinary-control-btn">
-                  {isMuted || volume === 0 ? '🔇' : '🔊'}
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={isMuted ? 0 : volume}
-                  onChange={handleVolumeChange}
-                  className="cloudinary-volume-slider"
+          {showControls && (
+            <div className="cloudinary-controls">
+              <div className="cloudinary-progress" onClick={handleSeek}>
+                <div 
+                  className="cloudinary-progress-fill" 
+                  style={{ width: `${progress}%` }}
                 />
               </div>
 
-              <div className="cloudinary-time-display">
-                {formatTime(currentTime)} / {formatTime(duration)}
+              <div className="cloudinary-controls-bottom">
+                <button onClick={togglePlay}>
+                  {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                </button>
+
+                <div className="cloudinary-volume">
+                  <button onClick={toggleMute}>
+                    {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  </button>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={volume}
+                    onChange={handleVolumeChange}
+                  />
+                </div>
+
+                <div className="cloudinary-time">
+                  <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span>
+                  <span> / </span>
+                  <span>{Math.floor(duration / 60)}:{Math.floor(duration % 60).toString().padStart(2, '0')}</span>
+                </div>
+
+                <button onClick={toggleFullscreen}>
+                  <Maximize size={20} />
+                </button>
               </div>
             </div>
-
-            <div className="cloudinary-controls-right">
-              {/* Quality Selector */}
-              <select 
-                value={currentQuality} 
-                onChange={(e) => setCurrentQuality(e.target.value)}
-                className="cloudinary-quality-selector"
-              >
-                <option value="auto">Auto</option>
-                <option value="high">Alta (1080p)</option>
-                <option value="medium">Media (720p)</option>
-                <option value="low">Baja (480p)</option>
-              </select>
-
-              {/* Subtitle Toggle */}
-              <button 
-                onClick={() => setShowControls(!showControls)}
-                className={`cloudinary-control-btn ${showSubtitles ? 'active' : ''}`}
-                aria-label={showSubtitles ? 'Ocultar subtítulos' : 'Mostrar subtítulos'}
-              >
-                CC
-              </button>
-
-              <button 
-                onClick={toggleFullscreen} 
-                className="cloudinary-control-btn"
-                aria-label="Pantalla completa"
-              >
-                ⛶
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Movie Info Section */}
-      <div className="cloudinary-movie-info-section">
-        <div className="cloudinary-movie-header">
-          <h1 className="cloudinary-movie-title-main">{movie.title}</h1>
-          <div className="cloudinary-movie-rating">
-            <span className="star">★</span> {movie.rating || '4.5'}/10
-          </div>
+          )}
         </div>
 
-        <div className="cloudinary-movie-metadata">
-          <span className="cloudinary-metadata-item">{movie.year || '2023'}</span>
-          <span className="cloudinary-metadata-separator">•</span>
-          <span className="cloudinary-metadata-item">{movie.genre || 'Drama'}</span>
-          <span className="cloudinary-metadata-separator">•</span>
-          <span className="cloudinary-metadata-item">2h 38m</span>
-        </div>
-
-        <div className="cloudinary-movie-description">
-          <h3>Descripción</h3>
-          <p className="cloudinary-description-text">
-            {movie.description || 'Una increíble aventura cinematográfica que te mantendrá al borde del asiento desde el primer momento.'}
-          </p>
+        <div className="cloudinary-info">
+          <h3>{movie.title}</h3>
+          <p>{movie.description}</p>
         </div>
       </div>
     </div>

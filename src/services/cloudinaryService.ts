@@ -54,11 +54,11 @@ export interface CloudinaryVideoInfo {
  * Cloudinary service class for video operations
  */
 class CloudinaryService {
-  private cloudName: string;
-  private apiKey: string;
-  private uploadPreset: string;
-  private baseUrl: string;
-  private cloudinary: Cloudinary;
+  cloudName: string;
+  apiKey: string;
+  uploadPreset: string;
+  baseUrl: string;
+  cloudinary: Cloudinary;
 
   constructor() {
     this.cloudName = CLOUDINARY_CONFIG.CLOUD_NAME;
