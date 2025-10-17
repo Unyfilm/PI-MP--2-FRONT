@@ -66,6 +66,8 @@ const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): 
     const contentType = response.headers.get('content-type') || '';
     const json = contentType.includes('application/json') ? await response.json() : { message: await response.text() };
 
+    console.log('[API] Response status:', response.status, 'Response:', json);
+
     if (!response.ok) {
       return {
         success: false,
@@ -184,6 +186,14 @@ export const apiService: ApiService = {
       method: 'PUT',
       body: JSON.stringify(profileData)
     }),
+
+  deleteAccount: (password: string): Promise<ApiResponse<void>> => {
+    console.log('[API] Calling delete account endpoint with password length:', password.length);
+    return makeRequest<void>(`${API_CONFIG.BASE_URL}/users/account`, {
+      method: 'DELETE',
+      body: JSON.stringify({ password })
+    });
+  },
 
   // Authentication API
   login: (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
