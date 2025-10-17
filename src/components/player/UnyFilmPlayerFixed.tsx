@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, Settings, SkipBack, SkipForward, X } from 'lucide-react';
 import { cloudinaryService } from '../../services/cloudinaryService';
-import type { EnhancedPlayerProps, Movie } from '../../types';
+import type { EnhancedPlayerProps } from '../../types';
 import './UnyFilmPlayer.css';
 
 /**
@@ -18,7 +18,6 @@ export default function UnyFilmPlayer({
   cloudinaryPublicId,
   quality = 'auto',
   showSubtitles = false,
-  subtitleLanguage = 'es',
   onQualityChange,
   onSubtitleToggle
 }: EnhancedPlayerProps) {
@@ -53,12 +52,7 @@ export default function UnyFilmPlayer({
         // Use Cloudinary streaming URL with quality optimization
         const streamingUrl = cloudinaryService.generateStreamingUrl(cloudinaryPublicId, currentQuality);
         setVideoUrl(streamingUrl);
-      } else if (movie.cloudinaryUrl) {
-        // Use stored Cloudinary URL
-        setVideoUrl(movie.cloudinaryUrl);
-      } else if (movie.streamingUrl) {
-        // Use stored streaming URL
-        setVideoUrl(movie.streamingUrl);
+      // Removed cloudinaryUrl and streamingUrl as they don't exist in MovieData type
       } else {
         // Fallback to original video URL
         setVideoUrl(movie.videoUrl);
@@ -66,7 +60,7 @@ export default function UnyFilmPlayer({
     };
 
     generateVideoUrl();
-  }, [cloudinaryPublicId, currentQuality, movie.cloudinaryUrl, movie.streamingUrl, movie.videoUrl]);
+  }, [cloudinaryPublicId, currentQuality, movie.videoUrl]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -207,7 +201,7 @@ export default function UnyFilmPlayer({
           ref={videoRef}
           onClick={togglePlay}
           className="unyfilm-video-element"
-          poster={movie.thumbnailUrl || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334495e;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%232c3e50;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='450' fill='url(%23grad1)'/%3E%3Cg transform='translate(400,225)'%3E%3Ccircle cx='-150' cy='-80' r='100' fill='%234a5568' opacity='0.3'/%3E%3Ccircle cx='150' cy='80' r='120' fill='%234a5568' opacity='0.2'/%3E%3Cpath d='M -200,150 L -100,50 L 0,120 L 100,20 L 200,150 Z' fill='%23718096' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E"
+          poster={movie.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%2334495e'/%3E%3C/svg%3E"}
         >
           <source 
             src={videoUrl || movie?.videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"} 
@@ -268,7 +262,7 @@ export default function UnyFilmPlayer({
                 value={currentQuality} 
                 onChange={(e) => handleQualityChange(e.target.value)}
                 className="unyfilm-quality-selector"
-                disabled={!cloudinaryPublicId && !movie.cloudinaryUrl}
+                disabled={!cloudinaryPublicId}
               >
                 <option value="auto">Auto</option>
                 <option value="high">Alta (1080p)</option>

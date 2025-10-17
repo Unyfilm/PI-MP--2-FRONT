@@ -1,4 +1,3 @@
-import React from 'react';
 import { Users, Heart, Star, Award, Globe, Shield } from 'lucide-react';
 import './UnyFilmAbout.css';
 
