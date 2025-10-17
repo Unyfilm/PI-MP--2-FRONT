@@ -196,7 +196,7 @@ export interface Movie {
   genre?: string;
   description?: string;
   image?: string; // pelis P (cards pequeñas)
-  imageG?: string; // pelis G (card grande)
+  imageG?: string; // Portadas (card grande)
   duration?: number;
   bitRate?: number;
   frameRate?: number;

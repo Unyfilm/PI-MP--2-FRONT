@@ -4,6 +4,7 @@ import Login from '../components/login/Login';
 import Register from '../components/register/Register';
 import Recover from '../components/recover/Recover';
 import Profile from '../components/profile/Profile';
+import ProfileEdit from '../components/profile/ProfileEdit';
 import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 
 /**
@@ -17,8 +18,8 @@ import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Ruta raíz: siempre redirige a login */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Ruta raíz: redirige a home si está autenticado, sino a login */}
+      <Route path="/" element={<Navigate to="/home" replace />} />
       
       {/* Rutas públicas (solo accesibles sin autenticación) */}
       <Route 
@@ -87,9 +88,17 @@ export default function AppRoutes() {
           </ProtectedRoute>
         } 
       />
+      <Route 
+        path="/profile/edit" 
+        element={
+          <ProtectedRoute>
+            <ProfileEdit />
+          </ProtectedRoute>
+        } 
+      />
       
-      {/* Ruta 404: redirige a login */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* Ruta 404: redirige a home */}
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 }

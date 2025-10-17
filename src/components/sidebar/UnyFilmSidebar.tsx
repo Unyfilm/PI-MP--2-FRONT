@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Home, Film, Heart, Users, Settings, LogOut, Eye } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import logoImage from '../../images/logo3.png';
 import './UnyFilmSidebar.css';
 import type { ViewType } from '../../types';
@@ -15,9 +16,16 @@ interface UnyFilmSidebarProps {
  */
 export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
   const [showAccessibility, setShowAccessibility] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const toggleAccessibility = () => {
     setShowAccessibility(!showAccessibility);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   return (
@@ -100,6 +108,7 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
         <NavIcon 
           icon={<LogOut size={24} strokeWidth={2} />}
           label="Cerrar Sesión"
+          onClick={handleLogout}
         />
       </div>
     </div>

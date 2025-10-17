@@ -1,6 +1,7 @@
 import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import './UnyFilmHeader.scss';
 
 // Tipos locales para el header
@@ -116,6 +117,7 @@ interface DropdownProps {
 function UnyFilmDropdown({ onClose }: DropdownProps) {
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     // Pequeño delay para asegurar que el DOM esté listo
@@ -144,8 +146,8 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
       return;
     }
     if (action === 'logout') {
-      // Aquí puedes agregar lógica de logout
-      console.log('Logout clicked');
+      logout();
+      navigate('/login');
       onClose();
       return;
     }

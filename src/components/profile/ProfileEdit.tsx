@@ -1,13 +1,29 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User as UserIcon, Mail, Calendar } from 'lucide-react';
 import './Profile.scss';
 
 export default function ProfileEdit() {
+  const navigate = useNavigate();
   const [name, setName] = useState('Usuario UnyFilm');
   const [lastName, setLastName] = useState('Apellido de Ejemplo');
   const [age, setAge] = useState('28');
   const [email, setEmail] = useState('usuario@unyfilm.com');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    // Simular guardado
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Aquí iría la llamada a la API para guardar los cambios
+    console.log('Guardando cambios:', { name, lastName, age, email });
+    setIsSaving(false);
+    navigate('/profile');
+  };
+
+  const handleCancel = () => {
+    navigate('/profile');
+  };
 
   return (
     <div className="profile-page">
@@ -48,8 +64,25 @@ export default function ProfileEdit() {
         </div>
 
         <div className="profile-card__actions" style={{ gap: 8 }}>
-          <Link to="/profile" className="profile-card__button">Guardar</Link>
-          <Link to="/profile" className="profile-card__button" style={{ background: 'rgba(255,255,255,0.1)' }}>Cancelar</Link>
+          <button 
+            onClick={handleSave} 
+            className="profile-card__button"
+            disabled={isSaving}
+            style={{ 
+              opacity: isSaving ? 0.7 : 1,
+              cursor: isSaving ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isSaving ? 'Guardando...' : 'Guardar cambios'}
+          </button>
+          <button 
+            onClick={handleCancel} 
+            className="profile-card__button" 
+            style={{ background: 'rgba(255,255,255,0.1)' }}
+            disabled={isSaving}
+          >
+            Cancelar
+          </button>
         </div>
       </div>
     </div>

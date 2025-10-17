@@ -39,6 +39,39 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
   const [comedyMovies, setComedyMovies] = useState<Movie[]>([]);
   const [dramaMovies, setDramaMovies] = useState<Movie[]>([]);
 
+  // Función para convertir ruta de pelis P a Portadas
+  const getPortadasImage = (pelisPImage?: string): string => {
+    if (!pelisPImage) return '/images/default-hero.jpg';
+    
+    // Extraer el nombre del archivo de la ruta de pelis P
+    const fileName = pelisPImage.split('/').pop() || '';
+    
+    // Crear la nueva ruta para Portadas usando import.meta.url
+    return new URL(`../images/Portadas/${fileName}`, import.meta.url).href;
+  };
+
+  // Función para obtener la imagen del hero con fallbacks
+  const getHeroImage = (movie: Movie): string => {
+    // 1. Intentar usar imageG si existe (ya apunta a Portadas)
+    if (movie.imageG) return movie.imageG;
+    
+    // 2. Convertir imagen de pelis P a Portadas
+    if (movie.image) return getPortadasImage(movie.image);
+    
+    // 3. Usar thumbnail si existe
+    if (movie.thumbnailUrl) return movie.thumbnailUrl;
+    
+    // 4. Usar Cloudinary si existe
+    if (movie.cloudinaryUrl) {
+      return movie.cloudinaryUrl
+        .replace('/video/upload/', '/image/upload/')
+        .replace('.mp4', '.jpg');
+    }
+    
+    // 5. Fallback por defecto
+    return '/images/default-hero.jpg';
+  };
+
   useEffect(() => {
     // Simulate loading
     const timer = setTimeout(() => {
@@ -142,27 +175,56 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
         <div className="unyfilm-home__hero">
           <div className="unyfilm-home__hero-bg">
             <img 
-              src={featuredMovie.image || '/images/default-hero.jpg'} 
+              src={getHeroImage(featuredMovie)} 
               alt={featuredMovie.title}
               className="unyfilm-home__hero-image"
+              onError={(e) => {
+                const img = e.currentTarget as HTMLImageElement;
+                // Fallback chain: Portadas -> pelis P -> thumbnail -> Cloudinary -> default
+                if (img.src !== featuredMovie.image && featuredMovie.image) {
+                  img.src = featuredMovie.image;
+                } else if (img.src !== featuredMovie.thumbnailUrl && featuredMovie.thumbnailUrl) {
+                  img.src = featuredMovie.thumbnailUrl;
+                } else if (img.src !== featuredMovie.cloudinaryUrl && featuredMovie.cloudinaryUrl) {
+                  img.src = featuredMovie.cloudinaryUrl
+                    .replace('/video/upload/', '/image/upload/')
+                    .replace('.mp4', '.jpg');
+                } else {
+                  img.src = '/images/default-hero.jpg';
+                }
+              }}
             />
             <div className="unyfilm-home__hero-overlay"></div>
           </div>
           
           <div className="unyfilm-home__hero-content">
+            {/* Tags de trending y featured */}
+            <div className="unyfilm-home__hero-badges">
+              <div className="unyfilm-home__hero-badge unyfilm-home__hero-badge--trending">
+                <Flame size={14} />
+                TRENDING
+              </div>
+              <div className="unyfilm-home__hero-badge unyfilm-home__hero-badge--featured">
+                <Star size={14} />
+                FEATURED
+              </div>
+            </div>
+            
             <h1 className="unyfilm-home__hero-title">{featuredMovie.title}</h1>
-            <p className="unyfilm-home__hero-description">
-              {featuredMovie.description || 'Una increíble experiencia cinematográfica te espera.'}
-            </p>
             
             <div className="unyfilm-home__hero-meta">
+              <span className="hero-year">{featuredMovie.year || 2024}</span>
+              <span className="hero-genre">{featuredMovie.genre || 'Acción'}</span>
               <span className="hero-rating">
                 <Star size={16} />
                 {featuredMovie.rating || 4.5}
               </span>
-              <span className="hero-year">{featuredMovie.year || 2024}</span>
-              <span className="hero-genre">{featuredMovie.genre || 'Acción'}</span>
+              <span className="hero-duration">135 min</span>
             </div>
+            
+            <p className="unyfilm-home__hero-description">
+              {featuredMovie.description || 'Una increíble experiencia cinematográfica te espera.'}
+            </p>
             
             <div className="unyfilm-home__hero-actions">
               <button 
@@ -179,16 +241,16 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
                   genres: featuredMovie.genre ? [featuredMovie.genre] : undefined
                 })}
               >
-                <Play size={20} />
-                Reproducir
+                <Play size={18} />
+                Ver ahora
               </button>
               
               <button 
                 className={`hero-btn hero-btn--secondary ${favorites.includes(featuredIndex) ? 'active' : ''}`}
                 onClick={() => toggleFavorite(featuredIndex)}
               >
-                <Heart size={20} />
-                {favorites.includes(featuredIndex) ? 'En Favoritos' : 'Agregar a Favoritos'}
+                <Heart size={18} />
+                Favoritos
               </button>
             </div>
           </div>

@@ -85,6 +85,47 @@ export default function UnyFilmAbout() {
             </p>
           </div>
         </section>
+
+        <section className="unyfilm-about__section">
+          <h2 className="unyfilm-about__section-title">Nuestro Equipo</h2>
+          <div className="unyfilm-about__team">
+            <div className="unyfilm-about__team-member">
+              <div className="unyfilm-about__team-avatar">
+                <Users className="unyfilm-about__team-icon" />
+              </div>
+              <h3>Hernan Garcia</h3>
+              <p>Frontend</p>
+            </div>
+            <div className="unyfilm-about__team-member">
+              <div className="unyfilm-about__team-avatar">
+                <Users className="unyfilm-about__team-icon" />
+              </div>
+              <h3>Julieta Arteta</h3>
+              <p>Frontend</p>
+            </div>
+            <div className="unyfilm-about__team-member">
+              <div className="unyfilm-about__team-avatar">
+                <Users className="unyfilm-about__team-icon" />
+              </div>
+              <h3>Juan Camilo Jimenez</h3>
+              <p>Backend</p>
+            </div>
+            <div className="unyfilm-about__team-member">
+              <div className="unyfilm-about__team-avatar">
+                <Users className="unyfilm-about__team-icon" />
+              </div>
+              <h3>Jerson Otero</h3>
+              <p>Frontend</p>
+            </div>
+            <div className="unyfilm-about__team-member">
+              <div className="unyfilm-about__team-avatar">
+                <Users className="unyfilm-about__team-icon" />
+              </div>
+              <h3>Julian Mosquera</h3>
+              <p>Backend</p>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

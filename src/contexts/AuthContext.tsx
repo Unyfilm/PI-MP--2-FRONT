@@ -163,10 +163,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     authService.logout().catch(console.error);
   };
 
+  const isAuthenticated = !!token && !!user;
+
   const value: AuthContextType = {
     user,
     token,
-    isAuthenticated: !!token && !!user,
+    isAuthenticated,
     isLoading,
     login,
     logout,
