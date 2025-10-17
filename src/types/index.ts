@@ -1,4 +1,11 @@
-// Tipos compartidos para toda la aplicación UnyFilm
+/**
+ * Shared TypeScript types for the UnyFilm frontend
+ *
+ * Conventions
+ * - PascalCase for exported interfaces and types
+ * - camelCase for properties and function names
+ * - Descriptive names to reflect purpose and usage
+ */
 
 // Tipos de vista de la aplicación
 export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap';

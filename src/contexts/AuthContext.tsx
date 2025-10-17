@@ -3,6 +3,13 @@ import type { ReactNode } from 'react';
 import authService from '../services/authService';
 import type { BackendUser } from '../services/authService';
 
+/**
+ * AuthContextType
+ *
+ * Strongly-typed shape for authentication context values.
+ * - Use camelCase for function names and properties
+ * - Follows the convention of descriptive and concise names
+ */
 interface AuthContextType {
   user: BackendUser | null;
   token: string | null;
@@ -19,8 +26,22 @@ interface AuthContextType {
   }) => Promise<{ success: boolean; message?: string }>;
 }
 
+/**
+ * AuthContext
+ *
+ * React context that provides authentication state and actions
+ * across the entire application. Must be consumed via `useAuth`.
+ */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * useAuth
+ *
+ * Hook to consume the AuthContext. It enforces usage within an AuthProvider.
+ *
+ * @throws {Error} If used outside AuthProvider
+ * @returns {AuthContextType} The auth context value
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -33,6 +54,16 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+/**
+ * AuthProvider
+ *
+ * Provides authentication state (user, token) and actions (login, logout, register)
+ * to all descendant components. It initializes the session by reading persisted
+ * values from localStorage and performs minimal validation.
+ *
+ * @param {AuthProviderProps} props - React children wrapper
+ * @returns {JSX.Element} Provider for authentication context
+ */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<BackendUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -112,6 +143,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
+  /**
+   * login
+   *
+   * Performs a login request through the auth service and updates
+   * the in-memory auth state.
+   *
+   * @param {string} email - User email in lowercase format
+   * @param {string} password - User password
+   * @returns {Promise<{success: boolean; message?: string}>} Operation result
+   */
   const login = async (email: string, password: string) => {
     try {
       const response = await authService.login({ email, password });
@@ -127,6 +168,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * register
+   *
+   * Performs a user registration through the auth service and establishes
+   * the session on success.
+   *
+   * @param {{nombres: string; apellidos: string; email: string; password: string; edad: string}} userData - Registration input
+   * @returns {Promise<{success: boolean; message?: string}>} Operation result
+   */
   const register = async (userData: {
     nombres: string;
     apellidos: string;
@@ -148,6 +198,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * logout
+   *
+   * Clears in-memory auth state, removes persisted tokens, and
+   * invokes the backend to invalidate the session token.
+   *
+   * @returns {void}
+   */
   const logout = () => {
     // Limpiar estado local
     setUser(null);

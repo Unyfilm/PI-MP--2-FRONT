@@ -3,6 +3,14 @@ import { Link } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import './Profile.scss';
 
+/**
+ * Profile
+ *
+ * User profile summary page with basic information and actions
+ * (edit profile, navigate home, and delete account modal).
+ *
+ * @returns {JSX.Element} Profile page UI
+ */
 export default function Profile() {
   const [showDelete, setShowDelete] = useState(false);
   const [password, setPassword] = useState('');

@@ -1,6 +1,14 @@
 /**
- * API Service for UnyFilm
- * Integra con backend real para movies/users y delega auth a authService
+ * ApiService (frontend)
+ *
+ * Centralized HTTP client for UnyFilm that integrates with the real backend
+ * for movies and users. Authentication is delegated to authService.
+ *
+ * Conventions:
+ * - camelCase for functions and variables
+ * - PascalCase for exported interfaces and types
+ * - Descriptive names for readability
+ *
  * @fileoverview Centralized API service with HTTP methods and TypeScript types
  */
 
@@ -27,10 +35,15 @@ const API_CONFIG: ApiConfig = {
 };
 
 /**
- * Generic HTTP request handler
- * @param url - Request URL
- * @param options - Fetch options
- * @returns Response data
+ * makeRequest
+ *
+ * Generic HTTP request handler adding JSON headers, authorization token,
+ * timeout via AbortController and unified JSON parsing.
+ *
+ * @template T - Expected payload type
+ * @param {string} url - Request URL
+ * @param {RequestOptions} [options] - Fetch options
+ * @returns {Promise<ApiResponse<T>>} Typed API response
  */
 const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> => {
   const controller = new AbortController();

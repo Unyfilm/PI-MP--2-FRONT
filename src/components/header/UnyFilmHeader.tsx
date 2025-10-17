@@ -7,6 +7,11 @@ import './UnyFilmHeader.scss';
 // Tipos locales para el header
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
+/**
+ * UnyFilmHeaderProps
+ *
+ * Props for the UnyFilm header component which includes search and profile actions.
+ */
 interface UnyFilmHeaderProps {
   searchQuery: string;
   onSearch: (query: string) => void;
@@ -14,7 +19,13 @@ interface UnyFilmHeaderProps {
 }
 
 /**
- * Header component with fixed search and profile
+ * UnyFilmHeader
+ *
+ * Header component with a persistent search bar and user profile menu.
+ * Follows camelCase for handlers and PascalCase for prop interfaces.
+ *
+ * @param {UnyFilmHeaderProps} props - Header props
+ * @returns {JSX.Element} Header UI
  */
 export default function UnyFilmHeader({ 
   searchQuery, 
@@ -106,9 +117,13 @@ export default function UnyFilmHeader({
 }
 
 /**
- * Profile dropdown menu component
- * @param {Object} props - Component props
- * @param {Function} props.onClose - Close handler
+ * UnyFilmDropdown
+ *
+ * Profile dropdown menu rendered under the header profile button.
+ * Closes on outside click and exposes navigation actions including logout.
+ *
+ * @param {{ onClose: () => void }} props - Close handler
+ * @returns {JSX.Element} Dropdown UI
  */
 interface DropdownProps {
   onClose: () => void;
@@ -213,12 +228,12 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
 }
 
 /**
- * Menu item component
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.icon - Icon component
- * @param {string} props.text - Menu text
- * @param {boolean} props.danger - Whether it's a danger action
- * @param {Function} props.onClick - Click handler
+ * MenuItem
+ *
+ * Stateless item for the profile dropdown menu.
+ *
+ * @param {{icon: React.ReactNode; text: string; danger?: boolean; onClick: () => void}} props - Item props
+ * @returns {JSX.Element} Menu item UI
  */
 interface MenuItemProps {
   icon: ReactNode;

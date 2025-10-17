@@ -3,6 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { User as UserIcon, Mail, Calendar } from 'lucide-react';
 import './Profile.scss';
 
+/**
+ * ProfileEdit
+ *
+ * Edit profile form with minimal local state. On save/cancel it navigates back
+ * to the Profile page. Replace demo logic with real API integration.
+ *
+ * @returns {JSX.Element} Profile edit UI
+ */
 export default function ProfileEdit() {
   const navigate = useNavigate();
   const [name, setName] = useState('Usuario UnyFilm');

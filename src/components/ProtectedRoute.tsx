@@ -7,8 +7,14 @@ interface ProtectedRouteProps {
 }
 
 /**
- * Componente que protege rutas que requieren autenticación
- * Redirige a /login si el usuario no está autenticado
+ * ProtectedRoute
+ *
+ * Route guard component that restricts access to authenticated users.
+ * When the user is not authenticated, it redirects to /login preserving
+ * the current location in navigation state.
+ *
+ * @param {ProtectedRouteProps} props - React children to render when allowed
+ * @returns {JSX.Element} Either children, a loading placeholder, or a redirect
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -40,8 +46,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 };
 
 /**
- * Componente que redirige usuarios autenticados lejos de páginas públicas
- * Por ejemplo, si ya está logueado, no debería ver la página de login
+ * PublicRoute
+ *
+ * Redirects authenticated users away from public pages (e.g., login/register)
+ * to the provided `redirectTo` path.
+ *
+ * @param {{children: React.ReactNode; redirectTo?: string}} props - Children and optional redirect path
+ * @returns {JSX.Element} Either children, a loading placeholder, or a redirect
  */
 interface PublicRouteProps {
   children: React.ReactNode;
