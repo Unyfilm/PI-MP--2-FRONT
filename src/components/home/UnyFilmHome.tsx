@@ -19,6 +19,11 @@ type MovieClickData = {
   cloudinaryUrl?: string;
 };
 
+/**
+ * HomeProps
+ *
+ * Props for the UnyFilm home component containing hero and movie sections.
+ */
 interface HomeProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
@@ -26,7 +31,14 @@ interface HomeProps {
 }
 
 /**
- * Home page component with hero section and trending movies
+ * UnyFilmHome
+ *
+ * Home page component featuring a hero poster and several curated sections
+ * (trending, popular, kids, action, comedy, drama). Handles image fallbacks
+ * and delegates movie click events via props.
+ *
+ * @param {HomeProps} props - Home props
+ * @returns {JSX.Element} Home UI
  */
 export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }: HomeProps) {
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null);
