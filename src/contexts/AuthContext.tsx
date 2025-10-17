@@ -32,6 +32,7 @@ interface AuthContextType {
     email: string;
   }) => Promise<{ success: boolean; message?: string; user?: BackendUser }>;
   refreshProfile: () => Promise<{ success: boolean; message?: string; user?: BackendUser }>;
+  deleteAccount: (password: string) => Promise<{ success: boolean; message?: string }>;
 }
 
 /**
@@ -356,6 +357,55 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     authService.logout().catch(console.error);
   };
 
+  /**
+   * deleteAccount
+   *
+   * Deletes the user account from the backend and clears all local state.
+   * Requires the user's password for confirmation.
+   *
+   * @param {string} password - User's current password for confirmation
+   * @returns {Promise<Object>} Delete result with success status
+   */
+  const deleteAccount = async (password: string) => {
+    try {
+      console.log('[Auth] Attempting to delete account...');
+      const response = await apiService.deleteAccount(password);
+      
+      console.log('[Auth] Delete account response:', response);
+      
+      if (response.success) {
+        console.log('[Auth] Account deleted successfully, clearing local state...');
+        
+        // Limpiar completamente el estado de autenticación
+        setUser(null);
+        setToken(null);
+        
+        // Limpiar localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('unyfilm-token');
+        localStorage.removeItem('auth:user');
+        localStorage.removeItem('unyfilm-logged-in');
+        
+        return { 
+          success: true, 
+          message: 'Cuenta eliminada exitosamente' 
+        };
+      } else {
+        console.log('[Auth] Delete account failed:', response.message);
+        return { 
+          success: false, 
+          message: response.message || 'Error al eliminar la cuenta' 
+        };
+      }
+    } catch (error: any) {
+      console.error('[Auth] Error deleting account:', error);
+      return { 
+        success: false, 
+        message: error?.message || 'Error de red al eliminar la cuenta' 
+      };
+    }
+  };
+
   const isAuthenticated = !!token && !!user;
 
   const value: AuthContextType = {
@@ -368,6 +418,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     updateProfile,
     refreshProfile,
+    deleteAccount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
