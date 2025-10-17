@@ -1,6 +1,6 @@
 /**
  * API Service for UnyFilm
- * Mock implementation using localStorage for data persistence
+ * Integra con backend real para movies/users y delega auth a authService
  * @fileoverview Centralized API service with HTTP methods and TypeScript types
  */
 
@@ -13,15 +13,17 @@ import type {
   LoginCredentials, 
   RegisterData, 
   RequestOptions, 
-  StorageKeys,
   ApiService
 } from '../types';
+import { API_CONFIG as ENV_API_CONFIG } from '../config/environment';
+import { authService } from './authService';
 
-// Base configuration
+// Base configuration desde environment
 const API_CONFIG: ApiConfig = {
-  BASE_URL: 'http://localhost:3000/api', // Mock backend URL
-  TIMEOUT: 10000,
-  RETRY_ATTEMPTS: 3
+  // Usar la BASE_URL tal cual viene del environment (debería incluir /api)
+  BASE_URL: (ENV_API_CONFIG.BASE_URL?.replace(/\/$/, '') || 'http://localhost:5000/api'),
+  TIMEOUT: ENV_API_CONFIG.TIMEOUT || 10000,
+  RETRY_ATTEMPTS: ENV_API_CONFIG.RETRY_ATTEMPTS || 3
 };
 
 /**
@@ -40,54 +42,37 @@ const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): 
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('unyfilm-token') || ''}`,
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token') || localStorage.getItem('unyfilm-token') || ''}`,
         ...options.headers
       }
     });
 
     clearTimeout(timeoutId);
 
+    const contentType = response.headers.get('content-type') || '';
+    const json = contentType.includes('application/json') ? await response.json() : { message: await response.text() };
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      return {
+        success: false,
+        message: json?.message || `HTTP ${response.status}`,
+        error: json?.error
+      } as ApiResponse<T>;
     }
 
-    return await response.json();
+    return json as ApiResponse<T>;
   } catch (error) {
     clearTimeout(timeoutId);
-    
-    // Mock implementation - return data from localStorage
-    return mockApiCall<T>(url, options);
+    return {
+      success: false,
+      message: 'Error de red',
+      error: (error as any)?.message || String(error)
+    } as ApiResponse<T>;
   }
 };
 
-/**
- * Mock API implementation using localStorage
- * @param url - Request URL
- * @param options - Request options
- * @returns Mock response data
- */
-const mockApiCall = async <T = any>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  const method = options.method || 'GET';
-  const endpoint = url.replace(API_CONFIG.BASE_URL, '');
-
-  switch (endpoint) {
-    case '/movies':
-      return handleMoviesRequest(method, options) as Promise<ApiResponse<T>>;
-    case '/users':
-      return handleUsersRequest(method, options) as Promise<ApiResponse<T>>;
-    case '/auth/login':
-      return handleLoginRequest(options) as Promise<ApiResponse<T>>;
-    case '/auth/register':
-      return handleRegisterRequest(options) as Promise<ApiResponse<T>>;
-    case '/auth/logout':
-      return handleLogoutRequest() as Promise<ApiResponse<T>>;
-    default:
-      throw new Error('Endpoint not found');
-  }
-};
+// Eliminado: mockApiCall y handlers mock. Ahora usamos backend real.
 
 /**
  * Handle movies API requests
@@ -95,57 +80,7 @@ const mockApiCall = async <T = any>(url: string, options: RequestOptions = {}): 
  * @param options - Request options
  * @returns Movies data
  */
-const handleMoviesRequest = async (method: string, options: RequestOptions): Promise<ApiResponse<Movie[] | Movie>> => {
-  const movies: Movie[] = JSON.parse(localStorage.getItem('unyfilm-movies') || '[]');
-  
-  switch (method) {
-    case 'GET':
-      return {
-        success: true,
-        data: movies,
-        total: movies.length
-      } as ApiResponse<Movie[]>;
-    
-    case 'POST':
-      const newMovie = JSON.parse(options.body || '{}') as Omit<Movie, 'id' | 'createdAt'>;
-      const movieWithId: Movie = {
-        ...newMovie,
-        id: Date.now(),
-        createdAt: new Date().toISOString()
-      };
-      movies.push(movieWithId);
-      localStorage.setItem('unyfilm-movies', JSON.stringify(movies));
-      return {
-        success: true,
-        data: movieWithId
-      } as ApiResponse<Movie>;
-    
-    case 'PUT':
-      const updatedMovie = JSON.parse(options.body || '{}') as Movie;
-      const movieIndex = movies.findIndex(m => m.id === updatedMovie.id);
-      if (movieIndex !== -1) {
-        movies[movieIndex] = { ...movies[movieIndex], ...updatedMovie };
-        localStorage.setItem('unyfilm-movies', JSON.stringify(movies));
-        return {
-          success: true,
-          data: movies[movieIndex]
-        } as ApiResponse<Movie>;
-      }
-      throw new Error('Movie not found');
-    
-    case 'DELETE':
-      const movieId = JSON.parse(options.body || '{}').id;
-      const filteredMovies = movies.filter(m => m.id !== movieId);
-      localStorage.setItem('unyfilm-movies', JSON.stringify(filteredMovies));
-      return {
-        success: true,
-        message: 'Movie deleted successfully'
-      } as ApiResponse<void>;
-    
-    default:
-      throw new Error('Method not allowed');
-  }
-};
+// Nota: se removieron handlers locales de movies/users para no mantener dos fuentes de verdad.
 
 /**
  * Handle users API requests
@@ -153,147 +88,36 @@ const handleMoviesRequest = async (method: string, options: RequestOptions): Pro
  * @param options - Request options
  * @returns Users data
  */
-const handleUsersRequest = async (method: string, options: RequestOptions): Promise<ApiResponse<User[] | User>> => {
-  const users: User[] = JSON.parse(localStorage.getItem('unyfilm-users') || '[]');
-  
-  switch (method) {
-    case 'GET':
-      return {
-        success: true,
-        data: users,
-        total: users.length
-      } as ApiResponse<User[]>;
-    
-    case 'POST':
-      const newUser = JSON.parse(options.body || '{}') as Omit<User, 'id' | 'createdAt'>;
-      const userWithId: User = {
-        ...newUser,
-        id: Date.now(),
-        createdAt: new Date().toISOString()
-      };
-      users.push(userWithId);
-      localStorage.setItem('unyfilm-users', JSON.stringify(users));
-      return {
-        success: true,
-        data: userWithId
-      } as ApiResponse<User>;
-    
-    case 'PUT':
-      const updatedUser = JSON.parse(options.body || '{}') as User;
-      const userIndex = users.findIndex(u => u.id === updatedUser.id);
-      if (userIndex !== -1) {
-        users[userIndex] = { ...users[userIndex], ...updatedUser };
-        localStorage.setItem('unyfilm-users', JSON.stringify(users));
-        return {
-          success: true,
-          data: users[userIndex]
-        } as ApiResponse<User>;
-      }
-      throw new Error('User not found');
-    
-    case 'DELETE':
-      const userId = JSON.parse(options.body || '{}').id;
-      const filteredUsers = users.filter(u => u.id !== userId);
-      localStorage.setItem('unyfilm-users', JSON.stringify(filteredUsers));
-      return {
-        success: true,
-        message: 'User deleted successfully'
-      } as ApiResponse<void>;
-    
-    default:
-      throw new Error('Method not allowed');
-  }
-};
+// --
 
 /**
  * Handle login request
  * @param options - Request options
  * @returns Login response
  */
-const handleLoginRequest = async (options: RequestOptions): Promise<ApiResponse<AuthResponse>> => {
-  const { email, password }: LoginCredentials = JSON.parse(options.body || '{}');
-  const users: User[] = JSON.parse(localStorage.getItem('unyfilm-users') || '[]');
-  
-  const user = users.find(u => u.email === email && u.password === password);
-  
-  if (user) {
-    const token = `mock-token-${Date.now()}`;
-    localStorage.setItem('unyfilm-token', token);
-    localStorage.setItem('unyfilm-user', JSON.stringify(user));
-    localStorage.setItem('unyfilm-logged-in', 'true');
-    
-    return {
-      success: true,
-      data: {
-        user: { ...user, password: undefined },
-        token
-      }
-    } as ApiResponse<AuthResponse>;
-  }
-  
-  throw new Error('Invalid credentials');
-};
+// Auth se maneja en authService
 
 /**
  * Handle register request
  * @param options - Request options
  * @returns Register response
  */
-const handleRegisterRequest = async (options: RequestOptions): Promise<ApiResponse<AuthResponse>> => {
-  const userData: RegisterData = JSON.parse(options.body || '{}');
-  const users: User[] = JSON.parse(localStorage.getItem('unyfilm-users') || '[]');
-  
-  // Check if user already exists
-  if (users.find(u => u.email === userData.email)) {
-    throw new Error('User already exists');
-  }
-  
-  const newUser: User = {
-    ...userData,
-    id: Date.now(),
-    createdAt: new Date().toISOString()
-  };
-  
-  users.push(newUser);
-  localStorage.setItem('unyfilm-users', JSON.stringify(users));
-  
-  const token = `mock-token-${Date.now()}`;
-  localStorage.setItem('unyfilm-token', token);
-  localStorage.setItem('unyfilm-user', JSON.stringify(newUser));
-  localStorage.setItem('unyfilm-logged-in', 'true');
-  
-  return {
-    success: true,
-    data: {
-      user: { ...newUser, password: undefined },
-      token
-    }
-  } as ApiResponse<AuthResponse>;
-};
+// --
 
 /**
  * Handle logout request
  * @returns Logout response
  */
-const handleLogoutRequest = async (): Promise<ApiResponse<void>> => {
-  localStorage.removeItem('unyfilm-token');
-  localStorage.removeItem('unyfilm-user');
-  localStorage.removeItem('unyfilm-logged-in');
-  
-  return {
-    success: true,
-    message: 'Logged out successfully'
-  } as ApiResponse<void>;
-};
+// --
 
 // API Service Methods
 export const apiService: ApiService = {
   // Movies API
   getMovies: (): Promise<ApiResponse<Movie[]>> => 
-    makeRequest<Movie[]>(`${API_CONFIG.BASE_URL}/movies`),
+    makeRequest<Movie[]>(`${API_CONFIG.BASE_URL}/movies`, { method: 'GET' }),
   
   getMovie: (id: number): Promise<ApiResponse<Movie>> => 
-    makeRequest<Movie>(`${API_CONFIG.BASE_URL}/movies/${id}`),
+    makeRequest<Movie>(`${API_CONFIG.BASE_URL}/movies/${id}`, { method: 'GET' }),
   
   createMovie: (movieData: Omit<Movie, 'id' | 'createdAt'>): Promise<ApiResponse<Movie>> => 
     makeRequest<Movie>(`${API_CONFIG.BASE_URL}/movies`, {
@@ -315,10 +139,10 @@ export const apiService: ApiService = {
 
   // Users API
   getUsers: (): Promise<ApiResponse<User[]>> => 
-    makeRequest<User[]>(`${API_CONFIG.BASE_URL}/users`),
+    makeRequest<User[]>(`${API_CONFIG.BASE_URL}/users`, { method: 'GET' }),
   
   getUser: (id: number): Promise<ApiResponse<User>> => 
-    makeRequest<User>(`${API_CONFIG.BASE_URL}/users/${id}`),
+    makeRequest<User>(`${API_CONFIG.BASE_URL}/users/${id}`, { method: 'GET' }),
   
   createUser: (userData: Omit<User, 'id' | 'createdAt'>): Promise<ApiResponse<User>> => 
     makeRequest<User>(`${API_CONFIG.BASE_URL}/users`, {
@@ -339,25 +163,27 @@ export const apiService: ApiService = {
     }),
 
   // Authentication API
-  login: (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => 
-    makeRequest<AuthResponse>(`${API_CONFIG.BASE_URL}/auth/login`, {
-      method: 'POST',
-      body: JSON.stringify(credentials)
-    }),
+  login: (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
+    // Delegar a authService para mapear correctamente y persistir token
+    return authService.login({ email: credentials.email, password: credentials.password }) as unknown as Promise<ApiResponse<AuthResponse>>;
+  },
   
-  register: (userData: RegisterData): Promise<ApiResponse<AuthResponse>> => 
-    makeRequest<AuthResponse>(`${API_CONFIG.BASE_URL}/auth/register`, {
-      method: 'POST',
-      body: JSON.stringify(userData)
-    }),
+  register: (userData: RegisterData): Promise<ApiResponse<AuthResponse>> => {
+    return authService.register({
+      nombres: userData.nombres,
+      apellidos: userData.apellidos,
+      email: userData.email,
+      password: userData.password,
+      edad: userData.edad
+    }) as unknown as Promise<ApiResponse<AuthResponse>>;
+  },
   
-  logout: (): Promise<ApiResponse<void>> => 
-    makeRequest<void>(`${API_CONFIG.BASE_URL}/auth/logout`, {
-      method: 'POST'
-    }),
+  logout: (): Promise<ApiResponse<void>> => {
+    return authService.logout() as unknown as Promise<ApiResponse<void>>;
+  },
   
   recoverPassword: (email: string): Promise<ApiResponse<void>> => 
-    makeRequest<void>(`${API_CONFIG.BASE_URL}/auth/recover`, {
+    makeRequest<void>(`${API_CONFIG.BASE_URL}/auth/forgot-password`, {
       method: 'POST',
       body: JSON.stringify({ email })
     })
