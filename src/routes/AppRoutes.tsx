@@ -3,6 +3,7 @@ import MovieApp from '../components/MovieApp';
 import Login from '../components/login/Login';
 import Register from '../components/register/Register';
 import Recover from '../components/recover/Recover';
+import Profile from '../components/profile/Profile';
 import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 
 /**
@@ -75,6 +76,14 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <MovieApp />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         } 
       />

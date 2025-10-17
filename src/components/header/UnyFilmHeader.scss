@@ -415,26 +415,43 @@
   min-width: 200px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(99, 102, 241, 0.2);
   border: 1px solid rgba(99, 102, 241, 0.2);
-  z-index: 1000;
+  z-index: 9999 !important;
   animation: dropdownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.unyfilm-dropdown--visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) scale(1) !important;
 }
 
 /* Responsive dropdown */
 @include mobile {
-  .unyfilm-profile-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
+  .unyfilm-profile-backdrop { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.5); 
+    z-index: 9998 !important; 
+  }
   .unyfilm-dropdown {
-    position: fixed;
-    top: auto;
-    right: auto;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    position: fixed !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
     border-radius: 16px 16px 0 0;
     min-width: 0;
     padding: 12px;
     transform: translateY(100%);
     animation: slideUpModal 0.28s ease-out forwards;
-    z-index: 1000;
+    z-index: 9999 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
   
   .unyfilm-dropdown__menu-item {
@@ -468,12 +485,13 @@
 @include tablet {
   .unyfilm-profile-backdrop { display: none; }
   .unyfilm-dropdown {
-    position: absolute;
-    top: 48px;
-    right: -5px;
+    position: absolute !important;
+    top: 48px !important;
+    right: -5px !important;
     min-width: 190px;
     border-radius: 12px;
     animation: dropdownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999 !important;
   }
   
   .unyfilm-dropdown__menu-item {
