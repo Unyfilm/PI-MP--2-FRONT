@@ -222,6 +222,16 @@ export const apiService: ApiService = {
     makeRequest<void>(`${API_CONFIG.BASE_URL}/api/auth/forgot-password`, {
       method: 'POST',
       body: JSON.stringify({ email })
+    }),
+
+  resetPassword: (token: string, newPassword: string, confirmPassword: string): Promise<ApiResponse<void>> => 
+    makeRequest<void>(`${API_CONFIG.BASE_URL}/auth/reset-password`, {
+      method: 'POST',
+      body: JSON.stringify({ 
+        token, 
+        password: newPassword,  // El backend espera 'password', no 'newPassword'
+        confirmPassword 
+      })
     })
 };
 

@@ -3,6 +3,7 @@ import MovieApp from '../components/MovieApp';
 import Login from '../components/login/Login';
 import Register from '../components/register/Register';
 import Recover from '../components/recover/Recover';
+import ResetPassword from '../components/recover/ResetPassword';
 import Profile from '../components/profile/Profile';
 import ProfileEdit from '../components/profile/ProfileEdit';
 import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
@@ -45,6 +46,14 @@ export default function AppRoutes() {
         element={
           <PublicRoute>
             <Recover />
+          </PublicRoute>
+        } 
+      />
+      <Route 
+        path="/reset-password" 
+        element={
+          <PublicRoute>
+            <ResetPassword />
           </PublicRoute>
         } 
       />
