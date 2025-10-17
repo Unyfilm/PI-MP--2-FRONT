@@ -20,7 +20,7 @@ export default function UnyFilmHeader({
   onSearchSubmit
 }: UnyFilmHeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
+  // const [showNotifications, setShowNotifications] = useState(false);
 
   const handleSearchChange = (e: InputChangeEvent): void => {
     if (onSearch) {
@@ -39,9 +39,9 @@ export default function UnyFilmHeader({
     setShowProfileMenu(!showProfileMenu);
   };
 
-  const handleNotificationClick = () => {
-    setShowNotifications(!showNotifications);
-  };
+  // const handleNotificationClick = () => {
+  //   setShowNotifications(!showNotifications);
+  // };
 
   return (
     <header className="unyfilm-header">

@@ -40,7 +40,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
   const filteredMovies = moviesData.filter((movie: Movie) => {
     const matchesSearch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGenre = selectedGenre === 'all' || 
-      movie.genres?.includes(selectedGenre) || 
+      movie.genre?.includes(selectedGenre) || 
       movie.genre === selectedGenre;
     return matchesSearch && matchesGenre;
   });
@@ -158,7 +158,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
 
       {/* Movie Grid */}
       <div className={`unyfilm-catalog__grid unyfilm-catalog__grid--${viewMode}`}>
-        {sortedMovies.map((movie, index) => {
+        {sortedMovies.map((movie) => {
           return (
             <UnyFilmCard
               key={movie.id}
@@ -173,8 +173,8 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
                 year: movie.year || 2024,
                 genre: movie.genre || 'Acción',
                 description: movie.description || '',
-                synopsis: movie.synopsis,
-                genres: movie.genres,
+                synopsis: movie.description,
+                genres: movie.genre ? [movie.genre] : undefined,
                 cloudinaryPublicId: movie.cloudinaryPublicId,
                 cloudinaryUrl: movie.cloudinaryUrl
               })}

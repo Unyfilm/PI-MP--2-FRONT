@@ -92,21 +92,21 @@ export default function UsabilityFeatures() {
   /**
    * Show contextual help
    */
-  const showContextualHelp = (context: 'home' | 'catalog' | 'player' | 'search') => {
-    const helpMessages = {
-      home: 'En la página de inicio puedes ver las películas en tendencia y populares.',
-      catalog: 'En el catálogo puedes filtrar y buscar películas por género.',
-      player: 'En el reproductor puedes usar las teclas de espacio para pausar/reproducir.',
-      search: 'Escribe el nombre de la película que buscas y presiona Enter.'
-    };
+  // const showContextualHelp = (context: 'home' | 'catalog' | 'player' | 'search') => {
+  //   const helpMessages = {
+  //     home: 'En la página de inicio puedes ver las películas en tendencia y populares.',
+  //     catalog: 'En el catálogo puedes filtrar y buscar películas por género.',
+  //     player: 'En el reproductor puedes usar las teclas de espacio para pausar/reproducir.',
+  //     search: 'Escribe el nombre de la película que buscas y presiona Enter.'
+  //   };
 
-    setNotifications([{
-      id: Date.now(),
-      type: 'info',
-      message: helpMessages[context] || 'Ayuda contextual no disponible.',
-      duration: 3000
-    }]);
-  };
+  //   setNotifications([{
+  //     id: Date.now(),
+  //     type: 'info',
+  //     message: helpMessages[context] || 'Ayuda contextual no disponible.',
+  //     duration: 3000
+  //   }]);
+  // };
 
   /**
    * Handle keyboard shortcuts
