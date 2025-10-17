@@ -39,6 +39,14 @@ export interface ExternalServices {
   SENTRY_DSN: string;
   GOOGLE_MAPS_API_KEY: string;
 }
+
+export interface CloudinaryConfig {
+  CLOUD_NAME: string;
+  API_KEY: string;
+  API_SECRET: string;
+  UPLOAD_PRESET: string;
+  BASE_URL: string;
+}
 export interface DevConfig {
   DEBUG_MODE: boolean;
   LOG_LEVEL: string;
@@ -91,6 +99,14 @@ export const EXTERNAL_SERVICES: ExternalServices = {
   GOOGLE_MAPS_API_KEY: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
 };
 
+export const CLOUDINARY_CONFIG: CloudinaryConfig = {
+  CLOUD_NAME: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '',
+  API_KEY: import.meta.env.VITE_CLOUDINARY_API_KEY || '',
+  API_SECRET: import.meta.env.VITE_CLOUDINARY_API_SECRET || '',
+  UPLOAD_PRESET: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '',
+  BASE_URL: `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'demo'}`
+};
+
 export const DEV_CONFIG: DevConfig = {
   DEBUG_MODE: import.meta.env.VITE_DEBUG_MODE === 'true',
   LOG_LEVEL: import.meta.env.VITE_LOG_LEVEL || 'info',
@@ -119,6 +135,7 @@ const environment = {
   UI_CONFIG,
   SECURITY_CONFIG,
   EXTERNAL_SERVICES,
+  CLOUDINARY_CONFIG,
   DEV_CONFIG,
   MOVIE_URLS
 };

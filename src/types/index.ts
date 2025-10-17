@@ -187,11 +187,19 @@ export interface Movie {
   id: number;
   title: string;
   videoUrl: string;
+  cloudinaryPublicId?: string;
+  cloudinaryUrl?: string;
+  thumbnailUrl?: string;
+  streamingUrl?: string;
   rating?: number;
   year?: number;
   genre?: string;
   description?: string;
-  image?: string;
+  image?: string; // pelis P (cards pequeñas)
+  imageG?: string; // pelis G (card grande)
+  duration?: number;
+  bitRate?: number;
+  frameRate?: number;
   createdAt: string;
 }
 
@@ -231,3 +239,69 @@ export type StorageKeys =
   | 'unyfilm-logged-in'
   | 'unyfilm-movies'
   | 'unyfilm-users';
+
+// Tipos para Cloudinary
+export interface CloudinaryUploadResponse {
+  public_id: string;
+  version: number;
+  signature: string;
+  width: number;
+  height: number;
+  format: string;
+  resource_type: string;
+  created_at: string;
+  tags: string[];
+  bytes: number;
+  type: string;
+  etag: string;
+  url: string;
+  secure_url: string;
+  access_mode: string;
+  original_filename: string;
+  duration?: number;
+  bit_rate?: number;
+  frame_rate?: number;
+}
+
+export interface CloudinaryUploadOptions {
+  folder?: string;
+  tags?: string[];
+  transformation?: string;
+  quality?: string;
+  format?: string;
+  resource_type?: 'video' | 'image' | 'raw' | 'auto';
+}
+
+export interface CloudinaryVideoInfo {
+  public_id: string;
+  url: string;
+  secure_url: string;
+  duration: number;
+  width: number;
+  height: number;
+  format: string;
+  bit_rate: number;
+  frame_rate: number;
+  created_at: string;
+}
+
+// Tipos para componentes de subida de video
+export interface VideoUploadProps {
+  onUploadSuccess: (response: CloudinaryUploadResponse) => void;
+  onUploadError: (error: string) => void;
+  onUploadProgress?: (progress: number) => void;
+  acceptedFormats?: string[];
+  maxFileSize?: number;
+  folder?: string;
+  tags?: string[];
+}
+
+// Tipos para reproductor mejorado
+export interface EnhancedPlayerProps extends PlayerProps {
+  cloudinaryPublicId?: string;
+  quality?: 'auto' | 'high' | 'medium' | 'low';
+  showSubtitles?: boolean;
+  subtitleLanguage?: 'es' | 'en';
+  onQualityChange?: (quality: string) => void;
+  onSubtitleToggle?: (enabled: boolean) => void;
+}

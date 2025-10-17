@@ -23,7 +23,8 @@
 .unyfilm-card__image-container {
   position: relative;
   width: 100%;
-  height: 213px; /* Exact height: 213.14px */
+  /* usa relación de aspecto para un responsive perfecto de póster */
+  aspect-ratio: 2 / 3; /* 3:2 vertical (poster) */
   overflow: hidden;
   background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
 }
@@ -31,8 +32,9 @@
 .unyfilm-card__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: all 0.3s ease;
+  object-fit: cover; /* llena sin deformar */
+  object-position: center; /* centra el foco */
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .unyfilm-card__placeholder {
@@ -380,11 +382,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-  .unyfilm-card__image-container {
-    height: 180px; /* Maintains aspect ratio on tablets */
-  }
-}
+/* con aspect-ratio ya no necesitamos alturas fijas */
 
 @media (max-width: 768px) {
   .unyfilm-card__image-container {
