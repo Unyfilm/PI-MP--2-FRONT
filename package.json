@@ -19,6 +19,8 @@
   "author": "Unyfilm",
   "license": "ISC",
   "dependencies": {
+    "@cloudinary/react": "^1.13.2",
+    "@cloudinary/url-gen": "^1.16.0",
     "lucide-react": "^0.545.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -39,6 +41,6 @@
     "rollup": "^4.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.19.0"
   }
 }
