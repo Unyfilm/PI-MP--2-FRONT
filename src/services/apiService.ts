@@ -235,18 +235,9 @@ export const apiService: ApiService = {
     }),
 
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string): Promise<ApiResponse<void>> => {
-    // Intentando diferentes variaciones del endpoint
-    const possibleUrls = [
-      `${API_CONFIG.BASE_URL}/api/users/change-password`,
-      `${API_CONFIG.BASE_URL}/api/users/password`, 
-      `${API_CONFIG.BASE_URL}/api/auth/change-password`,
-      `${API_CONFIG.BASE_URL}/users/change-password`
-    ];
-    
-    const fullUrl = possibleUrls[0]; // Empezamos con el primero según documentación
-    console.log('[DEBUG] changePassword URL:', fullUrl);
-    console.log('[DEBUG] API_CONFIG.BASE_URL:', API_CONFIG.BASE_URL);
-    console.log('[DEBUG] Possible URLs:', possibleUrls);
+    const fullUrl = `${API_CONFIG.BASE_URL}/api/users/change-password`;
+    console.log('[DEBUG] changePassword - URL:', fullUrl);
+    console.log('[DEBUG] changePassword - Request body:', { currentPassword: '***', newPassword: '***', confirmPassword: '***' });
     
     return makeRequest<void>(fullUrl, {
       method: 'PUT',
