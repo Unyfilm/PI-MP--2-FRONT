@@ -33,6 +33,7 @@ interface AuthContextType {
   }) => Promise<{ success: boolean; message?: string; user?: BackendUser }>;
   refreshProfile: () => Promise<{ success: boolean; message?: string; user?: BackendUser }>;
   deleteAccount: (password: string) => Promise<{ success: boolean; message?: string }>;
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<{ success: boolean; message?: string }>;
 }
 
 /**
@@ -412,6 +413,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * changePassword
+   *
+   * Changes the user's password using their current password for verification.
+   * 
+   * @param {string} currentPassword - User's current password
+   * @param {string} newPassword - New password to set
+   * @param {string} confirmPassword - Confirmation of new password
+   * @returns {Promise<Object>} Change password result with success status
+   */
+  const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
+    try {
+      console.log('[Auth] Attempting to change password...');
+      const response = await apiService.changePassword(currentPassword, newPassword, confirmPassword);
+      
+      console.log('[Auth] Change password response:', response);
+      
+      if (response.success) {
+        return { 
+          success: true, 
+          message: 'Contraseña actualizada exitosamente' 
+        };
+      } else {
+        return { 
+          success: false, 
+          message: response.message || 'Error al cambiar la contraseña' 
+        };
+      }
+    } catch (error: any) {
+      console.error('[Auth] Error changing password:', error);
+      return { 
+        success: false, 
+        message: error?.message || 'Error de red al cambiar la contraseña' 
+      };
+    }
+  };
+
   const isAuthenticated = !!token && !!user;
 
   const value: AuthContextType = {
@@ -425,6 +463,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateProfile,
     refreshProfile,
     deleteAccount,
+    changePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
