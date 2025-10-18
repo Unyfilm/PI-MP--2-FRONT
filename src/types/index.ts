@@ -242,6 +242,7 @@ export interface ApiService {
   logout: () => Promise<ApiResponse<void>>;
   recoverPassword: (email: string) => Promise<ApiResponse<void>>;
   resetPassword: (token: string, newPassword: string, confirmPassword: string) => Promise<ApiResponse<void>>;
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<ApiResponse<void>>;
 }
 
 // Tipos para request options
