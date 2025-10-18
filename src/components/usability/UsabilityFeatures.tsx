@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HelpCircle, AlertTriangle, CheckCircle, Info, Zap, Shield, Eye } from 'lucide-react';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import './UsabilityFeatures.css';
@@ -18,12 +18,21 @@ export default function UsabilityFeatures() {
   // Hook para cerrar el modal de ayuda al hacer clic fuera
   const helpModalRef = useClickOutside(() => setShowHelp(false));
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
+  
+  // Debounce para evitar múltiples ejecuciones
+  const lastKeyPress = useRef<number>(0);
 
   useEffect(() => {
     // Initialize usability features
-    initializeKeyboardShortcuts();
-    initializeErrorPrevention();
+    const cleanupKeyboard = initializeKeyboardShortcuts();
     initializeHelpSystem();
+    
+    // Cleanup function
+    return () => {
+      if (cleanupKeyboard) {
+        cleanupKeyboard();
+      }
+    };
   }, []);
 
   /**
@@ -38,24 +47,203 @@ export default function UsabilityFeatures() {
       { key: 'Alt + P', description: 'Reproducir/Pausar video', action: () => console.log('Play/Pause video') },
       { key: 'Alt + F', description: 'Pantalla completa', action: () => console.log('Toggle fullscreen') },
       { key: 'Alt + R', description: 'Resetear filtros', action: () => console.log('Reset filters') },
-      { key: 'Alt + V', description: 'Cambiar vista', action: () => console.log('Toggle view mode') },
-      { key: 'Alt + O', description: 'Opciones de orden', action: () => console.log('Sort options') },
       { key: 'Escape', description: 'Cerrar modales', action: () => setShowHelp(false) }
     ];
     setShortcuts(shortcuts);
+
+    // Agregar event listeners para los atajos
+    const handleKeyDown = (event: KeyboardEvent) => {
+      console.log('Key pressed:', event.key, 'Alt:', event.altKey, 'Code:', event.code);
+      
+      // Test simple: cualquier tecla debería aparecer en consola
+      if (event.altKey) {
+        console.log('Alt key detected with:', event.key);
+      }
+      
+      // Test específico para Alt + P
+      if (event.altKey && event.key === 'p') {
+        console.log('Alt + P combination detected!');
+      }
+      
+      // Alt + H para abrir ayuda
+      if (event.altKey && event.key === 'h') {
+        event.preventDefault();
+        console.log('Alt + H pressed - Opening help');
+        setShowHelp(true);
+      }
+      
+      // Escape para cerrar modales
+      if (event.key === 'Escape') {
+        console.log('Escape pressed - Closing modals');
+        setShowHelp(false);
+      }
+      
+      // Alt + N para navegación
+      if (event.altKey && event.key === 'n') {
+        event.preventDefault();
+        console.log('Alt + N pressed - Navigate to sidebar');
+        // Aquí puedes agregar la lógica para navegar al sidebar
+      }
+      
+      // Alt + S para búsqueda
+      if (event.altKey && event.key === 's') {
+        event.preventDefault();
+        console.log('Alt + S pressed - Navigate to search');
+        // Aquí puedes agregar la lógica para enfocar la búsqueda
+      }
+      
+      // Alt + A para accesibilidad
+      if (event.altKey && event.key === 'a') {
+        event.preventDefault();
+        console.log('Alt + A pressed - Toggle accessibility');
+        // Aquí puedes agregar la lógica para el panel de accesibilidad
+      }
+      
+      // Alt + P para play/pause
+      if (event.altKey && event.key === 'p') {
+        event.preventDefault();
+        
+        // Debounce para evitar múltiples ejecuciones
+        const now = Date.now();
+        if (now - lastKeyPress.current < 500) {
+          console.log('Alt + P debounced, ignoring');
+          return;
+        }
+        lastKeyPress.current = now;
+        
+        console.log('Alt + P pressed - Play/Pause video');
+        
+        // Buscar el elemento de video directamente para obtener el estado real
+        const videoElement = document.querySelector('video') as HTMLVideoElement;
+        console.log('Video element found:', videoElement);
+        
+        if (videoElement) {
+          console.log('Video element found, current state - paused:', videoElement.paused);
+          console.log('Video src:', videoElement.src);
+          console.log('Video currentSrc:', videoElement.currentSrc);
+          console.log('Video readyState:', videoElement.readyState);
+          console.log('Video networkState:', videoElement.networkState);
+          console.log('Video currentTime:', videoElement.currentTime);
+          console.log('Video duration:', videoElement.duration);
+          
+          // Buscar fuentes en elementos source
+          const sources = videoElement.querySelectorAll('source');
+          console.log('Video sources found:', sources.length);
+          sources.forEach((source, index) => {
+            console.log(`Source ${index}:`, source.src, source.type);
+          });
+          
+          try {
+            // SOLUCIÓN DEFINITIVA: Simular click en el botón del reproductor
+            console.log('Using definitive solution: clicking reproductor button');
+            
+            // Buscar el botón de play/pause del reproductor UnyFilm
+            const playButton = document.querySelector('.unyfilm-control-btn') as HTMLButtonElement;
+            if (playButton) {
+              console.log('Play button found, simulating click...');
+              
+              // Simular click real del usuario
+              const clickEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+              });
+              
+              // Disparar el evento de click
+              playButton.dispatchEvent(clickEvent);
+              
+              // También hacer click programático como fallback
+              playButton.click();
+              
+              console.log('Button click simulated successfully');
+              
+              // Verificar el estado después del click
+              setTimeout(() => {
+                console.log('Video state after button click - paused:', videoElement.paused);
+                console.log('Video currentTime after click:', videoElement.currentTime);
+              }, 200);
+              
+            } else {
+              console.log('Play button not found, trying direct video control...');
+              
+              // Fallback: control directo del video
+              if (videoElement.paused) {
+                console.log('Video is paused, starting playback');
+                videoElement.play().then(() => {
+                  console.log('Video started successfully');
+                }).catch((error) => {
+                  console.error('Error playing video:', error);
+                });
+              } else {
+                console.log('Video is playing, pausing');
+                videoElement.pause();
+                console.log('Video paused successfully');
+              }
+            }
+          } catch (error) {
+            console.error('Error controlling video:', error);
+          }
+        } else {
+          console.log('No video element found, trying fallback');
+          // Fallback: buscar el botón de play/pause del reproductor
+          const playButton = document.querySelector('.unyfilm-control-btn') as HTMLButtonElement;
+          if (playButton) {
+            console.log('Play button found, clicking it');
+            playButton.click();
+          } else {
+            console.log('No video player found');
+          }
+        }
+      }
+      
+      // Alt + F para pantalla completa
+      if (event.altKey && event.key === 'f') {
+        event.preventDefault();
+        console.log('Alt + F pressed - Toggle fullscreen');
+        
+        // Buscar el botón de pantalla completa del reproductor
+        const fullscreenButton = document.querySelector('.unyfilm-control-btn[title*="fullscreen"], .unyfilm-control-btn[aria-label*="fullscreen"]') as HTMLButtonElement;
+        if (fullscreenButton) {
+          console.log('Fullscreen button found, clicking it');
+          fullscreenButton.click();
+        } else {
+          // Fallback: usar API nativa
+          const videoContainer = document.querySelector('.unyfilm-video-player') as HTMLElement;
+          if (videoContainer) {
+            if (!document.fullscreenElement) {
+              videoContainer.requestFullscreen();
+            } else {
+              document.exitFullscreen();
+            }
+          }
+        }
+      }
+      
+      // Alt + R para resetear filtros
+      if (event.altKey && event.key === 'r') {
+        event.preventDefault();
+        console.log('Alt + R pressed - Reset filters');
+        // Aquí puedes agregar la lógica para resetear filtros
+      }
+      
+      
+    };
+
+    // Agregar el event listener con capture para asegurar que se ejecute
+    document.addEventListener('keydown', handleKeyDown, true);
+    console.log('Keyboard shortcuts initialized');
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+      console.log('Keyboard shortcuts cleaned up');
+    };
   };
 
   /**
-   * Initialize error prevention mechanisms
+   * Initialize error prevention mechanisms - REMOVED beforeunload alert
    */
   const initializeErrorPrevention = () => {
-    // Prevent accidental navigation
-    const beforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = '¿Estás seguro de que quieres salir?';
-    };
-    window.addEventListener('beforeunload', beforeUnload);
-
     // Auto-save user preferences
     const savePreferences = () => {
       const preferences = {
@@ -71,7 +259,6 @@ export default function UsabilityFeatures() {
 
     // Provide cleanup function for caller
     return () => {
-      window.removeEventListener('beforeunload', beforeUnload);
       clearInterval(intervalId);
     };
   };
@@ -149,6 +336,7 @@ export default function UsabilityFeatures() {
       >
         <HelpCircle size={20} />
       </button>
+
 
       {/* Help Modal */}
       {showHelp && (

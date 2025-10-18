@@ -180,19 +180,6 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
         right: '0'
       }}
     >
-      <div className="unyfilm-dropdown__header">
-        <div className="unyfilm-dropdown__user-info">
-          <div className="unyfilm-dropdown__avatar">
-            <User size={24} />
-          </div>
-          <div className="unyfilm-dropdown__details">
-            <span className="unyfilm-dropdown__name">Usuario</span>
-            <span className="unyfilm-dropdown__email">usuario@unyfilm.com</span>
-          </div>
-        </div>
-      </div>
-      
-      <div className="unyfilm-dropdown__divider"></div>
       
       <div className="unyfilm-dropdown__menu">
         <MenuItem 
