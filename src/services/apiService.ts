@@ -232,7 +232,22 @@ export const apiService: ApiService = {
         password: newPassword,  // El backend espera 'password', no 'newPassword'
         confirmPassword 
       })
-    })
+    }),
+
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string): Promise<ApiResponse<void>> => {
+    const fullUrl = `${API_CONFIG.BASE_URL}/api/users/change-password`;
+    console.log('[DEBUG] changePassword - URL:', fullUrl);
+    console.log('[DEBUG] changePassword - Request body:', { currentPassword: '***', newPassword: '***', confirmPassword: '***' });
+    
+    return makeRequest<void>(fullUrl, {
+      method: 'PUT',
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+        confirmPassword
+      })
+    });
+  }
 };
 
 export default apiService;
