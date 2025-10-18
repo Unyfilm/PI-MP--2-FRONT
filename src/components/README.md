@@ -1,45 +1,21 @@
-# UnyFilm Components
+# UnyFilm
 
-## Estructura Organizada
+## 🧩 Propósito
+Plataforma web de streaming para explorar, reproducir y valorar películas con experiencia accesible y responsiva. Incluye gestión de cuentas, favoritos, calificaciones, comentarios y soporte de subtítulos. Contenidos servidos desde proveedores externos (Cloudinary, Pexels, etc.).
 
-### 📁 **sidebar/**
-- `UnyFilmSidebar.jsx` - Barra lateral de navegación
-- `UnyFilmSidebar.css` - Estilos del sidebar
+## 🧱 Requisitos técnicos
+- Frontend: Vite, React, TypeScript, SASS; Fetch API; responsive; variables de entorno; código en inglés; estilo limpio + JSDoc
+- Backend: Node.js + Express (TypeScript); Render + env; integración de video (Cloudinary/Pexels);
+- Base de datos: MongoDB Atlas (users, movies, favorites, ratings, comments)
 
-### 📁 **header/**
-- `UnyFilmHeader.jsx` - Barra superior con buscador y perfil
-- `UnyFilmHeader.css` - Estilos del header
+## 🌐 Despliegues
+- Frontend (Vercel): https://TU-DEPLOY-FRONT.vercel.app
+- Backend (Render): https://TU-DEPLOY-BACK.onrender.com
 
-### 📁 **home/**
-- `UnyFilmHome.jsx` - Página principal con secciones de películas
-- `UnyFilmHome.css` - Estilos del home
-
-### 📁 **catalog/**
-- `UnyFilmCatalog.jsx` - Página de catálogo con filtros
-- `UnyFilmCatalog.css` - Estilos del catálogo
-
-### 📁 **card/**
-- `UnyFilmCard.jsx` - Tarjeta de película reutilizable
-- `UnyFilmCard.css` - Estilos de la tarjeta
-
-### 📁 **player/**
-- `UnyFilmPlayer.jsx` - Reproductor de video
-- `UnyFilmPlayer.css` - Estilos del reproductor
-
-## 🎯 **Archivos Principales**
-- `MovieApp.jsx` - Componente principal que orquesta todo
-- `MovieApp.css` - Estilos del contenedor principal
-
-## 🔗 **Flujo de Datos**
-1. **MovieApp** → Orquesta todos los componentes
-2. **Sidebar** → Navegación entre vistas
-3. **Header** → Búsqueda y perfil de usuario
-4. **Home/Catalog** → Muestran listas de películas
-5. **Card** → Tarjeta individual de película
-6. **Player** → Reproductor de video
-
-## 📱 **Responsive Design**
-Todos los componentes están optimizados para:
-- Desktop (1200px+)
-- Tablet (768px - 1199px)
-- Mobile (320px - 767px)
+## ⚙️ Uso
+```bash
+npm install
+npm run dev      # desarrollo
+npm run build    # producción
+npm run preview  # previsualizar build
+```

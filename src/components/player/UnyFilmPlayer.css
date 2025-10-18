@@ -10,6 +10,7 @@
   padding: 20px;
   z-index: 9999;
   overflow-y: auto;
+  overflow-x: hidden; /* evita scroll horizontal en reproductor */
 }
 
 /* Close Button */
@@ -50,6 +51,30 @@
   cursor: pointer;
 }
 
+/* Center Play overlay when paused */
+.unyfilm-center-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.unyfilm-center-play:hover {
+  background: rgba(0,0,0,0.75);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
 .unyfilm-video-container.fullscreen {
   max-width: 100vw;
   width: 100vw;
@@ -66,7 +91,8 @@
   width: 100%;
   height: auto;
   display: block;
-  aspect-ratio: 16 / 9;
+  /* Reducir altura ~10% manteniendo ancho → relación más ancha */
+  aspect-ratio: 16 / 7; /* antes 16/9 */
   background: #000;
 }
 
@@ -384,11 +410,43 @@
   box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
 }
 
+/* Comments */
+.unyfilm-comments-section { margin-bottom: 40px; }
+.unyfilm-comments-section h3 { font-size: 18px; font-weight: 600; margin: 0 0 15px 0; color: white; }
+.unyfilm-comments-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.unyfilm-comment-item { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; }
+.unyfilm-comment-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+.unyfilm-comment-author { font-weight: 700; color: #fff; }
+.unyfilm-comment-date { color: #9ca3af; font-size: 12px; }
+.unyfilm-comment-content { color: #e5e7eb; margin: 0 0 10px 0; line-height: 1.6; }
+.unyfilm-comment-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.unyfilm-comment-btn { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 8px 12px; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+.unyfilm-comment-btn:hover { background: rgba(255,255,255,0.15); }
+.unyfilm-comment-btn--danger { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.35); }
+.unyfilm-comment-btn--danger:hover { background: rgba(239,68,68,0.25); }
+.unyfilm-comment-btn--save { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.35); }
+.unyfilm-comment-btn--cancel { background: rgba(255,255,255,0.08); }
+.unyfilm-comment-edit { display: grid; gap: 8px; }
+.unyfilm-comment-textarea { width: 100%; min-height: 90px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; padding: 10px; font-family: inherit; font-size: 14px; }
+
+@media (max-width: 768px) {
+  .unyfilm-comment-btn { padding: 7px 10px; font-size: 12px; border-radius: 9px; }
+  .unyfilm-comment-textarea { min-height: 80px; }
+}
+
+@media (max-width: 480px) {
+  .unyfilm-comment-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .unyfilm-comment-actions { gap: 6px; }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .unyfilm-player-page {
     padding: 10px;
   }
+  .unyfilm-player-close-btn { top: 10px; right: 10px; width: 42px; height: 42px; }
+  .unyfilm-video-container { border-radius: 10px; margin: 0 auto 20px; }
+  .unyfilm-video-controls { padding: 14px; }
 
   .unyfilm-movie-title-main {
     font-size: 24px;
@@ -413,6 +471,65 @@
   .unyfilm-time-display {
     font-size: 12px;
   }
+  .unyfilm-submit-review-btn { padding: 10px 20px; font-size: 14px; border-radius: 10px; }
+}
+
+/* Sinopsis Section */
+.unyfilm-movie-synopsis {
+  margin-bottom: 30px;
+}
+
+.unyfilm-movie-synopsis h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  color: #f8fafc;
+}
+
+.unyfilm-synopsis-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+  margin: 0;
+  background: rgba(15, 23, 42, 0.3);
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+}
+
+/* Géneros Section */
+.unyfilm-movie-genres {
+  margin-bottom: 30px;
+}
+
+.unyfilm-movie-genres h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  color: #f8fafc;
+}
+
+.unyfilm-genres-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.unyfilm-genre-tag {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.unyfilm-genre-tag:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 @media (max-width: 480px) {
@@ -427,5 +544,22 @@
 
   .unyfilm-controls-left {
     flex-wrap: wrap;
+  }
+  .unyfilm-progress-container { height: 5px; }
+  .unyfilm-control-btn { padding: 6px; }
+  .unyfilm-video-container { max-width: 100%; }
+  
+  .unyfilm-genres-list {
+    gap: 8px;
+  }
+  
+  .unyfilm-genre-tag {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .unyfilm-synopsis-text {
+    padding: 15px;
+    font-size: 0.9rem;
   }
 }
