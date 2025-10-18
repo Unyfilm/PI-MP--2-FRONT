@@ -1,7 +1,4 @@
 ## 🧾 **README.md**
-
-Aquí tienes el **README.md** mejor organizado, con jerarquía clara de títulos, espaciado uniforme, formato consistente y mejoras menores en redacción y presentación. También corregí algunos detalles de sintaxis en tablas y bloques de código:
-
 ---
 
 ## 🎬 **Plataforma de Películas – Unyfilm**
@@ -159,3 +156,4 @@ Proyecto desarrollado por un equipo de **5 integrantes**.
 | 🗃️ **Base de datos**             | Modelos y colecciones en MongoDB Atlas           |
 | 🧭 **Gestión de proyectos & VCS** | Taiga + GitHub (SCRUM)                           |
 | 🧪 **Pruebas**                    | Heurísticas, WCAG y experiencia de usuario       |
+
