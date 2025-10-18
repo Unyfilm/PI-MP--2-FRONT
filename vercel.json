@@ -9,14 +9,15 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "env": {
-    "VITE_NODE_ENV": "production"
+    "VITE_NODE_ENV": "production",
+    "VITE_API_BASE_URL": "https://pi-mp-2-back-prod.onrender.com/api"
   },
   "buildCommand": "npm ci && npm run build",
   "installCommand": "npm ci"

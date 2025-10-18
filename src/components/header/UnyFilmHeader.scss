@@ -1,0 +1,549 @@
+@use 'sass:color';
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+// UnyFilm Header Component Styles con SASS
+// =========================================
+
+// Header Container
+.unyfilm-header {
+  position: fixed;
+  top: 0;
+  left: 120px;
+  right: 0;
+  height: 80px;
+  background: transparent;
+  z-index: 999;
+  transition: all $transition-normal cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.unyfilm-header__container {
+  @include flex-center;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 0 $spacing-xl;
+  max-width: 100%;
+  gap: $spacing-md;
+}
+
+// Search Section
+.unyfilm-header__search {
+  max-width: 300px;
+}
+
+.unyfilm-header__search-form {
+  width: 100%;
+  @include flex-center;
+  gap: $spacing-sm;
+}
+
+/* Place the search icon inside the input on the left */
+.unyfilm-header__search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.unyfilm-header__search-icon {
+  position: absolute;
+  left: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.unyfilm-header__search-input {
+  @include input-base;
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-sm;
+  height: 40px;
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba($primary-color, 0.2);
+  }
+}
+
+.unyfilm-header__search-button {
+  @include button-primary;
+  padding: $spacing-sm;
+  height: 40px;
+  width: 40px;
+  @include flex-center;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+// Actions Section
+.unyfilm-header__actions {
+  @include flex-center;
+  gap: $spacing-sm;
+}
+
+.unyfilm-header__action-button {
+  @include button-base;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: $spacing-sm;
+  height: 40px;
+  width: 40px;
+  @include flex-center;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+}
+
+// Profile Section
+.unyfilm-header__profile {
+  position: relative;
+}
+
+.unyfilm-header__profile-button {
+  @include button-base;
+  background: transparent;
+  color: white;
+  border: none;
+  padding: $spacing-sm;
+  @include flex-center;
+  gap: $spacing-xs;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.unyfilm-header__profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unyfilm-header__profile-name {
+  display: none; /* hide text next to the profile icon */
+}
+
+// Dropdown Menu
+.unyfilm-header__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-lg;
+  min-width: 200px;
+  z-index: 1000;
+  @include fade-in;
+}
+
+.unyfilm-header__dropdown-item {
+  @include button-base;
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  text-align: left;
+  color: $background-dark;
+  border: none;
+  background: transparent;
+  
+  &:hover {
+    background: rgba($primary-color, 0.1);
+    color: $primary-color;
+  }
+}
+
+// Notifications
+.unyfilm-header__notifications {
+  position: relative;
+}
+
+.unyfilm-header__notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: $error-color;
+  color: white;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  @include flex-center;
+}
+
+// Responsive Design
+@include mobile {
+  .unyfilm-header {
+    left: 0;
+    height: 60px;
+    padding-left: 72px; /* más espacio para evitar solapes con el toggle */
+  }
+  
+  .unyfilm-header__container {
+    padding: 0 $spacing-md;
+    gap: $spacing-sm;
+    display: grid; /* asegurar columnas definidas */
+    grid-template-columns: 1fr auto; /* búsqueda ocupa disponible, perfil tamaño auto */
+    align-items: center;
+    overflow: hidden; /* evita que el contenido se salga y se superponga */
+  }
+  
+  .unyfilm-header__search {
+    max-width: none;
+    width: 100%;
+    min-width: 0; /* permite encoger sin romper el layout */
+    margin-right: 0;
+  }
+  
+  .unyfilm-header__search-input {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 16px 8px 40px;
+    height: 36px;
+  }
+  
+  .unyfilm-header__search-icon {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .unyfilm-header__profile-btn {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+  }
+  
+  .unyfilm-header__profile-name {
+    display: none;
+  }
+  
+  .unyfilm-header__actions {
+    gap: $spacing-xs;
+  }
+}
+
+/* extra small devices */
+@media (max-width: 420px) {
+  .unyfilm-header__search { max-width: calc(100% - 110px); }
+  .unyfilm-header__search-input { height: 34px; font-size: 12px; padding: 8px 12px 8px 36px; }
+  .unyfilm-header__search-icon { left: 10px; width: 14px; height: 14px; }
+  .unyfilm-header { padding-left: 72px; }
+  .unyfilm-header__profile-btn { width: 32px; height: 32px; }
+}
+
+@media (max-width: 360px) {
+  .unyfilm-header__search { max-width: 130px; }
+  .unyfilm-header__search-input { height: 32px; font-size: 12px; padding: 6px 10px 6px 32px; }
+  .unyfilm-header__search-input::placeholder { opacity: 0.7; }
+  .unyfilm-header { padding-left: 72px; }
+}
+
+@include tablet {
+  .unyfilm-header {
+    left: 80px;
+    padding-left: 0; /* Reset padding for tablet */
+  }
+  
+  .unyfilm-header__search {
+    max-width: 250px;
+  }
+  
+  .unyfilm-header__search-input {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 18px 10px 44px;
+    height: 38px;
+  }
+  
+  .unyfilm-header__search-icon {
+    left: 14px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .unyfilm-header__profile-btn {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@include desktop {
+  .unyfilm-header {
+    left: 120px;
+  }
+  
+  .unyfilm-header__search {
+    max-width: 300px;
+  }
+  
+  .unyfilm-header__search-input {
+    width: 100%;
+    font-size: 14px;
+    padding: 12px 20px 12px 48px;
+    height: 40px;
+  }
+  
+  .unyfilm-header__search-icon {
+    left: 16px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .unyfilm-header__profile-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+// Animation States
+.unyfilm-header--scrolled {
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.unyfilm-header--hidden {
+  transform: translateY(-100%);
+}
+
+// Loading State
+.unyfilm-header--loading {
+  .unyfilm-header__search-button {
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid transparent;
+      border-top: 2px solid $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+// Animación spin para loading
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* === Overrides to match previous visual style (search input + profile button) === */
+.unyfilm-header__search-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 300px;
+  height: 40px;
+  padding: 12px 20px 12px 48px; /* space for icon */
+  border-radius: 25px;
+  outline: none;
+  font-size: 14px;
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  &:focus {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    transform: scale(1.02);
+  }
+}
+
+.unyfilm-header__profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border: 2px solid transparent;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.1);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.5);
+  }
+}
+
+.unyfilm-header__profile-btn--active {
+  background: rgba(99, 102, 241, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+/* Dropdown styles aligned with previous design and TSX class names */
+.unyfilm-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 200px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  z-index: 9999 !important;
+  animation: dropdownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.unyfilm-dropdown--visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Responsive dropdown */
+@include mobile {
+  .unyfilm-profile-backdrop { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.5); 
+    z-index: 9998 !important; 
+  }
+  .unyfilm-dropdown {
+    position: fixed !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    border-radius: 16px 16px 0 0;
+    min-width: 0;
+    padding: 12px;
+    transform: translateY(100%);
+    animation: slideUpModal 0.28s ease-out forwards;
+    z-index: 9999 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  .unyfilm-dropdown__menu-item {
+    padding: 8px 10px;
+    font-size: 13px;
+    gap: 10px;
+  }
+  
+  .unyfilm-dropdown__header {
+    padding: 8px 10px;
+  }
+  
+  .unyfilm-dropdown__user-info {
+    gap: 8px;
+  }
+  
+  .unyfilm-dropdown__avatar {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .unyfilm-dropdown__name {
+    font-size: 13px;
+  }
+  
+  .unyfilm-dropdown__email {
+    font-size: 11px;
+  }
+}
+
+@include tablet {
+  .unyfilm-profile-backdrop { display: none; }
+  .unyfilm-dropdown {
+    position: absolute !important;
+    top: 48px !important;
+    right: -5px !important;
+    min-width: 190px;
+    border-radius: 12px;
+    animation: dropdownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999 !important;
+  }
+  
+  .unyfilm-dropdown__menu-item {
+    padding: 9px 11px;
+    font-size: 13px;
+  }
+}
+
+.unyfilm-dropdown__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  font-size: 14px;
+
+  &:hover,
+  &.unyfilm-dropdown__menu-item--hover {
+    background: rgba(99, 102, 241, 0.25);
+    transform: translateX(4px);
+  }
+}
+
+.unyfilm-dropdown__menu-item--danger {
+  color: #ef4444;
+}
+
+.unyfilm-dropdown__menu-item--danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.unyfilm-dropdown__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 8px 0;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
