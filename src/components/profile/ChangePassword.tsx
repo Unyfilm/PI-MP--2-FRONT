@@ -14,7 +14,7 @@ import './ChangePassword.scss';
  * @returns {JSX.Element} Change password page UI
  */
 export default function ChangePassword() {
-  const { changePassword, logout } = useAuth();
+  const { changePassword } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -127,13 +127,12 @@ export default function ChangePassword() {
         if (result.success) {
           setSuccess(true);
           
-          // Opcional: Logout automático después de cambiar contraseña para mayor seguridad
+          // Regresar al perfil después del cambio exitoso
           setTimeout(() => {
-            logout();
-            navigate('/login', { 
-              state: { message: 'Contraseña cambiada exitosamente. Inicia sesión nuevamente.' }
+            navigate('/profile', { 
+              state: { message: 'Contraseña cambiada exitosamente.' }
             });
-          }, 2000);
+          }, 1500);
         } else {
           setErrors({ general: result.message || 'Error al cambiar la contraseña' });
         }
