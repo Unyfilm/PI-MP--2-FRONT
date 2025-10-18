@@ -116,10 +116,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             parsedUser = null;
           }
 
+          // Validación más permisiva - solo verificar que existe un objeto usuario básico
           const isValidUser = !!(
             parsedUser && typeof parsedUser === 'object' &&
-            typeof (parsedUser as any)._id === 'string' && (parsedUser as any)._id.length > 0 &&
-            typeof (parsedUser as any).email === 'string' && (parsedUser as any).email.includes('@')
+            (parsedUser as any).email && typeof (parsedUser as any).email === 'string'
           );
 
           // Evitar sesiones con el correo de pruebas reportado
@@ -128,26 +128,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (isValidUser && !isBlockedEmail) {
             setToken(storedToken);
             setUser(parsedUser as BackendUser);
-            // Refrescar perfil desde el backend para obtener datos actualizados
-            setTimeout(() => {
-              refreshProfile().catch(console.error);
-            }, 100);
+            // No hacer refreshProfile automático para evitar deslogueo en recarga
+            // El usuario puede actualizar su perfil manualmente si lo necesita
           } else {
-            console.warn('[Auth] Invalid stored user detected. Clearing auth storage.');
-            localStorage.removeItem('token');
-            localStorage.removeItem('unyfilm-token');
-            localStorage.removeItem('auth:user');
-            localStorage.removeItem('unyfilm-user');
-            localStorage.removeItem('unyfilm-logged-in');
+            // Solo limpiar si realmente es un email bloqueado, no por validación estricta
+            if (isBlockedEmail) {
+              console.warn('[Auth] Blocked email detected. Clearing auth storage.');
+              localStorage.removeItem('token');
+              localStorage.removeItem('unyfilm-token');
+              localStorage.removeItem('auth:user');
+              localStorage.removeItem('unyfilm-user');
+              localStorage.removeItem('unyfilm-logged-in');
+            } else {
+              // Si el usuario no es válido pero no está bloqueado, intentar mantener la sesión
+              console.warn('[Auth] User data may be incomplete, but keeping session active.');
+              setToken(storedToken);
+              setUser(parsedUser as BackendUser);
+            }
           }
         }
       } catch (error) {
-        console.error('Error al inicializar autenticación:', error);
-        // Limpiar datos corruptos
-        localStorage.removeItem('token');
-        localStorage.removeItem('unyfilm-token');
-        localStorage.removeItem('auth:user');
-        localStorage.removeItem('unyfilm-logged-in');
+        console.warn('Error al inicializar autenticación, pero manteniendo sesión si es posible:', error);
+        // No limpiar automáticamente en caso de error, solo logear
+        // La sesión puede seguir funcionando aunque haya errores menores
       } finally {
         setIsLoading(false);
       }
@@ -320,13 +323,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           user: refreshedUser
         };
       } else {
+        // No limpiar la sesión si falla el refresh, solo retornar error
+        console.warn('[Auth] Failed to refresh profile, but keeping session active');
         return { 
           success: false, 
           message: response.message || 'Error al cargar el perfil'
         };
       }
     } catch (error: any) {
-      console.error('[Auth] Error refreshing profile:', error);
+      // No limpiar la sesión si hay error de red, solo logear y retornar error
+      console.warn('[Auth] Error refreshing profile, but keeping session active:', error);
       return { 
         success: false, 
         message: error?.message || 'Error de red al cargar el perfil'

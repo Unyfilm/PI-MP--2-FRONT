@@ -40,9 +40,22 @@
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   display: flex;
   align-items: center;
-  padding: 0 60px;
+  padding: 0;
   overflow: hidden;
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Animación de transición para el carrusel */
+.unyfilm-home__hero--transitioning {
+  opacity: 0.7;
+  transform: scale(1.02);
+}
+
+.unyfilm-home__hero--transitioning .unyfilm-home__hero-image {
+  filter: blur(2px);
+  transform: scale(1.05);
 }
 
 .unyfilm-home__hero.is-fade-in {
@@ -55,7 +68,7 @@
   transform: translateY(6px);
 }
 
-.unyfilm-home__hero-background {
+.unyfilm-home__hero-bg {
   position: absolute;
   top: 0;
   left: 0;
@@ -63,6 +76,21 @@
   bottom: 0;
   z-index: 1;
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%);
+  width: 100%;
+  height: 100%;
+}
+
+.unyfilm-home__hero-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 2;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .unyfilm-home__hero-overlay {
@@ -73,56 +101,47 @@
   height: 100%;
   /* Suavizar borde para evitar línea visible en el límite del 50% */
   background: linear-gradient(270deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.0) 35%, rgba(15,23,42,0.25) 100%);
-  z-index: 2;
+  z-index: 3;
 }
 
 /* Nave eliminada */
 
-/* Póster de la película destacada (izquierda) */
-.unyfilm-home__hero-poster {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: 0;
-  right: 50%;
-  width: auto; /* ancho calculado entre left y right */
-  height: calc(100% - 0px);
-  object-fit: cover; /* llena sin deformar */
-  object-position: center;
-  margin-right: 0;
-  
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  z-index: 3;
-}
-
 /* Ajustes responsivos para la tarjeta grande del hero */
 @media (max-width: 1400px) {
-  .unyfilm-home__hero-poster { right: 45%; }
-  .unyfilm-home__hero-content { margin-left: 0; }
+  .unyfilm-home__hero-image { width: 45%; }
+  .unyfilm-home__hero-content { width: 55%; padding: 40px 50px; }
 }
 
 @media (max-width: 1200px) {
-  .unyfilm-home__hero-poster { right: 40%; }
-  .unyfilm-home__hero-content { margin-left: 0; }
+  .unyfilm-home__hero-image { width: 40%; }
+  .unyfilm-home__hero-content { width: 60%; padding: 40px 50px; }
 }
 
 @media (max-width: 1024px) {
-  .unyfilm-home__hero-poster { right: 50%; }
-  .unyfilm-home__hero-content { margin-left: 0; }
+  .unyfilm-home__hero-image { width: 50%; }
+  .unyfilm-home__hero-content { width: 50%; padding: 40px 50px; }
 }
 
 @media (max-width: 900px) {
-  .unyfilm-home__hero-poster { right: 52%; }
-  .unyfilm-home__hero-content { margin-left: 0; }
+  .unyfilm-home__hero-image { width: 52%; }
+  .unyfilm-home__hero-content { width: 48%; padding: 40px 50px; }
 }
 
 /* En móviles usamos la imagen como fondo suavizado para evitar desbordes */
 @media (max-width: 768px) {
-  .unyfilm-home__hero-poster {
+  .unyfilm-home__hero-image {
     top: 0; right: 0; bottom: 0; left: 0;
     width: 100%; height: 100%; border-radius: 0;
     filter: blur(1px) brightness(0.8);
     opacity: 0.25; pointer-events: none;
+  }
+  
+  .unyfilm-home__hero-content {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
   }
 }
 
@@ -136,22 +155,23 @@
 }
 
 .unyfilm-home__hero-content {
-  position: relative;
-  z-index: 4;
-  max-width: 100%;
-  width: 100%;
-  padding: 20px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
   height: 100%;
+  z-index: 4;
+  padding: 40px 60px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 15px;
-  overflow: hidden;
   overflow-y: auto;
   animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-left: 0;
-  margin-right: auto;
   box-sizing: border-box;
+  /* Asegurar que el contenido se ajuste */
+  min-height: 100%;
+  max-height: 100%;
 }
 
 @keyframes slideInLeft {
@@ -251,10 +271,16 @@
   overflow-wrap: anywhere;
   word-break: break-word;
   display: block;
-  flex: 1;
+  flex: 0 1 auto;
   overflow-y: auto;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   font-weight: 400;
+  /* Limitar el alto para dejar espacio a los botones */
+  max-height: 120px;
+  min-height: 40px;
+  padding-right: 8px;
+  /* Permitir scroll cuando sea necesario */
+  overflow-y: auto;
 }
 
 /* Estilos suaves para el scrollbar de la sinopsis */
@@ -265,9 +291,19 @@
 .unyfilm-home__hero-actions {
   display: flex;
   gap: 12px;
-  margin-top: 15px;
+  margin-top: auto;
   flex-shrink: 0;
   flex-wrap: wrap;
+  /* Asegurar que siempre estén visibles */
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  /* Ajuste automático para evitar que se corten */
+  min-height: 60px;
+  align-items: flex-end;
+  /* Fondo para asegurar visibilidad */
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.8) 100%);
+  padding-top: 10px;
 }
 
 .hero-btn {
@@ -418,6 +454,12 @@
 .unyfilm-home__section {
   padding: 40px 60px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  /* Evitar parpadeo durante transiciones del carrusel */
+  will-change: auto;
+  transform: translateZ(0);
+  /* Forzar estabilidad visual */
+  contain: layout style paint;
+  isolation: isolate;
 }
 
 .unyfilm-home__section:last-of-type {
@@ -449,6 +491,21 @@
   grid-template-columns: repeat(auto-fit, minmax(146px, 1fr)); /* Width: 145.59px */
   gap: 20px;
   max-width: 100%;
+  /* Evitar parpadeo durante transiciones del carrusel */
+  will-change: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  /* Forzar estabilidad visual */
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+/* Estilos específicos para las minicards individuales */
+.unyfilm-home__section-grid > * {
+  contain: layout style paint;
+  isolation: isolate;
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 /* Site Map Section */
@@ -542,8 +599,6 @@
     width: 350px;
     height: 280px;
   }
-
-  .unyfilm-home__hero-poster { width: 380px; height: 210px; right: 5%; }
 }
 
 @media (max-width: 768px) {
@@ -560,7 +615,6 @@
   .unyfilm-home__spaceship {
     display: none;
   }
-  .unyfilm-home__hero-poster { display: none; }
   
   .unyfilm-home__hero-overlay {
     display: none;
