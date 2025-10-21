@@ -2,47 +2,39 @@
 // ====================================
 
 // Importar variables y mixins
-@import 'variables';
-@import 'mixins';
+@use 'variables' as *;
+@use 'mixins' as *;
 
-// Estilos globales
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: $font-family-primary;
-  @include gradient-bg($background-dark, $background-light);
-  color: white;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-// Utilidades
+// Utilidades globales consolidadas
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 $spacing-md;
+  
+  @include mobile {
+    padding: 0 $spacing-sm;
+  }
 }
 
-.text-center {
-  text-align: center;
-}
+// Typography utilities
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-primary { color: $primary-color; }
+.text-accent { color: $accent-color; }
 
-.text-primary {
-  color: $primary-color;
-}
+// Flexbox utilities
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
 
-.text-accent {
-  color: $accent-color;
-}
+// Gap utilities
+.gap-1 { gap: $spacing-xs; }
+.gap-2 { gap: $spacing-sm; }
+.gap-4 { gap: $spacing-md; }
+.gap-8 { gap: $spacing-xl; }
 
 // Botones
 // Nota: los botones deben definirse en los SCSS específicos de cada vista

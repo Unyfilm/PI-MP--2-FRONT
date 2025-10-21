@@ -33,6 +33,7 @@ interface AuthContextType {
   }) => Promise<{ success: boolean; message?: string; user?: BackendUser }>;
   refreshProfile: () => Promise<{ success: boolean; message?: string; user?: BackendUser }>;
   deleteAccount: (password: string) => Promise<{ success: boolean; message?: string }>;
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<{ success: boolean; message?: string }>;
 }
 
 /**
@@ -412,7 +413,118 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const isAuthenticated = !!token && !!user;
+  /**
+   * changePassword
+   *
+   * Changes the user's password using their current password for verification.
+   * 
+   * @param {string} currentPassword - User's current password
+   * @param {string} newPassword - New password to set
+   * @param {string} confirmPassword - Confirmation of new password
+   * @returns {Promise<Object>} Change password result with success status
+   */
+  const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
+    try {
+      console.log('[Auth] Attempting to change password...');
+      
+      // Verificar si hay token válido
+      if (!token) {
+        return { 
+          success: false, 
+          message: 'No hay sesión activa. Por favor, inicia sesión nuevamente.' 
+        };
+      }
+      
+      const response = await apiService.changePassword(currentPassword, newPassword, confirmPassword);
+      
+      console.log('[Auth] Change password response:', response);
+      
+      if (response.success) {
+        return { 
+          success: true, 
+          message: 'Contraseña actualizada exitosamente' 
+        };
+      } else {
+        // Si el token es inválido, limpiar la sesión
+        if (response.message?.includes('Invalid token') || response.message?.includes('Unauthorized')) {
+          console.warn('[Auth] Token inválido detectado, limpiando sesión...');
+          logout();
+          return { 
+            success: false, 
+            message: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.' 
+          };
+        }
+        
+        return { 
+          success: false, 
+          message: response.message || 'Error al cambiar la contraseña' 
+        };
+      }
+    } catch (error: any) {
+      console.error('[Auth] Error changing password:', error);
+      
+      // Manejar errores de conexión específicamente
+      if (error?.message?.includes('ERR_CONNECTION_REFUSED') || 
+          error?.message?.includes('Failed to fetch') ||
+          error?.message?.includes('NetworkError')) {
+        return { 
+          success: false, 
+          message: 'El servidor backend no está disponible. Por favor, asegúrate de que el backend esté ejecutándose en el puerto 5000.' 
+        };
+      }
+      
+      // Manejar errores de autenticación
+      if (error?.message?.includes('401') || error?.message?.includes('Unauthorized')) {
+        console.warn('[Auth] Error 401 detectado, limpiando sesión...');
+        logout();
+        return { 
+          success: false, 
+          message: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.' 
+        };
+      }
+      
+      return { 
+        success: false, 
+        message: error?.message || 'Error de red al cambiar la contraseña' 
+      };
+    }
+  };
+
+  // Función para verificar si el token es válido
+  const isTokenValid = () => {
+    if (!token) return false;
+    
+    try {
+      // Decodificar el JWT para verificar si está expirado
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      return payload.exp > currentTime;
+    } catch (error) {
+      console.warn('[Auth] Error al verificar token:', error);
+      return false;
+    }
+  };
+
+  // Función para limpiar sesión expirada
+  const clearExpiredSession = () => {
+    console.warn('[Auth] Limpiando sesión expirada...');
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('auth:user');
+    localStorage.removeItem('unyfilm-token');
+    localStorage.removeItem('unyfilm-user');
+  };
+
+  // Verificar token al cargar la aplicación
+  useEffect(() => {
+    if (token && !isTokenValid()) {
+      console.warn('[Auth] Token expirado detectado al cargar la app');
+      clearExpiredSession();
+    }
+  }, [token]);
+
+  const isAuthenticated = !!token && !!user && isTokenValid();
 
   const value: AuthContextType = {
     user,
@@ -425,6 +537,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateProfile,
     refreshProfile,
     deleteAccount,
+    changePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
