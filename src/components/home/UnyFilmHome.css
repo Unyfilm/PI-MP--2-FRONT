@@ -36,7 +36,9 @@
 /* Hero Section */
 .unyfilm-home__hero {
   position: relative;
-  height: min(520px, 70vh);
+  height: min(600px, 80vh);
+  min-height: 500px;
+  max-height: 700px;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   display: flex;
   align-items: center;
@@ -45,6 +47,12 @@
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
   width: 100%;
   box-sizing: border-box;
+  /* Asegurar que el contenedor tenga dimensiones fijas */
+  aspect-ratio: 16/9;
+  /* Eliminar cualquier borde o sombra que pueda causar artefactos */
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 /* Animación de transición para el carrusel */
@@ -84,56 +92,154 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 50%;
+  width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
   z-index: 2;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  /* Eliminar box-shadow que puede causar artefactos */
+  box-shadow: none;
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Asegurar que la imagen llene completamente el contenedor */
+  min-height: 100%;
+  min-width: 100%;
+  max-height: 100%;
+  max-width: 100%;
+  /* Eliminar cualquier borde o outline */
+  border: none;
+  outline: none;
+  /* Mejoras de calidad de imagen */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: high-quality;
+  /* Suavizado de imagen */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* Optimización de renderizado */
+  will-change: transform;
+  transform: translateZ(0);
+  /* Mejorar la calidad de escala */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .unyfilm-home__hero-overlay {
   position: absolute;
   left: 0;
   top: 0;
-  width: 50%;
+  width: 100%;
   height: 100%;
-  /* Suavizar borde para evitar línea visible en el límite del 50% */
-  background: linear-gradient(270deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.0) 35%, rgba(15,23,42,0.25) 100%);
+  /* Overlay para mejorar legibilidad del texto */
+  background: linear-gradient(270deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.7) 50%, rgba(15,23,42,0.9) 100%);
   z-index: 3;
+  /* Eliminar cualquier borde o sombra que pueda causar artefactos */
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 /* Nave eliminada */
 
+/* Eliminar artefactos visuales en el hero */
+.unyfilm-home__hero,
+.unyfilm-home__hero *,
+.unyfilm-home__hero-image,
+.unyfilm-home__hero-overlay,
+.unyfilm-home__hero-bg,
+.unyfilm-home__hero-content,
+.unyfilm-home__hero-content *,
+.unyfilm-home__hero-actions,
+.unyfilm-home__hero-actions *,
+.hero-btn,
+.hero-btn * {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Eliminar específicamente las sombras de los botones */
+.hero-btn,
+.hero-btn--primary,
+.hero-btn--secondary,
+.hero-btn--primary:hover,
+.hero-btn--secondary:hover {
+  box-shadow: none !important;
+  text-shadow: 1px 1px 0px #312A6F, -1px -1px 0px #312A6F, 1px -1px 0px #312A6F, -1px 1px 0px #312A6F, 0 1px 2px rgba(49, 42, 111, 0.8) !important;
+}
+
+/* Mejoras de calidad para diferentes resoluciones - Hero */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .unyfilm-home__hero-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    /* Mejorar la calidad en pantallas de alta densidad */
+    filter: brightness(1.02) contrast(1.02) saturate(1.08);
+  }
+}
+
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+  .unyfilm-home__hero-image {
+    /* Optimización para pantallas 3x */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    filter: brightness(1.03) contrast(1.03) saturate(1.1);
+  }
+}
+
 /* Ajustes responsivos para la tarjeta grande del hero */
 @media (max-width: 1400px) {
-  .unyfilm-home__hero-image { width: 45%; }
-  .unyfilm-home__hero-content { width: 55%; padding: 40px 50px; }
+  .unyfilm-home__hero {
+    height: min(550px, 70vh);
+    aspect-ratio: 16/9;
+  }
+  
+  .unyfilm-home__hero-image {
+    object-fit: cover;
+    object-position: center;
+    min-height: 100%;
+    min-width: 100%;
+  }
+  
+  .unyfilm-home__hero-content { width: 55%; padding: 45px 50px; }
 }
 
 @media (max-width: 1200px) {
-  .unyfilm-home__hero-image { width: 40%; }
-  .unyfilm-home__hero-content { width: 60%; padding: 40px 50px; }
+  .unyfilm-home__hero-content { width: 60%; padding: 45px 50px; }
 }
 
 @media (max-width: 1024px) {
-  .unyfilm-home__hero-image { width: 50%; }
-  .unyfilm-home__hero-content { width: 50%; padding: 40px 50px; }
+  .unyfilm-home__hero-content { width: 50%; padding: 45px 50px; }
 }
 
 @media (max-width: 900px) {
-  .unyfilm-home__hero-image { width: 52%; }
-  .unyfilm-home__hero-content { width: 48%; padding: 40px 50px; }
+  .unyfilm-home__hero-content { width: 48%; padding: 45px 50px; }
 }
 
 /* En móviles usamos la imagen como fondo suavizado para evitar desbordes */
 @media (max-width: 768px) {
+  .unyfilm-home__hero {
+    height: 60vh;
+    min-height: 300px;
+    aspect-ratio: 16/9;
+  }
+  
   .unyfilm-home__hero-image {
     top: 0; right: 0; bottom: 0; left: 0;
-    width: 100%; height: 100%; border-radius: 0;
+    width: 100%; 
+    height: 100%; 
+    border-radius: 0;
     filter: blur(1px) brightness(0.8);
-    opacity: 0.25; pointer-events: none;
+    opacity: 0.25; 
+    pointer-events: none;
+    object-fit: cover;
+    object-position: center;
+    min-height: 100%;
+    min-width: 100%;
   }
   
   .unyfilm-home__hero-content {
@@ -161,17 +267,21 @@
   width: 50%;
   height: 100%;
   z-index: 4;
-  padding: 40px 60px;
+  padding: 50px 60px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: 15px;
+  justify-content: center;
+  gap: 20px;
   overflow-y: auto;
   animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
   /* Asegurar que el contenido se ajuste */
   min-height: 100%;
   max-height: 100%;
+  /* Eliminar cualquier sombra o borde que pueda causar artefactos */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 @keyframes slideInLeft {
@@ -213,6 +323,12 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 2px rgba(49, 42, 111, 0.8);
 }
 
 .unyfilm-home__hero-badge--trending {
@@ -237,7 +353,12 @@
   display: block;
   overflow: visible;
   color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  text-shadow: 
+    2px 2px 0px #312A6F,
+    -2px -2px 0px #312A6F,
+    2px -2px 0px #312A6F,
+    -2px 2px 0px #312A6F,
+    0 2px 8px rgba(49, 42, 111, 0.8);
   letter-spacing: -0.5px;
   flex-shrink: 0;
 }
@@ -252,6 +373,12 @@
   flex-wrap: wrap;
   font-weight: 500;
   flex-shrink: 0;
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 3px rgba(49, 42, 111, 0.7);
 }
 
 .unyfilm-home__hero-rating {
@@ -259,7 +386,12 @@
   align-items: center;
   gap: 4px;
   color: #fbbf24;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 3px rgba(49, 42, 111, 0.7);
 }
 
 .unyfilm-home__hero-description {
@@ -271,13 +403,18 @@
   overflow-wrap: anywhere;
   word-break: break-word;
   display: block;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   overflow-y: auto;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 3px rgba(49, 42, 111, 0.7);
   font-weight: 400;
-  /* Limitar el alto para dejar espacio a los botones */
-  max-height: 120px;
-  min-height: 40px;
+  /* Aumentar el alto para mostrar más texto */
+  max-height: 150px;
+  min-height: 60px;
   padding-right: 8px;
   /* Permitir scroll cuando sea necesario */
   overflow-y: auto;
@@ -301,9 +438,13 @@
   /* Ajuste automático para evitar que se corten */
   min-height: 60px;
   align-items: flex-end;
-  /* Fondo para asegurar visibilidad */
-  background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.8) 100%);
+  /* Eliminar el fondo que causaba la esquina visible */
+  background: none;
   padding-top: 10px;
+  /* Eliminar cualquier sombra o borde */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .hero-btn {
@@ -324,17 +465,23 @@
   justify-content: center;
   flex: 1;
   max-width: 200px;
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 2px rgba(49, 42, 111, 0.8);
 }
 
 .hero-btn--primary {
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: white;
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  box-shadow: none;
 }
 
 .hero-btn--primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+  box-shadow: none;
 }
 
 .hero-btn--secondary {
