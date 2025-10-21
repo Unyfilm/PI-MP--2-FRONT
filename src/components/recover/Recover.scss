@@ -1,4 +1,67 @@
 @use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+/* Estilos para la página de recuperación de contraseña */
+.recover-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md;
+}
+
+.recover-container {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+}
+
+.recover-title {
+  font-size: $font-size-2xl;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: $spacing-md;
+}
+
+.recover-subtitle {
+  color: #9ca3af;
+  text-align: center;
+  margin-bottom: $spacing-lg;
+  font-size: $font-size-sm;
+}
+
+.recover-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.recover-button {
+  @include button-primary;
+  width: 100%;
+  padding: $spacing-md;
+  font-size: $font-size-base;
+  font-weight: 600;
+}
+
+.recover-link {
+  color: $primary-color;
+  text-decoration: none;
+  font-size: $font-size-sm;
+  text-align: center;
+  margin-top: $spacing-md;
+  
+  &:hover {
+    color: #4f46e5;
+    text-decoration: underline;
+  }
+}
 
 /* Variante: imagen de héroe como fondo a pantalla completa (Recuperación) */
 .login-page--bg-hero {
@@ -25,6 +88,7 @@
   /* Mantener el formulario angosto y centrado */
   .login-form__form { max-width: 420px; width: 100%; margin: 0 auto; }
 }
+
 
 
 

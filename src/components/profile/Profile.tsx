@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import './Profile.scss';
@@ -16,24 +16,10 @@ import './Profile.scss';
 export default function Profile() {
   const { user, deleteAccount } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [showDelete, setShowDelete] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-
-  // Mostrar mensaje de éxito si viene del cambio de contraseña
-  useEffect(() => {
-    if (location.state?.message) {
-      setSuccessMessage(location.state.message);
-      // Limpiar el mensaje después de 5 segundos
-      const timer = setTimeout(() => {
-        setSuccessMessage('');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [location.state]);
 
   const handleCloseModal = () => {
     setShowDelete(false);
@@ -98,23 +84,6 @@ export default function Profile() {
       </div>
       <div className="profile-card">
         <h1 className="profile-card__title">Mi perfil</h1>
-        
-        {/* Mensaje de éxito */}
-        {successMessage && (
-          <div className="profile-success-message" style={{
-            background: 'rgba(76, 175, 80, 0.2)',
-            border: '1px solid rgba(76, 175, 80, 0.3)',
-            color: '#4CAF50',
-            padding: '12px 16px',
-            borderRadius: '8px',
-            marginBottom: '20px',
-            fontSize: '14px',
-            textAlign: 'center'
-          }}>
-            {successMessage}
-          </div>
-        )}
-        
         <div className="profile-card__row">
           <span className="profile-card__label">Nombre</span>
           <span className="profile-card__value">{user.firstName || 'No especificado'}</span>
@@ -134,7 +103,6 @@ export default function Profile() {
 
         <div className="profile-card__actions">
           <Link to="/home" className="profile-card__button" style={{ background: 'rgba(255,255,255,0.1)' }}>Volver al inicio</Link>
-          <Link to="/profile/change-password" className="profile-card__button" style={{ background: 'rgba(255,200,0,0.2)' }}>Cambiar contraseña</Link>
           <Link to="/profile/edit" className="profile-card__button">Editar perfil</Link>
           <button className="profile-card__button profile-card__button--danger" onClick={() => setShowDelete(true)}>Eliminar cuenta</button>
         </div>
@@ -191,5 +159,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
