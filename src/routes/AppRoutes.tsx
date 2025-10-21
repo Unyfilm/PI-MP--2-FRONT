@@ -6,7 +6,6 @@ import Recover from '../components/recover/Recover';
 import ResetPassword from '../components/recover/ResetPassword';
 import Profile from '../components/profile/Profile';
 import ProfileEdit from '../components/profile/ProfileEdit';
-import ChangePassword from '../components/profile/ChangePassword';
 import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 
 /**
@@ -105,14 +104,6 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <ProfileEdit />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/profile/change-password" 
-        element={
-          <ProtectedRoute>
-            <ChangePassword />
           </ProtectedRoute>
         } 
       />

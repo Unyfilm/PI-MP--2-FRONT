@@ -1,6 +1,9 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-$primary: #6366f1;
+// Variables específicas del login
+$primary: $primary-color;
 $primary-hover: #4f46e5;
 $secondary: #7c3aed;
 $background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
@@ -10,7 +13,7 @@ $glass-focus: rgba(255, 255, 255, 0.12);
 $border: rgba(255, 255, 255, 0.15);
 $text: #ffffff;
 $text-muted: #9ca3af;
-$error: #ef4444;
+$error: $error-color;
 
 @mixin transition($property: all, $duration: 0.3s, $timing: ease) {
   transition: $property $duration $timing;
