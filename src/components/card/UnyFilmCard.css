@@ -35,6 +35,21 @@
   object-fit: cover; /* llena sin deformar */
   object-position: center; /* centra el foco */
   transition: transform 0.3s ease, filter 0.3s ease;
+  /* Mejoras de calidad de imagen */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: high-quality;
+  /* Suavizado de imagen */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* Optimización de renderizado */
+  will-change: transform;
+  transform: translateZ(0);
+  /* Mejorar la calidad de escala */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Filtros para mejorar la calidad */
+  filter: brightness(1) contrast(1) saturate(1.05);
 }
 
 .unyfilm-card__placeholder {
@@ -67,11 +82,11 @@
 /* Favorite Button */
 .unyfilm-card__favorite {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  background: rgba(0, 0, 0, 0.6);
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.7);
   border: none;
   border-radius: 50%;
   display: flex;
@@ -81,11 +96,18 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: white;
   backdrop-filter: blur(10px);
+  z-index: 20;
+  /* Asegurar que el botón sea clickeable */
+  pointer-events: auto;
+  /* Aumentar el área de click */
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .unyfilm-card__favorite:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .unyfilm-card__favorite--active {
@@ -95,8 +117,19 @@
 }
 
 .unyfilm-card__favorite--active:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.6);
+}
+
+/* Icono dentro del botón de favoritos */
+.unyfilm-card__favorite svg {
+  width: 20px;
+  height: 20px;
+  transition: all 0.3s ease;
+}
+
+.unyfilm-card__favorite:hover svg {
   transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
 }
 
 /* Overlay */
@@ -122,7 +155,9 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(8px);
   border-radius: 16px;
-  z-index: 10;
+  z-index: 15;
+  /* Asegurar que no interfiera con el botón de favoritos */
+  pointer-events: none;
 }
 
 .unyfilm-card__overlay-content {
@@ -234,7 +269,7 @@
   background: linear-gradient(135deg, #e50914 0%, #b81d13 100%);
   color: white;
   border: none;
-  padding: 10px 18px;
+  padding: 12px 20px;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 700;
@@ -245,6 +280,12 @@
   letter-spacing: 0.5px;
   position: relative;
   overflow: hidden;
+  z-index: 25;
+  /* Asegurar que el botón sea clickeable */
+  pointer-events: auto;
+  /* Aumentar el área de click */
+  min-height: 44px;
+  min-width: 120px;
 }
 
 .unyfilm-card__play-button::before {
@@ -319,7 +360,11 @@
 /* Hover Effects */
 .unyfilm-card:hover .unyfilm-card__image {
   transform: scale(1.08);
-  filter: brightness(1.1) contrast(1.1);
+  filter: brightness(1.1) contrast(1.1) saturate(1.1) sharpness(1.1);
+  /* Mejorar la calidad durante el hover */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: high-quality;
 }
 
 .unyfilm-card:hover .unyfilm-card__title {
@@ -381,6 +426,31 @@
   }
 }
 
+/* Mejoras de calidad para diferentes resoluciones */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .unyfilm-card__image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    /* Mejorar la calidad en pantallas de alta densidad */
+    filter: brightness(1.02) contrast(1.02) saturate(1.08);
+  }
+  
+  .unyfilm-card:hover .unyfilm-card__image {
+    filter: brightness(1.12) contrast(1.12) saturate(1.15) sharpness(1.15);
+  }
+}
+
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+  .unyfilm-card__image {
+    /* Optimización para pantallas 3x */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    filter: brightness(1.03) contrast(1.03) saturate(1.1);
+  }
+}
+
 /* Responsive Design */
 /* con aspect-ratio ya no necesitamos alturas fijas */
 
@@ -406,6 +476,28 @@
   .unyfilm-card__genre,
   .unyfilm-card__rating {
     font-size: 10px;
+  }
+  
+  /* Botón de favoritos más grande en móviles */
+  .unyfilm-card__favorite {
+    width: 44px;
+    height: 44px;
+    top: 6px;
+    right: 6px;
+    padding: 10px;
+  }
+  
+  .unyfilm-card__favorite svg {
+    width: 22px;
+    height: 22px;
+  }
+  
+  /* Botón de play más grande en móviles */
+  .unyfilm-card__play-button {
+    padding: 14px 22px;
+    font-size: 12px;
+    min-height: 48px;
+    min-width: 130px;
   }
 }
 
