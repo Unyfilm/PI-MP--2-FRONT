@@ -89,14 +89,16 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
   };
 
   // Función para cambiar a la siguiente película en orden
-  const changeToNextMovie = () => {
+  const changeToNextMovie = useCallback(() => {
     if (moviesData.length === 0 || isTransitioning) return;
     
+    console.log('Cambiando película:', { featuredIndex, totalMovies: moviesData.length });
     setIsTransitioning(true);
     
     // Fade out
     setTimeout(() => {
       const nextIndex = (featuredIndex + 1) % moviesData.length;
+      console.log('Nueva película:', { nextIndex, movie: moviesData[nextIndex]?.title });
       setFeaturedMovie(moviesData[nextIndex]);
       setFeaturedIndex(nextIndex);
       
@@ -105,20 +107,22 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
         setIsTransitioning(false);
       }, 300);
     }, 300);
-  };
+  }, [featuredIndex, isTransitioning]);
 
   // Función para iniciar el carrusel automático
-  const startCarousel = () => {
+  const startCarousel = useCallback(() => {
+    console.log('Iniciando carrusel...');
     if (carouselInterval) {
       clearInterval(carouselInterval);
     }
     
     const interval = setInterval(() => {
+      console.log('Intervalo del carrusel ejecutándose...');
       changeToNextMovie();
     }, 5000); // Cambia cada 5 segundos
     
     setCarouselInterval(interval);
-  };
+  }, [changeToNextMovie]);
 
   useEffect(() => {
     // Simulate loading
@@ -147,20 +151,26 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
         movie.genre?.includes('Drama')
       ).slice(0, 6));
       setIsLoading(false);
-      
-      // Iniciar carrusel automático después de cargar
-      setTimeout(() => {
-        startCarousel();
-      }, 2000);
     }, 1000);
 
     return () => {
       clearTimeout(timer);
+    };
+  }, [moviesData.length]);
+
+  // useEffect separado para manejar el carrusel automático
+  useEffect(() => {
+    console.log('useEffect carrusel:', { moviesDataLength: moviesData.length, isLoading });
+    if (moviesData.length > 1 && !isLoading) {
+      startCarousel();
+    }
+    
+    return () => {
       if (carouselInterval) {
         clearInterval(carouselInterval);
       }
     };
-  }, []);
+  }, [moviesData.length, isLoading, startCarousel]);
 
   const handleMovieClick = useCallback((movie: MovieClickData) => {
     if (onMovieClick) {
