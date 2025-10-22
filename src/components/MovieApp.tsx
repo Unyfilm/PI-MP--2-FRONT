@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';
 import UnyFilmHeader from './header/UnyFilmHeader';
@@ -14,16 +14,17 @@ import Footer from './footer/Footer';
 import './MovieApp.css';
 // import Login from './login/Login';
 import type { MovieData, MovieClickData, ViewType } from '../types';
-import { moviesData } from '../data/moviesData';
+// Importación eliminada - ya no usamos datos simulados
 
 export default function MovieApp() {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<ViewType>('home');
-  const [favorites, setFavorites] = useState<number[]>([0, 4, 8]);
+  // Eliminamos la funcionalidad de favoritos
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentMovie, setCurrentMovie] = useState<MovieData | null>(null);
   const [showPlayer, setShowPlayer] = useState<boolean>(false);
+  const playerProcessedRef = useRef<boolean>(false);
 
   // Restaurar última ruta al cargar (si se entra por ruta desconocida)
   useEffect(() => {
@@ -39,73 +40,136 @@ export default function MovieApp() {
   // Detectar la ruta actual, actualizar vista y guardar última ruta
   useEffect(() => {
     const path = location.pathname;
-    switch (path) {
-      case '/':
-      case '/home':
-        setCurrentView('home');
-        break;
-      case '/catalog':
-        setCurrentView('catalog');
-        break;
-      case '/about':
-        setCurrentView('about');
-        break;
-      case '/sitemap':
-        setCurrentView('sitemap');
-        break;
-      default:
-        // Mantener última vista si la ruta no está mapeada
-        setCurrentView(prev => prev);
+    
+    // Solo ejecutar para rutas normales (no reproductor)
+    if (!path.startsWith('/player/')) {
+      // Rutas normales
+      switch (path) {
+        case '/':
+        case '/home':
+          setCurrentView('home');
+          break;
+        case '/catalog':
+          setCurrentView('catalog');
+          break;
+        case '/about':
+          setCurrentView('about');
+          break;
+        case '/sitemap':
+          setCurrentView('sitemap');
+          break;
+        default:
+          // Mantener última vista si la ruta no está mapeada
+          setCurrentView(prev => prev);
+      }
+      
+      // Guardar última ruta navegada
+      localStorage.setItem('unyfilm:lastPath', path);
+      // Scroll to top when route changes (only for non-player routes)
+      if (!path.startsWith('/player/')) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
-    // Guardar última ruta navegada
-    localStorage.setItem('unyfilm:lastPath', path);
-    // Always scroll to top when route changes
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [location]);
+  }, [location, navigate]);
+
+  // Guardar película actual en localStorage cuando cambie
+  useEffect(() => {
+    if (currentMovie) {
+      localStorage.setItem('unyfilm:currentMovie', JSON.stringify(currentMovie));
+    } else {
+      localStorage.removeItem('unyfilm:currentMovie');
+    }
+  }, [currentMovie]);
+
+  // Manejar navegación del reproductor basada en la ruta
+  useEffect(() => {
+    const isPlayerRoute = location.pathname.startsWith('/player/');
+    
+    // Si estamos en el reproductor y no se ha procesado aún
+    if (isPlayerRoute && !playerProcessedRef.current) {
+      playerProcessedRef.current = true;
+      
+      // Si hay estado en la ubicación, usar esos datos (navegación directa)
+      if (location.state?.movie) {
+        setCurrentMovie(location.state.movie);
+        setShowPlayer(true);
+        setCurrentView(location.state.fromView || 'home');
+      } else {
+        // Si no hay estado (refresh), intentar cargar desde localStorage
+        const savedMovie = localStorage.getItem('unyfilm:currentMovie');
+        if (savedMovie) {
+          try {
+            const movieData = JSON.parse(savedMovie);
+            setCurrentMovie(movieData);
+            setShowPlayer(true);
+            setCurrentView('home'); // Default a home si no sabemos de dónde vino
+          } catch (error) {
+            // Si hay error al parsear, redirigir a home
+            navigate('/home', { replace: true });
+          }
+        } else {
+          // Si no hay película guardada, redirigir a home
+          navigate('/home', { replace: true });
+        }
+      }
+    }
+
+    // Si NO estamos en el reproductor pero el player sigue abierto, cerrarlo
+    if (!isPlayerRoute && showPlayer) {
+      // Usar setTimeout para suavizar la transición y evitar parpadeos
+      setTimeout(() => {
+        setShowPlayer(false);
+        setCurrentMovie(null);
+        playerProcessedRef.current = false;
+      }, 50); // Pequeño delay para suavizar la transición
+    }
+  }, [location.pathname, navigate]);
   
   // Datos unificados: moviesData
 
-  const toggleFavorite = (index: number): void => {
-    setFavorites(prev => 
-      prev.includes(index) 
-        ? prev.filter(i => i !== index)
-        : [...prev, index]
-    );
-  };
+  // Función de favoritos eliminada
 
   const handleSearch = (query: string): void => {
     setSearchQuery(query);
   };
 
-  const handleSearchSubmit = (query: string): void => {
-    console.log('Search submitted:', query);
+  const handleSearchSubmit = (_query: string): void => {
+    // Search functionality can be implemented here
   };
 
   const handleMovieClick = (movie: MovieClickData): void => {
-    // Buscar los datos completos en moviesData
-    const full = moviesData.find(m => m.title === movie.title);
-    const fullMovieData: MovieData = full ? {
-      title: full.title,
-      videoUrl: full.videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      rating: full.rating ?? movie.rating ?? 4.5,
-      year: full.year ?? movie.year ?? 2023,
-      genre: full.genre ?? movie.genre ?? 'Drama',
-      description: full.description ?? movie.description ?? ''
-    } : {
+    // Crear datos de película directamente desde los datos recibidos
+    const fullMovieData: MovieData = {
       title: movie.title,
-      videoUrl: movie.videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      rating: movie.rating || 4.5,
-      year: movie.year || 2023,
-      genre: movie.genre || 'Drama',
-      description: movie.description || ''
+      videoUrl: movie.videoUrl || '',
+      rating: movie.rating || 0,
+      year: movie.year || 0,
+      genre: movie.genre || '',
+      genres: (movie as any).genres || [movie.genre || ''],
+      description: movie.description || '',
+      duration: (movie as any).duration || 0
     };
     setCurrentMovie(fullMovieData);
     setShowPlayer(true);
+    
+    // Agregar al historial del navegador
+    const playerState = {
+      movie: fullMovieData,
+      fromView: currentView
+    };
+    navigate(`/player/${encodeURIComponent(movie.title)}`, { 
+      state: playerState,
+      replace: false 
+    });
   };
 
   const handleClosePlayer = (): void => {
+    // Cerrar el reproductor inmediatamente para evitar parpadeos
     setShowPlayer(false);
     setCurrentMovie(null);
+    
+    // Navegar de vuelta a la página anterior usando el historial natural
+    navigate(-1);
   };
 
   // View changes are handled via route path in useEffect
@@ -151,15 +215,13 @@ export default function MovieApp() {
       <div className="main-content" id="main-content" tabIndex={-1}>
         {currentView === 'home' && (
           <UnyFilmHome 
-            favorites={favorites} 
-            toggleFavorite={toggleFavorite}
             onMovieClick={handleMovieClick}
           />
         )}
         {currentView === 'catalog' && (
           <UnyFilmCatalog 
-            favorites={favorites} 
-            toggleFavorite={toggleFavorite}
+            favorites={[]} 
+            toggleFavorite={() => {}}
             onMovieClick={handleMovieClick}
           />
         )}

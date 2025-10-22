@@ -17,8 +17,10 @@ export interface MovieData {
   rating?: number;
   year?: number;
   genre?: string;
+  genres?: string[];
   description?: string;
   image?: string;
+  duration?: number;
 }
 
 // Tipos para datos de película al hacer click
@@ -30,6 +32,7 @@ export interface MovieClickData {
   year?: number;
   genre?: string;
   description?: string;
+  duration?: number;
 }
 
 // Tipos para formularios

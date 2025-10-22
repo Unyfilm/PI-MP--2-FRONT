@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Filter, Grid, List, Search } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
-import { moviesData, availableGenres } from '../../data/moviesData';
-import type { Movie } from '../../types';
+import { movieService, type Movie } from '../../services/movieService';
 import './UnyFilmCatalog.css';
 
 // Interfaces para el catálogo
@@ -18,6 +17,7 @@ interface MovieClickData {
   genres?: string[];
   cloudinaryPublicId?: string;
   cloudinaryUrl?: string;
+  duration?: number;
 }
 
 interface UnyFilmCatalogProps {
@@ -34,14 +34,71 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('title');
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
+  // Cargar películas desde la API - CATÁLOGO INDEPENDIENTE
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Usar el endpoint para obtener TODAS las películas
+        const moviesData = await movieService.getAllMovies();
+        setMovies(moviesData);
+        
+        setIsLoading(false);
+        } catch (error) {
+          setError('Error al cargar las películas. Por favor, verifica que el servidor esté funcionando.');
+          setIsLoading(false);
+        }
+    };
+
+    loadMovies();
+  }, []);
+
+  // Búsqueda real usando endpoint de búsqueda
+  useEffect(() => {
+    const performSearch = async () => {
+      if (searchQuery.trim() === '') {
+        // Si no hay búsqueda, cargar todas las películas
+        try {
+          const allMovies = await movieService.getAllMovies();
+          setMovies(allMovies);
+        } catch (error) {
+        }
+        return;
+      }
+
+      try {
+        setIsSearching(true);
+        const searchResults = await movieService.searchMovies(searchQuery);
+        setMovies(searchResults);
+      } catch (error) {
+        // En caso de error en búsqueda, mantener películas actuales
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    // Debounce para evitar demasiadas búsquedas
+    const timeoutId = setTimeout(performSearch, 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  // Obtener géneros únicos de las películas cargadas
+  const availableGenres = Array.from(new Set(movies.flatMap(movie => movie.genre)));
   const genres = ['all', ...availableGenres];
 
-  const filteredMovies = moviesData.filter((movie: Movie) => {
-    const matchesSearch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredMovies = movies.filter((movie: Movie) => {
+    // Si hay búsqueda, no filtrar por título (ya viene filtrado del endpoint)
+    const matchesSearch = searchQuery.trim() === '' || 
+      movie.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGenre = selectedGenre === 'all' || 
-      movie.genre?.includes(selectedGenre) || 
-      movie.genre === selectedGenre;
+      movie.genre.includes(selectedGenre);
     return matchesSearch && matchesGenre;
   });
 
@@ -50,9 +107,9 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
       case 'title':
         return a.title.localeCompare(b.title);
       case 'year':
-        return (b.year || 0) - (a.year || 0);
+        return new Date(b.releaseDate || '').getFullYear() - new Date(a.releaseDate || '').getFullYear();
       case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
+        return (b.rating.average || 0) - (a.rating.average || 0);
       default:
         return 0;
     }
@@ -88,6 +145,25 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
       {/* Title Section */}
       <div className="unyfilm-catalog__title-section">
         <h1 className="unyfilm-catalog__title">Todas las películas</h1>
+        
+        {/* Search Bar */}
+        <div className="unyfilm-catalog__search">
+          <div className="unyfilm-catalog__search-input-wrapper">
+            <Search size={20} className="unyfilm-catalog__search-icon" />
+            <input
+              type="text"
+              placeholder="Buscar películas..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="unyfilm-catalog__search-input"
+            />
+            {isSearching && (
+              <div className="unyfilm-catalog__search-loading">
+                <div className="loading-spinner-small"></div>
+              </div>
+            )}
+          </div>
+        </div>
         
         <div className="unyfilm-catalog__controls">
           <div className="unyfilm-catalog__filters">
@@ -157,37 +233,50 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
       </div>
 
       {/* Movie Grid */}
+      {isLoading ? (
+        <div className="unyfilm-catalog-loading">
+          <div className="loading-spinner"></div>
+          <p>Cargando catálogo...</p>
+        </div>
+      ) : error ? (
+        <div className="unyfilm-catalog-error">
+          <h2>Error al cargar el catálogo</h2>
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>
+            Reintentar
+          </button>
+        </div>
+      ) : (
       <div className={`unyfilm-catalog__grid unyfilm-catalog__grid--${viewMode}`}>
-        {sortedMovies.map((movie) => {
+          {sortedMovies.map((movie, index) => {
           return (
             <UnyFilmCard
-              key={movie.id}
+                key={movie._id || index}
               title={movie.title}
-              isFavorite={favorites.includes(movie.id)}
-              onToggleFavorite={() => toggleFavorite(movie.id)}
               onMovieClick={() => handleMovieClick({ 
                 title: movie.title, 
-                index: movie.id,
-                videoUrl: movie.videoUrl,
-                rating: movie.rating || 4.0,
-                year: movie.year || 2024,
-                genre: movie.genre || 'Acción',
+                index: index,
+                videoUrl: movie.videoUrl || '',
+                rating: movie.rating?.average || 0,
+                year: movie.releaseDate && movie.releaseDate !== 'Invalid Date' ? new Date(movie.releaseDate).getFullYear() : 0,
+                genre: movie.genre[0] || '',
                 description: movie.description || '',
-                synopsis: movie.description,
-                genres: movie.genre ? [movie.genre] : undefined,
-                cloudinaryPublicId: movie.cloudinaryPublicId,
-                cloudinaryUrl: movie.cloudinaryUrl
+                synopsis: movie.synopsis || movie.description,
+                genres: movie.genre,
+                cloudinaryPublicId: movie.cloudinaryVideoId,
+                cloudinaryUrl: movie.videoUrl,
+                duration: movie.duration || 0
               })}
               description={movie.description || ''}
-              image={movie.image}
-              fallbackImage={movie.thumbnailUrl || movie.cloudinaryUrl?.replace('/video/upload/','/image/upload/').replace('.mp4','.jpg')}
-              genre={movie.genre || 'Acción'}
-              rating={movie.rating || 4.0}
-              year={movie.year || 2024}
+              image={movie.poster}
+              fallbackImage={movie.trailer}
+              genre={movie.genre[0] || ''}
+              year={movie.releaseDate && movie.releaseDate !== 'Invalid Date' ? new Date(movie.releaseDate).getFullYear() : 0}
             />
           );
         })}
       </div>
+      )}
 
       {/* No Results */}
       {sortedMovies.length === 0 && (

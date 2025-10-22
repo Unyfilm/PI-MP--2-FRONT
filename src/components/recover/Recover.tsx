@@ -38,7 +38,6 @@ export default function Recover() {
           setError(response.message || 'Error al enviar el correo de recuperación');
         }
       } catch (error) {
-        console.error('Error sending recovery email:', error);
         setError('Error de conexión. Por favor, intenta de nuevo.');
       } finally {
         setIsLoading(false);
