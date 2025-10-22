@@ -40,62 +40,45 @@ export default function UsabilityFeatures() {
    */
   const initializeKeyboardShortcuts = () => {
     const shortcuts = [
-      { key: 'Alt + N', description: 'Saltar a navegación', action: () => console.log('Navigate to sidebar') },
-      { key: 'Alt + S', description: 'Saltar a búsqueda', action: () => console.log('Navigate to search') },
-      { key: 'Alt + A', description: 'Panel de accesibilidad', action: () => console.log('Toggle accessibility') },
+      { key: 'Alt + N', description: 'Saltar a navegación', action: () => {} },
+      { key: 'Alt + S', description: 'Saltar a búsqueda', action: () => {} },
+      { key: 'Alt + A', description: 'Panel de accesibilidad', action: () => {} },
       { key: 'Alt + H', description: 'Panel de ayuda', action: () => setShowHelp(true) },
-      { key: 'Alt + P', description: 'Reproducir/Pausar video', action: () => console.log('Play/Pause video') },
-      { key: 'Alt + F', description: 'Pantalla completa', action: () => console.log('Toggle fullscreen') },
-      { key: 'Alt + R', description: 'Resetear filtros', action: () => console.log('Reset filters') },
+      { key: 'Alt + P', description: 'Reproducir/Pausar video', action: () => {} },
+      { key: 'Alt + F', description: 'Pantalla completa', action: () => {} },
+      { key: 'Alt + R', description: 'Resetear filtros', action: () => {} },
       { key: 'Escape', description: 'Cerrar modales', action: () => setShowHelp(false) }
     ];
     setShortcuts(shortcuts);
 
     // Agregar event listeners para los atajos
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.log('Key pressed:', event.key, 'Alt:', event.altKey, 'Code:', event.code);
-      
-      // Test simple: cualquier tecla debería aparecer en consola
-      if (event.altKey) {
-        console.log('Alt key detected with:', event.key);
-      }
-      
-      // Test específico para Alt + P
-      if (event.altKey && event.key === 'p') {
-        console.log('Alt + P combination detected!');
-      }
-      
       // Alt + H para abrir ayuda
       if (event.altKey && event.key === 'h') {
         event.preventDefault();
-        console.log('Alt + H pressed - Opening help');
         setShowHelp(true);
       }
       
       // Escape para cerrar modales
       if (event.key === 'Escape') {
-        console.log('Escape pressed - Closing modals');
         setShowHelp(false);
       }
       
       // Alt + N para navegación
       if (event.altKey && event.key === 'n') {
         event.preventDefault();
-        console.log('Alt + N pressed - Navigate to sidebar');
         // Aquí puedes agregar la lógica para navegar al sidebar
       }
       
       // Alt + S para búsqueda
       if (event.altKey && event.key === 's') {
         event.preventDefault();
-        console.log('Alt + S pressed - Navigate to search');
         // Aquí puedes agregar la lógica para enfocar la búsqueda
       }
       
       // Alt + A para accesibilidad
       if (event.altKey && event.key === 'a') {
         event.preventDefault();
-        console.log('Alt + A pressed - Toggle accessibility');
         // Aquí puedes agregar la lógica para el panel de accesibilidad
       }
       
@@ -106,41 +89,22 @@ export default function UsabilityFeatures() {
         // Debounce para evitar múltiples ejecuciones
         const now = Date.now();
         if (now - lastKeyPress.current < 500) {
-          console.log('Alt + P debounced, ignoring');
           return;
         }
         lastKeyPress.current = now;
         
-        console.log('Alt + P pressed - Play/Pause video');
-        
         // Buscar el elemento de video directamente para obtener el estado real
         const videoElement = document.querySelector('video') as HTMLVideoElement;
-        console.log('Video element found:', videoElement);
         
         if (videoElement) {
-          console.log('Video element found, current state - paused:', videoElement.paused);
-          console.log('Video src:', videoElement.src);
-          console.log('Video currentSrc:', videoElement.currentSrc);
-          console.log('Video readyState:', videoElement.readyState);
-          console.log('Video networkState:', videoElement.networkState);
-          console.log('Video currentTime:', videoElement.currentTime);
-          console.log('Video duration:', videoElement.duration);
           
-          // Buscar fuentes en elementos source
-          const sources = videoElement.querySelectorAll('source');
-          console.log('Video sources found:', sources.length);
-          sources.forEach((source, index) => {
-            console.log(`Source ${index}:`, source.src, source.type);
-          });
           
           try {
-            // SOLUCIÓN DEFINITIVA: Simular click en el botón del reproductor
-            console.log('Using definitive solution: clicking reproductor button');
+            // Simular click en el botón del reproductor
             
             // Buscar el botón de play/pause del reproductor UnyFilm
             const playButton = document.querySelector('.unyfilm-control-btn') as HTMLButtonElement;
             if (playButton) {
-              console.log('Play button found, simulating click...');
               
               // Simular click real del usuario
               const clickEvent = new MouseEvent('click', {
@@ -155,43 +119,27 @@ export default function UsabilityFeatures() {
               // También hacer click programático como fallback
               playButton.click();
               
-              console.log('Button click simulated successfully');
-              
-              // Verificar el estado después del click
-              setTimeout(() => {
-                console.log('Video state after button click - paused:', videoElement.paused);
-                console.log('Video currentTime after click:', videoElement.currentTime);
-              }, 200);
               
             } else {
-              console.log('Play button not found, trying direct video control...');
               
               // Fallback: control directo del video
               if (videoElement.paused) {
-                console.log('Video is paused, starting playback');
-                videoElement.play().then(() => {
-                  console.log('Video started successfully');
-                }).catch((error) => {
-                  console.error('Error playing video:', error);
+                videoElement.play().catch((error) => {
+                  // Error playing video
                 });
               } else {
-                console.log('Video is playing, pausing');
                 videoElement.pause();
-                console.log('Video paused successfully');
               }
             }
           } catch (error) {
-            console.error('Error controlling video:', error);
+            // Error controlling video
           }
         } else {
-          console.log('No video element found, trying fallback');
           // Fallback: buscar el botón de play/pause del reproductor
           const playButton = document.querySelector('.unyfilm-control-btn') as HTMLButtonElement;
           if (playButton) {
-            console.log('Play button found, clicking it');
             playButton.click();
           } else {
-            console.log('No video player found');
           }
         }
       }
@@ -199,12 +147,10 @@ export default function UsabilityFeatures() {
       // Alt + F para pantalla completa
       if (event.altKey && event.key === 'f') {
         event.preventDefault();
-        console.log('Alt + F pressed - Toggle fullscreen');
         
         // Buscar el botón de pantalla completa del reproductor
         const fullscreenButton = document.querySelector('.unyfilm-control-btn[title*="fullscreen"], .unyfilm-control-btn[aria-label*="fullscreen"]') as HTMLButtonElement;
         if (fullscreenButton) {
-          console.log('Fullscreen button found, clicking it');
           fullscreenButton.click();
         } else {
           // Fallback: usar API nativa
@@ -222,7 +168,6 @@ export default function UsabilityFeatures() {
       // Alt + R para resetear filtros
       if (event.altKey && event.key === 'r') {
         event.preventDefault();
-        console.log('Alt + R pressed - Reset filters');
         // Aquí puedes agregar la lógica para resetear filtros
       }
       
@@ -231,12 +176,10 @@ export default function UsabilityFeatures() {
 
     // Agregar el event listener con capture para asegurar que se ejecute
     document.addEventListener('keydown', handleKeyDown, true);
-    console.log('Keyboard shortcuts initialized');
 
     // Cleanup function
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
-      console.log('Keyboard shortcuts cleaned up');
     };
   };
 
