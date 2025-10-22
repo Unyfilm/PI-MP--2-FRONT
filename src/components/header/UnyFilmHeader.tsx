@@ -166,7 +166,6 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
       onClose();
       return;
     }
-    console.log(`Menu clicked: ${action}`);
     onClose();
   };
 

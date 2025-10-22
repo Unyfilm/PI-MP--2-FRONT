@@ -69,7 +69,6 @@ const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): 
     const contentType = response.headers.get('content-type') || '';
     const json = contentType.includes('application/json') ? await response.json() : { message: await response.text() };
 
-    console.log('[API] Response status:', response.status, 'Response:', json);
 
     if (!response.ok) {
       return {
@@ -191,7 +190,6 @@ export const apiService: ApiService = {
     }),
 
   deleteAccount: (password: string): Promise<ApiResponse<void>> => {
-    console.log('[DEBUG] Calling deleteAccount with password length:', password?.length);
     return makeRequest<void>(`${API_CONFIG.BASE_URL}/api/users/account`, {
       method: 'DELETE',
       body: JSON.stringify({ password })
@@ -236,8 +234,6 @@ export const apiService: ApiService = {
 
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string): Promise<ApiResponse<void>> => {
     const fullUrl = `${API_CONFIG.BASE_URL}/api/users/change-password`;
-    console.log('[DEBUG] changePassword - URL:', fullUrl);
-    console.log('[DEBUG] changePassword - Request body:', { currentPassword: '***', newPassword: '***', confirmPassword: '***' });
     
     return makeRequest<void>(fullUrl, {
       method: 'PUT',

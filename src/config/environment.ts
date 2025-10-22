@@ -73,15 +73,7 @@ export const API_CONFIG: ApiConfig = {
   RETRY_DELAY: 1000
 };
 
-// Debug logging for environment detection
-if (import.meta.env.DEV) {
-  console.log('🔧 Environment Debug:', {
-    isProd: isProduction,
-    apiUrl: API_CONFIG.BASE_URL,
-    nodeEnv: import.meta.env.VITE_NODE_ENV,
-    mode: import.meta.env.MODE
-  });
-}
+// Environment configuration loaded
 
 export const APP_CONFIG: AppConfig = {
   NAME: import.meta.env.VITE_APP_NAME || 'UnyFilm',
