@@ -83,7 +83,6 @@ export default function ResetPassword() {
           setErrors({ general: response.message || 'Error al restablecer la contraseña' });
         }
       } catch (error) {
-        console.error('Error resetting password:', error);
         setErrors({ general: 'Error de conexión. Por favor, intenta de nuevo.' });
       } finally {
         setIsLoading(false);

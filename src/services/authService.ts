@@ -115,7 +115,6 @@ export const authService = {
    * @returns {Promise<BackendResponse<AuthData>>} Auth payload on success
    */
   async login(input: LoginInput) {
-    console.debug('[Auth] POST', `${ROOT_URL}/api/auth/login`, { email: input.email });
     const res = await request<AuthData>('/api/auth/login', {
       method: 'POST',
       headers: defaultHeaders,
@@ -161,10 +160,6 @@ export const authService = {
       age: age  // debe ser NUMBER no string
     };
 
-    console.debug('[Auth] POST', `${ROOT_URL}/api/auth/register`, payload);
-    console.debug('[Auth] URL completa:', `${ROOT_URL}/api/auth/register`);
-    console.debug('[Auth] Headers:', defaultHeaders);
-    console.debug('[Auth] Body stringified:', JSON.stringify(payload));
     
     const res = await request<AuthData>('/api/auth/register', {
       method: 'POST',
