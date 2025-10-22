@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, Settings, SkipBack, SkipForward, X } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
 import type { EnhancedPlayerProps } from '../../types';
 import './UnyFilmPlayer.css';
@@ -22,6 +22,8 @@ export default function UnyFilmPlayer({
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [currentQuality, setCurrentQuality] = useState<string>(quality);
   const [subtitlesEnabled, setSubtitlesEnabled] = useState<boolean>(showSubtitles);
+  const [subtitleTrack, setSubtitleTrack] = useState<TextTrack | null>(null);
+  const [qualityChangeMessage, setQualityChangeMessage] = useState<string>('');
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
@@ -29,22 +31,22 @@ export default function UnyFilmPlayer({
   // Cloudinary instance
   const cld = new Cloudinary({ cloud: { cloudName: 'dlyqtvvxv' } });
 
-  // Simulated comments
-  type Comment = { id: number; author: string; content: string; date: string };
-  const [comments, setComments] = useState<Comment[]>([
-    { id: 1, author: 'Ana María', content: 'Una obra maestra, la fotografía es increíble.', date: '2025-10-12' },
-    { id: 2, author: 'Carlos García', content: 'La banda sonora me encantó, muy inmersiva.', date: '2025-10-13' },
-    { id: 3, author: 'Lucía Pérez', content: 'El guion flojea por momentos, pero entretiene.', date: '2025-10-15' }
-  ]);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editingText, setEditingText] = useState<string>('');
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const handleTimeUpdate = () => setCurrentTime(video.currentTime);
-    const handleLoadedMetadata = () => setDuration(video.duration);
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+      
+      // Inicializar subtítulos si están habilitados
+      if (subtitlesEnabled && !subtitleTrack) {
+        const track = video.addTextTrack('subtitles', 'Subtítulos', 'es');
+        track.mode = 'showing';
+        setSubtitleTrack(track);
+      }
+    };
     const handleEnded = () => setIsPlaying(false);
 
     video.addEventListener('timeupdate', handleTimeUpdate);
@@ -56,7 +58,8 @@ export default function UnyFilmPlayer({
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
       video.removeEventListener('ended', handleEnded);
     };
-  }, []);
+  }, [subtitlesEnabled, subtitleTrack]);
+
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -132,13 +135,92 @@ export default function UnyFilmPlayer({
   const handleQualityChange = (newQuality: string) => {
     setCurrentQuality(newQuality);
     onQualityChange?.(newQuality);
+    
+    if (videoRef.current && movie?.videoUrl) {
+      // Usar transformaciones manuales de Cloudinary
+      let newVideoUrl = '';
+      const baseUrl = movie.videoUrl;
+      
+      // Si es Cloudinary, aplicar transformaciones
+      if (baseUrl.includes('cloudinary.com')) {
+        const urlParts = baseUrl.split('/');
+        const publicIdWithVersion = urlParts[urlParts.length - 1];
+        const publicId = publicIdWithVersion.split('.')[0];
+        const fullPublicId = `movies/videos/${publicId}`;
+        
+        const video = cld.video(fullPublicId);
+        
+        switch (newQuality) {
+          case 'high':
+            newVideoUrl = video.addTransformation('w_1920,h_1080,c_fill').format('auto').toURL();
+            break;
+          case 'medium':
+            newVideoUrl = video.addTransformation('w_1280,h_720,c_fill').format('auto').toURL();
+            break;
+          case 'low':
+            newVideoUrl = video.addTransformation('w_854,h_480,c_fill').format('auto').toURL();
+            break;
+          default:
+            newVideoUrl = baseUrl; // Usar URL original
+        }
+        
+        // Guardar tiempo actual para continuar desde donde estaba
+        const currentTime = videoRef.current.currentTime;
+        const wasPlaying = !videoRef.current.paused;
+        
+        // Cambiar la fuente del video
+        videoRef.current.src = newVideoUrl;
+        videoRef.current.load();
+        
+        // Restaurar tiempo y estado de reproducción
+        videoRef.current.addEventListener('loadedmetadata', () => {
+          videoRef.current!.currentTime = currentTime;
+          if (wasPlaying) {
+            videoRef.current!.play();
+          }
+        }, { once: true });
+        
+        // Mostrar mensaje de confirmación
+        const qualityNames = {
+          'auto': 'Automática',
+          'high': 'Alta (1080p)',
+          'medium': 'Media (720p)',
+          'low': 'Baja (480p)'
+        };
+        
+        setQualityChangeMessage(`🔄 Cambiando a: ${qualityNames[newQuality as keyof typeof qualityNames]}`);
+        setTimeout(() => setQualityChangeMessage(''), 3000);
+      }
+    }
   };
 
   const handleSubtitleToggle = () => {
     const newSubtitlesEnabled = !subtitlesEnabled;
     setSubtitlesEnabled(newSubtitlesEnabled);
     onSubtitleToggle?.(newSubtitlesEnabled);
+    
+    // Activar/desactivar subtítulos en el video
+    if (videoRef.current) {
+      const video = videoRef.current;
+      
+      if (newSubtitlesEnabled) {
+        // Crear pista de subtítulos si no existe
+        if (!subtitleTrack) {
+          const track = video.addTextTrack('subtitles', 'Subtítulos', 'es');
+          track.mode = 'showing';
+          setSubtitleTrack(track);
+        } else {
+          subtitleTrack.mode = 'showing';
+        }
+      } else {
+        // Ocultar subtítulos
+        if (subtitleTrack) {
+          subtitleTrack.mode = 'hidden';
+        }
+      }
+    }
   };
+
 
   const handleMouseMove = (): void => {
     setShowControls(true);
@@ -154,14 +236,7 @@ export default function UnyFilmPlayer({
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // Generate Cloudinary video URL
-  const getVideoUrl = () => {
-    if (cloudinaryPublicId) {
-      const video = cld.video(cloudinaryPublicId);
-      return video.format('auto').quality('auto').toURL();
-    }
-    return movie?.videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-  };
+
 
   return (
     <div className="unyfilm-player-wrapper">
@@ -178,7 +253,7 @@ export default function UnyFilmPlayer({
           <div className="unyfilm-movie-header">
             <h1 className="unyfilm-movie-title-main">{movie?.title || 'Película'}</h1>
             <div className="unyfilm-movie-rating">
-              <span className="star">★</span> {movie?.rating || '4.5'}/10
+              <span className="star">★</span> {movie?.rating || 'N/A'}/5
             </div>
           </div>
         </div>
@@ -198,7 +273,7 @@ export default function UnyFilmPlayer({
               "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%2334495e'/%3E%3C/svg%3E"
             }
           >
-            <source src={getVideoUrl()} type="video/mp4" />
+            <source src={movie?.videoUrl || ''} type="video/mp4" />
           </video>
 
           {!isPlaying && (
@@ -265,24 +340,30 @@ export default function UnyFilmPlayer({
                   onChange={(e) => handleQualityChange(e.target.value)}
                   className="unyfilm-quality-selector"
                   disabled={!cloudinaryPublicId}
+                  style={{
+                    backgroundColor: cloudinaryPublicId ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                    border: cloudinaryPublicId ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)'
+                  }}
                 >
-                  <option value="auto">Auto</option>
-                  <option value="high">Alta (1080p)</option>
-                  <option value="medium">Media (720p)</option>
-                  <option value="low">Baja (480p)</option>
+                  <option value="auto">Auto {currentQuality === 'auto' ? '✓' : ''}</option>
+                  <option value="high">Alta (1080p) {currentQuality === 'high' ? '✓' : ''}</option>
+                  <option value="medium">Media (720p) {currentQuality === 'medium' ? '✓' : ''}</option>
+                  <option value="low">Baja (480p) {currentQuality === 'low' ? '✓' : ''}</option>
                 </select>
 
                 <button
                   onClick={handleSubtitleToggle}
                   className={`unyfilm-control-btn ${subtitlesEnabled ? 'active' : ''}`}
                   aria-label={subtitlesEnabled ? 'Ocultar subtítulos' : 'Mostrar subtítulos'}
+                  style={{
+                    backgroundColor: subtitlesEnabled ? '#6366f1' : 'transparent',
+                    color: subtitlesEnabled ? 'white' : 'white',
+                    fontWeight: subtitlesEnabled ? 'bold' : 'normal'
+                  }}
                 >
-                  CC
+                  CC{subtitlesEnabled ? ' ✓' : ''}
                 </button>
 
-                <button className="unyfilm-control-btn">
-                  <Settings size={20} />
-                </button>
 
                 <button
                   onClick={toggleFullscreen}
@@ -294,22 +375,39 @@ export default function UnyFilmPlayer({
               </div>
             </div>
           </div> {/* ← cierre correcto del div .unyfilm-video-controls */}
+          
+          {/* Mensaje de cambio de calidad */}
+          {qualityChangeMessage && (
+            <div className="unyfilm-quality-message">
+              {qualityChangeMessage}
+            </div>
+          )}
+          
+          {/* Indicador de carga cuando cambia calidad */}
+          {qualityChangeMessage && (
+            <div className="unyfilm-loading-overlay">
+              <div className="unyfilm-loading-spinner"></div>
+            </div>
+          )}
+          
         </div> {/* ← cierre correcto del div .unyfilm-video-container */}
 
         <div className="unyfilm-movie-info-section">
 
           <div className="unyfilm-movie-metadata">
-            <span className="unyfilm-metadata-item">{movie?.year || '2023'}</span>
+            <span className="unyfilm-metadata-item">{movie?.year || 'N/A'}</span>
             <span className="unyfilm-metadata-separator">•</span>
-            <span className="unyfilm-metadata-item">{movie?.genre || 'Drama'}</span>
+            <span className="unyfilm-metadata-item">{movie?.genre || 'N/A'}</span>
             <span className="unyfilm-metadata-separator">•</span>
-            <span className="unyfilm-metadata-item">2h 38m</span>
+            <span className="unyfilm-metadata-item">
+              {movie?.duration ? `${Math.floor(movie.duration / 60)}h ${movie.duration % 60}m` : 'N/A'}
+            </span>
           </div>
 
           <div className="unyfilm-movie-description">
             <h3>Descripción</h3>
             <p className="unyfilm-description-text">
-              {movie?.description || 'Una increíble aventura cinematográfica que te mantendrá al borde del asiento desde el primer momento.'}
+              {movie?.description || 'Descripción no disponible'}
             </p>
           </div>
 
@@ -335,74 +433,7 @@ export default function UnyFilmPlayer({
             </div>
           )}
 
-          <div className="unyfilm-user-rating-section">
-            <h3>Tu calificación</h3>
-            <div className="unyfilm-star-rating">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span key={star} className="unyfilm-rating-star">★</span>
-              ))}
-            </div>
-          </div>
-
-          <div className="unyfilm-review-section">
-            <h3>Tu comentario</h3>
-            <textarea
-              placeholder="Comparte tus ideas sobre esta película."
-              className="unyfilm-review-textarea"
-            />
-            <button className="unyfilm-submit-review-btn">Publicar reseña</button>
-          </div>
-
-          <div className="unyfilm-comments-section">
-            <h3>Comentarios</h3>
-            <ul className="unyfilm-comments-list">
-              {comments.map((c) => (
-                <li key={c.id} className="unyfilm-comment-item">
-                  <div className="unyfilm-comment-header">
-                    <span className="unyfilm-comment-author">{c.author}</span>
-                    <span className="unyfilm-comment-date">{new Date(c.date).toLocaleDateString()}</span>
-                  </div>
-                  {editingId === c.id ? (
-                    <div className="unyfilm-comment-edit">
-                      <textarea
-                        className="unyfilm-comment-textarea"
-                        value={editingText}
-                        onChange={(e) => setEditingText(e.target.value)}
-                      />
-                      <div className="unyfilm-comment-actions">
-                        <button
-                          className="unyfilm-comment-btn unyfilm-comment-btn--save"
-                          onClick={() => {
-                            setComments(prev => prev.map(x => x.id === c.id ? { ...x, content: editingText } : x));
-                            setEditingId(null);
-                            setEditingText('');
-                          }}
-                        >Guardar</button>
-                        <button
-                          className="unyfilm-comment-btn unyfilm-comment-btn--cancel"
-                          onClick={() => { setEditingId(null); setEditingText(''); }}
-                        >Cancelar</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <p className="unyfilm-comment-content">{c.content}</p>
-                      <div className="unyfilm-comment-actions">
-                        <button
-                          className="unyfilm-comment-btn"
-                          onClick={() => { setEditingId(c.id); setEditingText(c.content); }}
-                        >Editar</button>
-                        <button
-                          className="unyfilm-comment-btn unyfilm-comment-btn--danger"
-                          onClick={() => setComments(prev => prev.filter(x => x.id !== c.id))}
-                        >Eliminar</button>
-                      </div>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Secciones de calificación y comentarios eliminadas */}
         </div>
       </div>
     </div>

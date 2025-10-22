@@ -146,7 +146,6 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
       setUploadProgress(0);
       
     } catch (error) {
-      console.error('Upload error:', error);
       onUploadError(error instanceof Error ? error.message : 'Error desconocido al subir el video');
     } finally {
       setIsUploading(false);

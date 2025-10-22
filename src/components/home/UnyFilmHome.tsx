@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Play, Heart, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Play, Heart, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
-import { moviesData } from '../../data/moviesData';
-import type { Movie } from '../../types';
+import { movieConfig, homeSections } from '../../data/moviesData';
+import { movieService, type Movie } from '../../services/movieService';
 import './UnyFilmHome.css';
 
 type MovieClickData = {
@@ -17,6 +17,7 @@ type MovieClickData = {
   genres?: string[];
   cloudinaryPublicId?: string;
   cloudinaryUrl?: string;
+  duration?: number;
 };
 
 /**
@@ -40,137 +41,217 @@ interface HomeProps {
  * @param {HomeProps} props - Home props
  * @returns {JSX.Element} Home UI
  */
-export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }: HomeProps) {
+export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites' | 'toggleFavorite'>) {
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null);
   const [featuredIndex, setFeaturedIndex] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
-  const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
-  const [kidsMovies, setKidsMovies] = useState<Movie[]>([]);
-  const [actionMovies, setActionMovies] = useState<Movie[]>([]);
-  const [comedyMovies, setComedyMovies] = useState<Movie[]>([]);
-  const [dramaMovies, setDramaMovies] = useState<Movie[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [sectionMovies, setSectionMovies] = useState<Record<string, Movie[]>>({});
   
   // Estados para el carrusel automático
-  const [carouselInterval, setCarouselInterval] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+  const [featuredMovies, setFeaturedMovies] = useState<Movie[]>([]);
+  const carouselIntervalRef = useRef<number | null>(null);
 
-  // Función para convertir ruta de pelis P a Portadas
-  const getPortadasImage = (pelisPImage?: string): string => {
-    if (!pelisPImage) return '/images/default-hero.jpg';
-    
-    // Extraer el nombre del archivo de la ruta de pelis P
-    const fileName = pelisPImage.split('/').pop() || '';
-    
-    // Crear la nueva ruta para Portadas usando import.meta.url
-    return new URL(`../images/Portadas/${fileName}`, import.meta.url).href;
-  };
+  // Función eliminada - ya no necesaria
 
   // Función para obtener la imagen del hero con fallbacks
   const getHeroImage = (movie: Movie): string => {
-    // 1. Intentar usar imageG si existe (ya apunta a Portadas)
-    if (movie.imageG) return movie.imageG;
+    // 1. Usar port (imagen grande) de la API
+    if (movie.port) return movie.port;
     
-    // 2. Convertir imagen de pelis P a Portadas
-    if (movie.image) return getPortadasImage(movie.image);
+    // 2. Usar poster como fallback
+    if (movie.poster) return movie.poster;
     
-    // 3. Usar thumbnail si existe
-    if (movie.thumbnailUrl) return movie.thumbnailUrl;
+    // 3. Usar trailer como fallback
+    if (movie.trailer) return movie.trailer;
     
-    // 4. Usar Cloudinary si existe
-    if (movie.cloudinaryUrl) {
-      return movie.cloudinaryUrl
-        .replace('/video/upload/', '/image/upload/')
-        .replace('.mp4', '.jpg');
-    }
+    // 4. Usar videoUrl como último recurso
+    if (movie.videoUrl) return movie.videoUrl;
     
     // 5. Fallback por defecto
     return '/images/default-hero.jpg';
   };
 
   // Función para cambiar a la siguiente película en orden
-  const changeToNextMovie = useCallback(() => {
-    if (moviesData.length === 0 || isTransitioning) return;
+  const changeToNextMovie = useCallback(async () => {
+    if (!featuredMovies.length || featuredMovies.length <= 1 || isTransitioning) {
+      return;
+    }
     
-    console.log('Cambiando película:', { featuredIndex, totalMovies: moviesData.length });
     setIsTransitioning(true);
     
-    // Fade out
-    setTimeout(() => {
-      const nextIndex = (featuredIndex + 1) % moviesData.length;
-      console.log('Nueva película:', { nextIndex, movie: moviesData[nextIndex]?.title });
-      setFeaturedMovie(moviesData[nextIndex]);
-      setFeaturedIndex(nextIndex);
+    try {
+      const nextIndex = (featuredIndex + 1) % featuredMovies.length;
       
-      // Fade in
+      // Cambiar la película inmediatamente pero mantener la transición
+      setFeaturedIndex(nextIndex);
+      setFeaturedMovie(featuredMovies[nextIndex]);
+      
+      // Esperar a que termine la animación completa
       setTimeout(() => {
         setIsTransitioning(false);
-      }, 300);
-    }, 300);
-  }, [featuredIndex, isTransitioning]);
+      }, 800); // Tiempo total de la animación (0.8s)
+    } catch (error) {
+      setIsTransitioning(false);
+    }
+  }, [featuredIndex, featuredMovies, isTransitioning]);
 
   // Función para iniciar el carrusel automático
   const startCarousel = useCallback(() => {
-    console.log('Iniciando carrusel...');
-    if (carouselInterval) {
-      clearInterval(carouselInterval);
+    // Limpiar intervalo existente si hay uno
+    if (carouselIntervalRef.current) {
+      clearInterval(carouselIntervalRef.current);
     }
     
+    // Crear nuevo intervalo
     const interval = setInterval(() => {
-      console.log('Intervalo del carrusel ejecutándose...');
       changeToNextMovie();
     }, 5000); // Cambia cada 5 segundos
     
-    setCarouselInterval(interval);
+    carouselIntervalRef.current = interval;
   }, [changeToNextMovie]);
 
+  // Cargar datos de la API
   useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      // Featured movie (first movie from our data)
-      if (moviesData.length > 0) {
-        setFeaturedMovie(moviesData[0]);
-        setFeaturedIndex(0);
-      }
-      
-      // Cargar diferentes secciones basadas en géneros
-      setTrendingMovies(moviesData.slice(0, 6));
-      setPopularMovies(moviesData.slice(1, 7));
-      setKidsMovies(moviesData.filter(movie => 
-        movie.genre?.includes('Animación') ||
-        movie.genre?.includes('Aventura')
-      ).slice(0, 6));
-      setActionMovies(moviesData.filter(movie => 
-        movie.genre?.includes('Acción') ||
-        movie.genre?.includes('Aventura')
-      ).slice(0, 6));
-      setComedyMovies(moviesData.filter(movie => 
-        movie.genre?.includes('Comedia')
-      ).slice(0, 6));
-      setDramaMovies(moviesData.filter(movie => 
-        movie.genre?.includes('Drama')
-      ).slice(0, 6));
-      setIsLoading(false);
-    }, 1000);
+    const loadMovies = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-    return () => {
-      clearTimeout(timer);
+        let featuredMovieData: Movie | null = null;
+        let availableMovies: Movie[] = [];
+        const sectionData: Record<string, Movie[]> = {};
+
+        // Primero intentar obtener todas las películas disponibles
+        try {
+          availableMovies = await movieService.getAvailableMovies();
+        } catch (error) {
+        }
+
+        // Cargar películas para el carrusel (hasta 5 películas)
+        let carouselMovies: Movie[] = [];
+        
+        // Usar las películas disponibles como carrusel
+        if (availableMovies.length > 0) {
+          carouselMovies = availableMovies.slice(0, 5);
+        } else {
+          // Intentar cargar películas específicas para el carrusel como fallback
+          const carouselIds = [
+            movieConfig.featuredMovieId,
+            "68f84e9aba5b03d95f2d6ce2", // Mortal Kombat 2
+            "68f84e9aba5b03d95f2d6ce3", // Tron: Ares
+            "68f84e9aba5b03d95f2d6ce4", // Avatar: El Origen del Agua
+            "68f84e9aba5b03d95f2d6ce5", // Primate (2026)
+          ];
+          
+          try {
+            carouselMovies = await movieService.getMovies(carouselIds);
+          } catch (error) {
+          }
+        }
+        
+        // Configurar películas del carrusel
+        if (carouselMovies.length > 0) {
+          setFeaturedMovies(carouselMovies);
+          setFeaturedMovie(carouselMovies[0]);
+          setFeaturedIndex(0);
+        } else {
+        }
+
+        // Cargar películas para cada sección
+        for (const section of homeSections) {
+          try {
+            let movies: Movie[] = [];
+            
+            // Usar endpoint específico para trending
+            if (section.id === 'trending') {
+              try {
+                movies = await movieService.getTrendingMovies();
+              } catch (trendingError) {
+                movies = await movieService.getMovies(section.movieIds);
+              }
+            } else {
+              movies = await movieService.getMovies(section.movieIds);
+            }
+            
+            // Si no se encontraron películas, usar fallback
+            if (movies.length === 0) {
+              
+              // Fallback 1: usar películas disponibles
+              if (availableMovies.length > 0) {
+                // Tomar hasta 3 películas disponibles para la sección
+                const fallbackMovies = availableMovies.slice(0, 3);
+                sectionData[section.id] = fallbackMovies;
+              }
+              // Fallback 2: usar la película destacada si está disponible
+              else if (featuredMovieData) {
+                sectionData[section.id] = [featuredMovieData];
+              }
+              // Sin fallback final - sección vacía si no hay datos reales
+              else {
+                sectionData[section.id] = [];
+              }
+            } else {
+              sectionData[section.id] = movies;
+            }
+          } catch (error) {
+            
+            // Fallback 1: usar películas disponibles
+            if (availableMovies.length > 0) {
+              const fallbackMovies = availableMovies.slice(0, 3);
+              sectionData[section.id] = fallbackMovies;
+            }
+            // Fallback 2: usar la película destacada si está disponible
+            else if (featuredMovieData) {
+              sectionData[section.id] = [featuredMovieData];
+            }
+            // Sin fallback final - sección vacía si no hay datos reales
+            else {
+              sectionData[section.id] = [];
+            }
+          }
+        }
+
+        setSectionMovies(sectionData);
+        setIsLoading(false);
+        } catch (error) {
+          setError('Error al cargar las películas. Por favor, verifica que el servidor esté funcionando.');
+          setIsLoading(false);
+        }
     };
-  }, [moviesData.length]);
+
+    // Solo cargar si no hay datos ya cargados
+    if (featuredMovies.length === 0 && Object.keys(sectionMovies).length === 0) {
+      loadMovies();
+    }
+  }, []);
 
   // useEffect separado para manejar el carrusel automático
   useEffect(() => {
-    console.log('useEffect carrusel:', { moviesDataLength: moviesData.length, isLoading });
-    if (moviesData.length > 1 && !isLoading) {
-      startCarousel();
+    if (featuredMovie && !isLoading && featuredMovies.length > 1) {
+      // Solo iniciar el carrusel si no hay uno activo
+      if (!carouselIntervalRef.current) {
+        // Agregar un pequeño delay para evitar parpadeos
+        setTimeout(() => {
+          startCarousel();
+        }, 100);
+      }
+    } else {
+      // Limpiar el carrusel si no se cumplen las condiciones
+      if (carouselIntervalRef.current) {
+        clearInterval(carouselIntervalRef.current);
+        carouselIntervalRef.current = null;
+      }
     }
     
     return () => {
-      if (carouselInterval) {
-        clearInterval(carouselInterval);
+      if (carouselIntervalRef.current) {
+        clearInterval(carouselIntervalRef.current);
+        carouselIntervalRef.current = null;
       }
     };
-  }, [moviesData.length, isLoading, startCarousel]);
+  }, [featuredMovie, isLoading, featuredMovies.length, startCarousel]);
 
   const handleMovieClick = useCallback((movie: MovieClickData) => {
     if (onMovieClick) {
@@ -179,13 +260,12 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
   }, [onMovieClick]);
 
   // Componente reutilizable para secciones de películas - memoizado para evitar re-renderizados
-  const MovieSection = React.memo(({ title, icon, movies, subtitle, favorites, toggleFavorite, handleMovieClick }: { 
+  const MovieSection = React.memo(({ title, icon, movies, subtitle, sectionId, handleMovieClick }: { 
     title: string; 
     icon: React.ReactNode; 
     movies: Movie[]; 
     subtitle?: string;
-    favorites: number[];
-    toggleFavorite: (index: number) => void;
+    sectionId: string;
     handleMovieClick: (movie: MovieClickData) => void;
   }) => {
     return (
@@ -200,26 +280,24 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
         
         <div className="unyfilm-home__section-grid">
           {movies.map((movie, index) => {
-            const movieIndex = moviesData.findIndex(m => m.title === movie.title);
             return (
               <UnyFilmCard
-                key={movie.id || index}
+                key={`${sectionId}-${movie._id}-${index}`}
                 title={movie.title}
-                image={movie.image || '/images/default-movie.jpg'}
-                isFavorite={favorites.includes(movieIndex)}
-                onToggleFavorite={() => toggleFavorite(movieIndex)}
+                image={movie.poster || '/images/default-movie.jpg'}
                 onMovieClick={() => handleMovieClick({
                   title: movie.title,
-                  index: movieIndex,
+                  index: index,
                   videoUrl: movie.videoUrl || '',
-                  rating: movie.rating || 4.0,
-                  year: movie.year || 2024,
-                  genre: movie.genre || 'Acción',
+                  rating: movie.rating?.average || 0,
+                  year: new Date(movie.releaseDate || '').getFullYear() || 0,
+                  genre: movie.genre[0] || '',
                   description: movie.description || '',
-                  synopsis: movie.description,
-                  genres: movie.genre ? [movie.genre] : undefined,
-                  cloudinaryPublicId: movie.cloudinaryPublicId,
-                  cloudinaryUrl: movie.cloudinaryUrl
+                  synopsis: movie.synopsis || movie.description,
+                  genres: movie.genre,
+                  cloudinaryPublicId: movie.cloudinaryVideoId,
+                  cloudinaryUrl: movie.videoUrl,
+                  duration: movie.duration || 0
                 })}
                 description={movie.description || ''}
               />
@@ -232,87 +310,45 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
 
   // Componente separado para todas las secciones de películas - completamente memoizado
   const MovieSections = React.memo(({ 
-    trendingMovies, 
-    popularMovies, 
-    kidsMovies, 
-    actionMovies, 
-    comedyMovies, 
-    dramaMovies, 
-    favorites, 
-    toggleFavorite, 
+    sectionMovies,
     handleMovieClick 
   }: {
-    trendingMovies: Movie[];
-    popularMovies: Movie[];
-    kidsMovies: Movie[];
-    actionMovies: Movie[];
-    comedyMovies: Movie[];
-    dramaMovies: Movie[];
-    favorites: number[];
-    toggleFavorite: (index: number) => void;
+    sectionMovies: Record<string, Movie[]>;
     handleMovieClick: (movie: MovieClickData) => void;
   }) => {
     return (
       <div className="unyfilm-home__sections">
-        <MovieSection 
-          title="En Tendencia" 
-          icon={<Flame size={24} />}
-          movies={trendingMovies}
-          subtitle="Las películas más populares del momento"
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          handleMovieClick={handleMovieClick}
-        />
-        
-        <MovieSection 
-          title="Populares" 
-          icon={<TrendingUp size={24} />}
-          movies={popularMovies}
-          subtitle="Favoritas de la audiencia"
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          handleMovieClick={handleMovieClick}
-        />
-        
-        <MovieSection 
-          title="Para toda la familia" 
-          icon={<Baby size={24} />}
-          movies={kidsMovies}
-          subtitle="Diversión para grandes y pequeños"
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          handleMovieClick={handleMovieClick}
-        />
-        
-        <MovieSection 
-          title="Acción y Aventura" 
-          icon={<Zap size={24} />}
-          movies={actionMovies}
-          subtitle="Emociones que te mantendrán al borde del asiento"
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          handleMovieClick={handleMovieClick}
-        />
-        
-        <MovieSection 
-          title="Comedia" 
-          icon={<Smile size={24} />}
-          movies={comedyMovies}
-          subtitle="Para reír y pasar un buen rato"
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          handleMovieClick={handleMovieClick}
-        />
-        
-        <MovieSection 
-          title="Drama" 
-          icon={<Drama size={24} />}
-          movies={dramaMovies}
-          subtitle="Historias que tocan el corazón"
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          handleMovieClick={handleMovieClick}
-        />
+        {homeSections.map((section) => (
+          <MovieSection 
+            key={section.id}
+            title={section.title} 
+            icon={
+              section.id === 'trending' ? <Flame size={24} /> :
+              section.id === 'popular' ? <TrendingUp size={24} /> :
+              section.id === 'kids' ? <Baby size={24} /> :
+              section.id === 'action' ? <Zap size={24} /> :
+              section.id === 'sci-fi' ? <Rocket size={24} /> :
+              section.id === 'horror' ? <Skull size={24} /> :
+              section.id === 'comedy' ? <Smile size={24} /> :
+              section.id === 'drama' ? <Drama size={24} /> :
+              <Star size={24} />
+            }
+            movies={sectionMovies[section.id] || []}
+            subtitle={
+              section.id === 'trending' ? "Las películas más populares del momento" :
+              section.id === 'popular' ? "Favoritas de la audiencia" :
+              section.id === 'kids' ? "Diversión para grandes y pequeños" :
+              section.id === 'action' ? "Emociones que te mantendrán al borde del asiento" :
+              section.id === 'sci-fi' ? "Viajes a mundos futuros e imaginarios" :
+              section.id === 'horror' ? "Suspenso y terror que te pondrán los pelos de punta" :
+              section.id === 'comedy' ? "Para reír y pasar un buen rato" :
+              section.id === 'drama' ? "Historias que tocan el corazón" :
+              "Contenido seleccionado"
+            }
+            sectionId={section.id}
+            handleMovieClick={handleMovieClick}
+          />
+        ))}
       </div>
     );
   });
@@ -320,17 +356,10 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
   // Memoizar las secciones de películas para evitar re-renderizados
   const memoizedMovieSections = useMemo(() => (
     <MovieSections 
-      trendingMovies={trendingMovies}
-      popularMovies={popularMovies}
-      kidsMovies={kidsMovies}
-      actionMovies={actionMovies}
-      comedyMovies={comedyMovies}
-      dramaMovies={dramaMovies}
-      favorites={favorites}
-      toggleFavorite={toggleFavorite}
+      sectionMovies={sectionMovies}
       handleMovieClick={handleMovieClick}
     />
-  ), [trendingMovies, popularMovies, kidsMovies, actionMovies, comedyMovies, dramaMovies, favorites, toggleFavorite, handleMovieClick]);
+  ), [sectionMovies, handleMovieClick]);
 
   if (isLoading) {
     return (
@@ -341,11 +370,25 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
     );
   }
 
+  if (error) {
+    return (
+      <div className="unyfilm-home__error">
+        <h2>Error al cargar el contenido</h2>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>
+          Reintentar
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="unyfilm-home">
       {/* Hero Section - Separado para evitar re-renderizado de minicards */}
       {featuredMovie && (
-        <div className={`unyfilm-home__hero ${isTransitioning ? 'unyfilm-home__hero--transitioning' : ''}`}>
+        <div 
+          className={`unyfilm-home__hero ${isTransitioning ? 'unyfilm-home__hero--transitioning' : ''}`}
+        >
           <div className="unyfilm-home__hero-bg">
             <img 
               src={getHeroImage(featuredMovie)} 
@@ -353,15 +396,11 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
               className="unyfilm-home__hero-image"
               onError={(e) => {
                 const img = e.currentTarget as HTMLImageElement;
-                // Fallback chain: Portadas -> pelis P -> thumbnail -> Cloudinary -> default
-                if (img.src !== featuredMovie.image && featuredMovie.image) {
-                  img.src = featuredMovie.image;
-                } else if (img.src !== featuredMovie.thumbnailUrl && featuredMovie.thumbnailUrl) {
-                  img.src = featuredMovie.thumbnailUrl;
-                } else if (img.src !== featuredMovie.cloudinaryUrl && featuredMovie.cloudinaryUrl) {
-                  img.src = featuredMovie.cloudinaryUrl
-                    .replace('/video/upload/', '/image/upload/')
-                    .replace('.mp4', '.jpg');
+                // Fallback chain: poster -> trailer -> videoUrl -> default
+                if (img.src !== featuredMovie.trailer && featuredMovie.trailer) {
+                  img.src = featuredMovie.trailer;
+                } else if (img.src !== featuredMovie.videoUrl && featuredMovie.videoUrl) {
+                  img.src = featuredMovie.videoUrl;
                 } else {
                   img.src = '/images/default-hero.jpg';
                 }
@@ -370,33 +409,26 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
             <div className="unyfilm-home__hero-overlay"></div>
           </div>
           
-          <div className="unyfilm-home__hero-content">
-            {/* Tags de trending y featured */}
-            <div className="unyfilm-home__hero-badges">
-              <div className="unyfilm-home__hero-badge unyfilm-home__hero-badge--trending">
-                <Flame size={14} />
-                TRENDING
-              </div>
-              <div className="unyfilm-home__hero-badge unyfilm-home__hero-badge--featured">
-                <Star size={14} />
-                FEATURED
-              </div>
-            </div>
-            
+          <div 
+            className="unyfilm-home__hero-content"
+            style={{
+              animation: 'heroContentSlideIn 1.0s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both'
+            }}
+          >
             <h1 className="unyfilm-home__hero-title">{featuredMovie.title}</h1>
             
             <div className="unyfilm-home__hero-meta">
-              <span className="hero-year">{featuredMovie.year || 2024}</span>
-              <span className="hero-genre">{featuredMovie.genre || 'Acción'}</span>
+              <span className="hero-year">{new Date(featuredMovie.releaseDate || '').getFullYear() || 'N/A'}</span>
+              <span className="hero-genre">{featuredMovie.genre[0] || 'N/A'}</span>
               <span className="hero-rating">
                 <Star size={16} />
-                {featuredMovie.rating || 4.5}
+                {featuredMovie.rating?.average || 'N/A'}
               </span>
-              <span className="hero-duration">135 min</span>
+              <span className="hero-duration">{featuredMovie.duration ? `${featuredMovie.duration} min` : 'N/A'}</span>
             </div>
             
             <p className="unyfilm-home__hero-description">
-              {featuredMovie.description || 'Una increíble experiencia cinematográfica te espera.'}
+              {featuredMovie.description || 'Descripción no disponible'}
             </p>
             
             <div className="unyfilm-home__hero-actions">
@@ -406,12 +438,15 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
                   title: featuredMovie.title,
                   index: featuredIndex,
                   videoUrl: featuredMovie.videoUrl || '',
-                  rating: featuredMovie.rating || 4.5,
-                  year: featuredMovie.year || 2024,
-                  genre: featuredMovie.genre || 'Acción',
+                  rating: featuredMovie.rating?.average || 0,
+                  year: new Date(featuredMovie.releaseDate || '').getFullYear() || 0,
+                  genre: featuredMovie.genre[0] || '',
                   description: featuredMovie.description || '',
-                  synopsis: featuredMovie.description,
-                  genres: featuredMovie.genre ? [featuredMovie.genre] : undefined
+                  synopsis: featuredMovie.synopsis || featuredMovie.description,
+                  genres: featuredMovie.genre,
+                  cloudinaryPublicId: featuredMovie.cloudinaryVideoId,
+                  cloudinaryUrl: featuredMovie.videoUrl,
+                  duration: featuredMovie.duration || 0
                 })}
               >
                 <Play size={18} />
@@ -419,8 +454,8 @@ export default function UnyFilmHome({ favorites, toggleFavorite, onMovieClick }:
               </button>
               
               <button 
-                className={`hero-btn hero-btn--secondary ${favorites.includes(featuredIndex) ? 'active' : ''}`}
-                onClick={() => toggleFavorite(featuredIndex)}
+                className="hero-btn hero-btn--secondary"
+                onClick={() => {}}
               >
                 <Heart size={18} />
                 Favoritos

@@ -90,7 +90,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Migración/limpieza: si existe solo el token legacy sin el oficial, limpiar para evitar auto-login indeseado
         const legacyToken = localStorage.getItem('unyfilm-token');
         if (!storedToken && legacyToken) {
-          console.warn('[Auth] Legacy token found without official token. Clearing stale auth data.');
           localStorage.removeItem('unyfilm-token');
           localStorage.removeItem('auth:user');
           localStorage.removeItem('unyfilm-user');
@@ -100,7 +99,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Verificar formato básico de JWT para evitar aceptar strings inválidos
           const isJwtLike = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(storedToken);
           if (!isJwtLike) {
-            console.warn('[Auth] Invalid token format. Clearing auth storage.');
             localStorage.removeItem('token');
             localStorage.removeItem('unyfilm-token');
             localStorage.removeItem('auth:user');
@@ -134,7 +132,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           } else {
             // Solo limpiar si realmente es un email bloqueado, no por validación estricta
             if (isBlockedEmail) {
-              console.warn('[Auth] Blocked email detected. Clearing auth storage.');
               localStorage.removeItem('token');
               localStorage.removeItem('unyfilm-token');
               localStorage.removeItem('auth:user');
@@ -142,14 +139,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               localStorage.removeItem('unyfilm-logged-in');
             } else {
               // Si el usuario no es válido pero no está bloqueado, intentar mantener la sesión
-              console.warn('[Auth] User data may be incomplete, but keeping session active.');
               setToken(storedToken);
               setUser(parsedUser as BackendUser);
             }
           }
         }
       } catch (error) {
-        console.warn('Error al inicializar autenticación, pero manteniendo sesión si es posible:', error);
         // No limpiar automáticamente en caso de error, solo logear
         // La sesión puede seguir funcionando aunque haya errores menores
       } finally {
@@ -325,7 +320,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
       } else {
         // No limpiar la sesión si falla el refresh, solo retornar error
-        console.warn('[Auth] Failed to refresh profile, but keeping session active');
         return { 
           success: false, 
           message: response.message || 'Error al cargar el perfil'
@@ -333,7 +327,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       // No limpiar la sesión si hay error de red, solo logear y retornar error
-      console.warn('[Auth] Error refreshing profile, but keeping session active:', error);
       return { 
         success: false, 
         message: error?.message || 'Error de red al cargar el perfil'
@@ -361,7 +354,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('unyfilm-logged-in');
 
     // Llamar al backend para invalidar el token (opcional)
-    authService.logout().catch(console.error);
+    authService.logout().catch(() => {});
   };
 
   /**
@@ -375,13 +368,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const deleteAccount = async (password: string) => {
     try {
-      console.log('[Auth] Attempting to delete account...');
       const response = await apiService.deleteAccount(password);
       
-      console.log('[Auth] Delete account response:', response);
-      
       if (response.success) {
-        console.log('[Auth] Account deleted successfully, clearing local state...');
         
         // Limpiar completamente el estado de autenticación
         setUser(null);
@@ -398,14 +387,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           message: 'Cuenta eliminada exitosamente' 
         };
       } else {
-        console.log('[Auth] Delete account failed:', response.message);
         return { 
           success: false, 
-          message: response.message || 'Error al eliminar la cuenta' 
+          message: response.message || 'Error al eliminar la cuenta'
         };
       }
     } catch (error: any) {
-      console.error('[Auth] Error deleting account:', error);
       return { 
         success: false, 
         message: error?.message || 'Error de red al eliminar la cuenta' 
@@ -425,8 +412,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
     try {
-      console.log('[Auth] Attempting to change password...');
-      
       // Verificar si hay token válido
       if (!token) {
         return { 
@@ -434,10 +419,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           message: 'No hay sesión activa. Por favor, inicia sesión nuevamente.' 
         };
       }
-      
+
       const response = await apiService.changePassword(currentPassword, newPassword, confirmPassword);
-      
-      console.log('[Auth] Change password response:', response);
       
       if (response.success) {
         return { 
@@ -447,7 +430,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         // Si el token es inválido, limpiar la sesión
         if (response.message?.includes('Invalid token') || response.message?.includes('Unauthorized')) {
-          console.warn('[Auth] Token inválido detectado, limpiando sesión...');
           logout();
           return { 
             success: false, 
@@ -461,7 +443,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
       }
     } catch (error: any) {
-      console.error('[Auth] Error changing password:', error);
       
       // Manejar errores de conexión específicamente
       if (error?.message?.includes('ERR_CONNECTION_REFUSED') || 
@@ -475,7 +456,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Manejar errores de autenticación
       if (error?.message?.includes('401') || error?.message?.includes('Unauthorized')) {
-        console.warn('[Auth] Error 401 detectado, limpiando sesión...');
         logout();
         return { 
           success: false, 
@@ -500,14 +480,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const currentTime = Math.floor(Date.now() / 1000);
       return payload.exp > currentTime;
     } catch (error) {
-      console.warn('[Auth] Error al verificar token:', error);
       return false;
     }
   };
 
   // Función para limpiar sesión expirada
   const clearExpiredSession = () => {
-    console.warn('[Auth] Limpiando sesión expirada...');
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
@@ -519,7 +497,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Verificar token al cargar la aplicación
   useEffect(() => {
     if (token && !isTokenValid()) {
-      console.warn('[Auth] Token expirado detectado al cargar la app');
       clearExpiredSession();
     }
   }, [token]);
