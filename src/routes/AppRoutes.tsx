@@ -3,21 +3,26 @@ import MovieApp from '../components/MovieApp';
 import Login from '../components/login/Login';
 import Register from '../components/register/Register';
 import Recover from '../components/recover/Recover';
+import ResetPassword from '../components/recover/ResetPassword';
+import Profile from '../components/profile/Profile';
+import ProfileEdit from '../components/profile/ProfileEdit';
 import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 
 /**
- * Main application routes configuration
- * - Rutas públicas: login, register, recover (solo accesibles sin autenticación)
- * - Rutas protegidas: home, catalog, about, sitemap (requieren autenticación)
- * - Ruta raíz (/) redirige a login por defecto
- * @component
- * @returns {JSX.Element} Application routes
+ * AppRoutes
+ *
+ * Main application routes configuration.
+ * - Public routes: login, register, recover (only accessible when unauthenticated)
+ * - Protected routes: home, catalog, about, sitemap, profile, profile edit
+ * - Root path redirects to /home (ProtectedRoute will handle auth)
+ *
+ * @returns {JSX.Element} Application routes tree wrapped with guards
  */
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Ruta raíz: siempre redirige a login */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Ruta raíz: redirige a home si está autenticado, sino a login */}
+      <Route path="/" element={<Navigate to="/home" replace />} />
       
       {/* Rutas públicas (solo accesibles sin autenticación) */}
       <Route 
@@ -41,6 +46,14 @@ export default function AppRoutes() {
         element={
           <PublicRoute>
             <Recover />
+          </PublicRoute>
+        } 
+      />
+      <Route 
+        path="/reset-password" 
+        element={
+          <PublicRoute>
+            <ResetPassword />
           </PublicRoute>
         } 
       />
@@ -78,9 +91,33 @@ export default function AppRoutes() {
           </ProtectedRoute>
         } 
       />
+      <Route 
+        path="/player/*" 
+        element={
+          <ProtectedRoute>
+            <MovieApp />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/profile/edit" 
+        element={
+          <ProtectedRoute>
+            <ProfileEdit />
+          </ProtectedRoute>
+        } 
+      />
       
-      {/* Ruta 404: redirige a login */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* Ruta 404: redirige a home */}
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 }

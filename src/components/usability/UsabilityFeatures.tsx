@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HelpCircle, AlertTriangle, CheckCircle, Info, Zap, Shield, Eye } from 'lucide-react';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import './UsabilityFeatures.css';
 
 /**
@@ -13,13 +14,25 @@ type Shortcut = { key: string; description: string; action: () => void };
 export default function UsabilityFeatures() {
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  
+  // Hook para cerrar el modal de ayuda al hacer clic fuera
+  const helpModalRef = useClickOutside(() => setShowHelp(false));
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
+  
+  // Debounce para evitar múltiples ejecuciones
+  const lastKeyPress = useRef<number>(0);
 
   useEffect(() => {
     // Initialize usability features
-    initializeKeyboardShortcuts();
-    initializeErrorPrevention();
+    const cleanupKeyboard = initializeKeyboardShortcuts();
     initializeHelpSystem();
+    
+    // Cleanup function
+    return () => {
+      if (cleanupKeyboard) {
+        cleanupKeyboard();
+      }
+    };
   }, []);
 
   /**
@@ -27,31 +40,153 @@ export default function UsabilityFeatures() {
    */
   const initializeKeyboardShortcuts = () => {
     const shortcuts = [
-      { key: 'Alt + N', description: 'Saltar a navegación', action: () => console.log('Navigate to sidebar') },
-      { key: 'Alt + S', description: 'Saltar a búsqueda', action: () => console.log('Navigate to search') },
-      { key: 'Alt + A', description: 'Panel de accesibilidad', action: () => console.log('Toggle accessibility') },
+      { key: 'Alt + N', description: 'Saltar a navegación', action: () => {} },
+      { key: 'Alt + S', description: 'Saltar a búsqueda', action: () => {} },
+      { key: 'Alt + A', description: 'Panel de accesibilidad', action: () => {} },
       { key: 'Alt + H', description: 'Panel de ayuda', action: () => setShowHelp(true) },
-      { key: 'Alt + P', description: 'Reproducir/Pausar video', action: () => console.log('Play/Pause video') },
-      { key: 'Alt + F', description: 'Pantalla completa', action: () => console.log('Toggle fullscreen') },
-      { key: 'Alt + R', description: 'Resetear filtros', action: () => console.log('Reset filters') },
-      { key: 'Alt + V', description: 'Cambiar vista', action: () => console.log('Toggle view mode') },
-      { key: 'Alt + O', description: 'Opciones de orden', action: () => console.log('Sort options') },
+      { key: 'Alt + P', description: 'Reproducir/Pausar video', action: () => {} },
+      { key: 'Alt + F', description: 'Pantalla completa', action: () => {} },
+      { key: 'Alt + R', description: 'Resetear filtros', action: () => {} },
       { key: 'Escape', description: 'Cerrar modales', action: () => setShowHelp(false) }
     ];
     setShortcuts(shortcuts);
+
+    // Agregar event listeners para los atajos
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Alt + H para abrir ayuda
+      if (event.altKey && event.key === 'h') {
+        event.preventDefault();
+        setShowHelp(true);
+      }
+      
+      // Escape para cerrar modales
+      if (event.key === 'Escape') {
+        setShowHelp(false);
+      }
+      
+      // Alt + N para navegación
+      if (event.altKey && event.key === 'n') {
+        event.preventDefault();
+        // Aquí puedes agregar la lógica para navegar al sidebar
+      }
+      
+      // Alt + S para búsqueda
+      if (event.altKey && event.key === 's') {
+        event.preventDefault();
+        // Aquí puedes agregar la lógica para enfocar la búsqueda
+      }
+      
+      // Alt + A para accesibilidad
+      if (event.altKey && event.key === 'a') {
+        event.preventDefault();
+        // Aquí puedes agregar la lógica para el panel de accesibilidad
+      }
+      
+      // Alt + P para play/pause
+      if (event.altKey && event.key === 'p') {
+        event.preventDefault();
+        
+        // Debounce para evitar múltiples ejecuciones
+        const now = Date.now();
+        if (now - lastKeyPress.current < 500) {
+          return;
+        }
+        lastKeyPress.current = now;
+        
+        // Buscar el elemento de video directamente para obtener el estado real
+        const videoElement = document.querySelector('video') as HTMLVideoElement;
+        
+        if (videoElement) {
+          
+          
+          try {
+            // Simular click en el botón del reproductor
+            
+            // Buscar el botón de play/pause del reproductor UnyFilm
+            const playButton = document.querySelector('.unyfilm-control-btn') as HTMLButtonElement;
+            if (playButton) {
+              
+              // Simular click real del usuario
+              const clickEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+              });
+              
+              // Disparar el evento de click
+              playButton.dispatchEvent(clickEvent);
+              
+              // También hacer click programático como fallback
+              playButton.click();
+              
+              
+            } else {
+              
+              // Fallback: control directo del video
+              if (videoElement.paused) {
+                videoElement.play().catch((error) => {
+                  // Error playing video
+                });
+              } else {
+                videoElement.pause();
+              }
+            }
+          } catch (error) {
+            // Error controlling video
+          }
+        } else {
+          // Fallback: buscar el botón de play/pause del reproductor
+          const playButton = document.querySelector('.unyfilm-control-btn') as HTMLButtonElement;
+          if (playButton) {
+            playButton.click();
+          } else {
+          }
+        }
+      }
+      
+      // Alt + F para pantalla completa
+      if (event.altKey && event.key === 'f') {
+        event.preventDefault();
+        
+        // Buscar el botón de pantalla completa del reproductor
+        const fullscreenButton = document.querySelector('.unyfilm-control-btn[title*="fullscreen"], .unyfilm-control-btn[aria-label*="fullscreen"]') as HTMLButtonElement;
+        if (fullscreenButton) {
+          fullscreenButton.click();
+        } else {
+          // Fallback: usar API nativa
+          const videoContainer = document.querySelector('.unyfilm-video-player') as HTMLElement;
+          if (videoContainer) {
+            if (!document.fullscreenElement) {
+              videoContainer.requestFullscreen();
+            } else {
+              document.exitFullscreen();
+            }
+          }
+        }
+      }
+      
+      // Alt + R para resetear filtros
+      if (event.altKey && event.key === 'r') {
+        event.preventDefault();
+        // Aquí puedes agregar la lógica para resetear filtros
+      }
+      
+      
+    };
+
+    // Agregar el event listener con capture para asegurar que se ejecute
+    document.addEventListener('keydown', handleKeyDown, true);
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
   };
 
   /**
-   * Initialize error prevention mechanisms
+   * Initialize error prevention mechanisms - REMOVED beforeunload alert
    */
   const initializeErrorPrevention = () => {
-    // Prevent accidental navigation
-    const beforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = '¿Estás seguro de que quieres salir?';
-    };
-    window.addEventListener('beforeunload', beforeUnload);
-
     // Auto-save user preferences
     const savePreferences = () => {
       const preferences = {
@@ -67,7 +202,6 @@ export default function UsabilityFeatures() {
 
     // Provide cleanup function for caller
     return () => {
-      window.removeEventListener('beforeunload', beforeUnload);
       clearInterval(intervalId);
     };
   };
@@ -146,10 +280,12 @@ export default function UsabilityFeatures() {
         <HelpCircle size={20} />
       </button>
 
+
       {/* Help Modal */}
       {showHelp && (
         <div className="usability-help-modal" role="dialog" aria-modal="true" aria-labelledby="usability-help-title">
-          <div className="usability-help-content">
+          <div className="usability-help-backdrop" onClick={() => setShowHelp(false)}></div>
+          <div className="usability-help-content" ref={helpModalRef}>
             <div className="usability-help-header">
               <h2 id="usability-help-title">Guía de Usabilidad</h2>
               <button 

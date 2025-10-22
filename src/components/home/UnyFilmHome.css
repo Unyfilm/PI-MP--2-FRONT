@@ -36,88 +36,226 @@
 /* Hero Section */
 .unyfilm-home__hero {
   position: relative;
-  height: min(520px, 70vh);
+  height: min(600px, 80vh);
+  min-height: 500px;
+  max-height: 700px;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   display: flex;
   align-items: center;
-  padding: 0 60px;
+  padding: 0;
   overflow: hidden;
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
+  /* Asegurar que el contenedor tenga dimensiones fijas */
+  aspect-ratio: 16/9;
+  /* Eliminar cualquier borde o sombra que pueda causar artefactos */
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
-.unyfilm-home__hero.is-fade-in {
+/* Animación de transición lateral para el carrusel */
+.unyfilm-home__hero--transitioning {
+  opacity: 0.85;
+  transform: translateX(15px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.unyfilm-home__hero--transitioning .unyfilm-home__hero-image {
+  filter: blur(0.5px);
+  transform: translateX(-8px) scale(1.01);
+  transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.unyfilm-home__hero.is-slide-in {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
-.unyfilm-home__hero.is-fade-out {
+.unyfilm-home__hero.is-slide-out {
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateX(-30px);
 }
 
-.unyfilm-home__hero-background {
+/* Transición suave para el contenido del hero */
+.unyfilm-home__hero--transitioning .unyfilm-home__hero-content {
+  opacity: 0.9;
+  transform: translateX(-10px);
+}
+
+.unyfilm-home__hero-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 1;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%);
+  width: 100%;
+  height: 100%;
+}
+
+.unyfilm-home__hero-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 2;
+  /* Eliminar box-shadow que puede causar artefactos */
+  box-shadow: none;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Asegurar que la imagen llene completamente el contenedor */
+  min-height: 100%;
+  min-width: 100%;
+  max-height: 100%;
+  max-width: 100%;
+  /* Eliminar cualquier borde o outline */
+  border: none;
+  outline: none;
+  /* Mejoras de calidad de imagen */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: high-quality;
+  /* Suavizado de imagen */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* Optimización de renderizado */
+  will-change: transform;
+  transform: translateZ(0);
+  /* Mejorar la calidad de escala */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .unyfilm-home__hero-overlay {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 0;
-  width: 60%;
+  width: 100%;
   height: 100%;
-  /* Suavizar borde para evitar línea visible en el límite del 40% */
-  background: linear-gradient(90deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.0) 35%, rgba(15,23,42,0.25) 100%);
-  z-index: 2;
+  /* Overlay para mejorar legibilidad del texto */
+  background: linear-gradient(270deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.7) 50%, rgba(15,23,42,0.9) 100%);
+  z-index: 3;
+  /* Eliminar cualquier borde o sombra que pueda causar artefactos */
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 /* Nave eliminada */
 
-/* Póster de la película destacada (derecha) */
-.unyfilm-home__hero-poster {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  right: 0;
-  left: 40%;
-  width: auto; /* ancho calculado entre left y right */
-  height: calc(100% - 0px);
-  object-fit: cover; /* llena sin deformar */
-  object-position: center;
-  margin-left: 0;
-  
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  z-index: 3;
+/* Eliminar artefactos visuales en el hero */
+.unyfilm-home__hero,
+.unyfilm-home__hero *,
+.unyfilm-home__hero-image,
+.unyfilm-home__hero-overlay,
+.unyfilm-home__hero-bg,
+.unyfilm-home__hero-content,
+.unyfilm-home__hero-content *,
+.unyfilm-home__hero-actions,
+.unyfilm-home__hero-actions *,
+.hero-btn,
+.hero-btn * {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Eliminar específicamente las sombras de los botones */
+.hero-btn,
+.hero-btn--primary,
+.hero-btn--secondary,
+.hero-btn--primary:hover,
+.hero-btn--secondary:hover {
+  box-shadow: none !important;
+  text-shadow: 1px 1px 0px #312A6F, -1px -1px 0px #312A6F, 1px -1px 0px #312A6F, -1px 1px 0px #312A6F, 0 1px 2px rgba(49, 42, 111, 0.8) !important;
+}
+
+/* Mejoras de calidad para diferentes resoluciones - Hero */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .unyfilm-home__hero-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    /* Mejorar la calidad en pantallas de alta densidad */
+    filter: brightness(1.02) contrast(1.02) saturate(1.08);
+  }
+}
+
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+  .unyfilm-home__hero-image {
+    /* Optimización para pantallas 3x */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    filter: brightness(1.03) contrast(1.03) saturate(1.1);
+  }
 }
 
 /* Ajustes responsivos para la tarjeta grande del hero */
 @media (max-width: 1400px) {
-  .unyfilm-home__hero-poster { left: 45%; }
+  .unyfilm-home__hero {
+    height: min(550px, 70vh);
+    aspect-ratio: 16/9;
+  }
+  
+  .unyfilm-home__hero-image {
+    object-fit: cover;
+    object-position: center;
+    min-height: 100%;
+    min-width: 100%;
+  }
+  
+  .unyfilm-home__hero-content { width: 55%; padding: 45px 50px; }
 }
 
 @media (max-width: 1200px) {
-  .unyfilm-home__hero-poster { left: 40%; }
+  .unyfilm-home__hero-content { width: 60%; padding: 45px 50px; }
 }
 
 @media (max-width: 1024px) {
-  .unyfilm-home__hero-poster { left: 50%; }
+  .unyfilm-home__hero-content { width: 50%; padding: 45px 50px; }
 }
 
 @media (max-width: 900px) {
-  .unyfilm-home__hero-poster { left: 52%; }
+  .unyfilm-home__hero-content { width: 48%; padding: 45px 50px; }
 }
 
 /* En móviles usamos la imagen como fondo suavizado para evitar desbordes */
 @media (max-width: 768px) {
-  .unyfilm-home__hero-poster {
+  .unyfilm-home__hero {
+    height: 60vh;
+    min-height: 300px;
+    aspect-ratio: 16/9;
+  }
+  
+  .unyfilm-home__hero-image {
     top: 0; right: 0; bottom: 0; left: 0;
-    width: 100%; height: 100%; border-radius: 0;
+    width: 100%; 
+    height: 100%; 
+    border-radius: 0;
     filter: blur(1px) brightness(0.8);
-    opacity: 0.25; pointer-events: none;
+    opacity: 0.25; 
+    pointer-events: none;
+    object-fit: cover;
+    object-position: center;
+    min-height: 100%;
+    min-width: 100%;
+  }
+  
+  .unyfilm-home__hero-content {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
   }
 }
 
@@ -131,21 +269,28 @@
 }
 
 .unyfilm-home__hero-content {
-  position: relative;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
   z-index: 4;
-  max-width: 520px;
-  width: min(52ch, 40vw);
-  padding-right: 12px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  max-height: calc(100% - 24px);
+  padding: 50px 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 12px;
-  overflow: hidden; /* el texto se adapta al contenedor */
-  overflow-y: auto; /* permite desplazamiento si el texto excede la altura */
+  gap: 20px;
+  overflow-y: auto;
   animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Asegurar que el contenido se ajuste */
+  min-height: 100%;
+  max-height: 100%;
+  /* Eliminar cualquier sombra o borde que pueda causar artefactos */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 @keyframes slideInLeft {
@@ -159,58 +304,90 @@
   }
 }
 
-.unyfilm-home__hero-badges {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.unyfilm-home__hero-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+/* Animación para el carrusel lateral - Entrada completa */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.unyfilm-home__hero-badge--trending {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+@keyframes slideOutToLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
 }
 
-.unyfilm-home__hero-badge--featured {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+
+/* Animación suave para el contenido del hero */
+@keyframes heroContentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-80px) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
 }
+
 
 .unyfilm-home__hero-title {
-  font-size: clamp(28px, 3.6vw, 36px);
-  font-weight: bold;
-  margin: 0 0 10px 0;
-  line-height: 1.15;
+  font-size: clamp(24px, 3.5vw, 42px);
+  font-weight: 800;
+  margin: 0 0 12px 0;
+  line-height: 1.1;
   word-break: break-word;
   overflow-wrap: anywhere;
-  display: block; /* sin clamp para evitar cortes */
+  display: block;
   overflow: visible;
-  background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
+  text-shadow: 
+    2px 2px 0px #312A6F,
+    -2px -2px 0px #312A6F,
+    2px -2px 0px #312A6F,
+    -2px 2px 0px #312A6F,
+    0 2px 8px rgba(49, 42, 111, 0.8);
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
 }
 
 .unyfilm-home__hero-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
-  font-size: 16px;
-  color: #9ca3af;
+  gap: 15px;
+  margin-bottom: 15px;
+  font-size: clamp(14px, 2vw, 18px);
+  color: #d1d5db;
+  flex-wrap: wrap;
+  font-weight: 500;
+  flex-shrink: 0;
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 3px rgba(49, 42, 111, 0.7);
 }
 
 .unyfilm-home__hero-rating {
@@ -218,19 +395,37 @@
   align-items: center;
   gap: 4px;
   color: #fbbf24;
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 3px rgba(49, 42, 111, 0.7);
 }
 
 .unyfilm-home__hero-description {
-  font-size: 16px;
+  font-size: clamp(14px, 2vw, 18px);
   line-height: 1.6;
   color: #d1d5db;
   margin-bottom: 20px;
-  max-width: 52ch;
+  max-width: 100%;
   overflow-wrap: anywhere;
   word-break: break-word;
-  /* Scroll vertical para leer más sin desbordar el panel */
   display: block;
-  max-height: calc(1.6em * 6); /* ~6 líneas visibles */
+  flex: 1 1 auto;
+  overflow-y: auto;
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 3px rgba(49, 42, 111, 0.7);
+  font-weight: 400;
+  /* Aumentar el alto para mostrar más texto */
+  max-height: 150px;
+  min-height: 60px;
+  padding-right: 8px;
+  /* Permitir scroll cuando sea necesario */
   overflow-y: auto;
 }
 
@@ -241,7 +436,80 @@
 
 .unyfilm-home__hero-actions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  margin-top: auto;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  /* Asegurar que siempre estén visibles */
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  /* Ajuste automático para evitar que se corten */
+  min-height: 60px;
+  align-items: flex-end;
+  /* Eliminar el fondo que causaba la esquina visible */
+  background: none;
+  padding-top: 10px;
+  /* Eliminar cualquier sombra o borde */
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: clamp(13px, 2vw, 16px);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  min-width: 120px;
+  justify-content: center;
+  flex: 1;
+  max-width: 200px;
+  text-shadow: 
+    1px 1px 0px #312A6F,
+    -1px -1px 0px #312A6F,
+    1px -1px 0px #312A6F,
+    -1px 1px 0px #312A6F,
+    0 1px 2px rgba(49, 42, 111, 0.8);
+}
+
+.hero-btn--primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  box-shadow: none;
+}
+
+.hero-btn--primary:hover {
+  transform: translateY(-3px);
+  box-shadow: none;
+}
+
+.hero-btn--secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(15px);
+}
+
+.hero-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.hero-btn--secondary.active {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-color: #ef4444;
+  color: white;
 }
 
 .unyfilm-home__hero-button {
@@ -342,6 +610,12 @@
 .unyfilm-home__section {
   padding: 40px 60px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  /* Evitar parpadeo durante transiciones del carrusel */
+  will-change: auto;
+  transform: translateZ(0);
+  /* Forzar estabilidad visual */
+  contain: layout style paint;
+  isolation: isolate;
 }
 
 .unyfilm-home__section:last-of-type {
@@ -373,6 +647,21 @@
   grid-template-columns: repeat(auto-fit, minmax(146px, 1fr)); /* Width: 145.59px */
   gap: 20px;
   max-width: 100%;
+  /* Evitar parpadeo durante transiciones del carrusel */
+  will-change: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  /* Forzar estabilidad visual */
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+/* Estilos específicos para las minicards individuales */
+.unyfilm-home__section-grid > * {
+  contain: layout style paint;
+  isolation: isolate;
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 /* Site Map Section */
@@ -466,8 +755,6 @@
     width: 350px;
     height: 280px;
   }
-
-  .unyfilm-home__hero-poster { width: 380px; height: 210px; right: 5%; }
 }
 
 @media (max-width: 768px) {
@@ -484,7 +771,6 @@
   .unyfilm-home__spaceship {
     display: none;
   }
-  .unyfilm-home__hero-poster { display: none; }
   
   .unyfilm-home__hero-overlay {
     display: none;
@@ -519,17 +805,6 @@
 }
 
 /* Animation Enhancements */
-.unyfilm-home__hero-badge {
-  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.unyfilm-home__hero-badge:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.unyfilm-home__hero-badge:nth-child(2) {
-  animation-delay: 0.2s;
-}
 
 @keyframes fadeInUp {
   from {

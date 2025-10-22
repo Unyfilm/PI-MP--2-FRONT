@@ -300,7 +300,7 @@ export default function UnyFilmPlayer({
         <div className="unyfilm-movie-header">
           <h1 className="unyfilm-movie-title-main">{movie?.title || 'Película'}</h1>
           <div className="unyfilm-movie-rating">
-            <span className="star">★</span> {movie?.rating || '4.5'}/10
+            <span className="star">★</span> {movie?.rating || 'N/A'}/5
           </div>
         </div>
 
