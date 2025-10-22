@@ -1,23 +1,47 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Home, Film, Heart, Users, Settings, LogOut, Eye } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import logoImage from '../../images/logo3.png';
 import './UnyFilmSidebar.css';
 import type { ViewType } from '../../types';
 
-// Interface específica para el sidebar
+/**
+ * UnyFilmSidebarProps
+ *
+ * Props for the fixed navigation sidebar.
+ */
 interface UnyFilmSidebarProps {
   currentView: ViewType;
 }
 
 /**
- * Sidebar component with fixed navigation
+ * UnyFilmSidebar
+ *
+ * Fixed navigation sidebar with quick links, accessibility options,
+ * and a logout action. Uses camelCase handlers and descriptive names.
+ *
+ * @param {UnyFilmSidebarProps} props - Sidebar props
+ * @returns {JSX.Element} Sidebar UI
  */
 export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
   const [showAccessibility, setShowAccessibility] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  
+  // Hook para cerrar el panel de accesibilidad al hacer clic fuera
+  const accessibilityRef = useClickOutside(() => {
+    setShowAccessibility(false);
+  });
 
   const toggleAccessibility = () => {
     setShowAccessibility(!showAccessibility);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   return (
@@ -77,29 +101,33 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
             onClick={toggleAccessibility}
           />
           {showAccessibility && (
-            <div className="unyfilm-sidebar__accessibility-panel">
-              <h4>Opciones de Accesibilidad</h4>
-              <div className="unyfilm-sidebar__accessibility-controls">
-                <label>
-                  <input type="checkbox" />
-                  <span>Alto contraste</span>
-                </label>
-                <label>
-                  <input type="checkbox" />
-                  <span>Reducir animaciones</span>
-                </label>
-                <label>
-                  <input type="checkbox" />
-                  <span>Mostrar foco</span>
-                </label>
+            <>
+              <div className="unyfilm-sidebar__accessibility-backdrop" onClick={() => setShowAccessibility(false)}></div>
+              <div className="unyfilm-sidebar__accessibility-panel" ref={accessibilityRef}>
+                <h4>Opciones de Accesibilidad</h4>
+                <div className="unyfilm-sidebar__accessibility-controls">
+                  <label>
+                    <input type="checkbox" />
+                    <span>Alto contraste</span>
+                  </label>
+                  <label>
+                    <input type="checkbox" />
+                    <span>Reducir animaciones</span>
+                  </label>
+                  <label>
+                    <input type="checkbox" />
+                    <span>Mostrar foco</span>
+                  </label>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
         
         <NavIcon 
           icon={<LogOut size={24} strokeWidth={2} />}
           label="Cerrar Sesión"
+          onClick={handleLogout}
         />
       </div>
     </div>
@@ -107,12 +135,12 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
 }
 
 /**
- * Navigation icon component
- * @param {Object} props - Component props
- * @param {boolean} props.active - Whether the icon is active
- * @param {Function} props.onClick - Click handler
- * @param {React.ReactNode} props.icon - Icon component
- * @param {string} props.label - Accessibility label
+ * NavIcon
+ *
+ * Generic navigation icon used within the sidebar.
+ *
+ * @param {{active?: boolean; icon: React.ReactNode; label: string; onClick?: () => void}} props - Icon props
+ * @returns {JSX.Element} Icon button UI
  */
 interface SidebarItemProps {
   active?: boolean;

@@ -1,15 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Lock, Check, CheckCircle } from 'lucide-react';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import './Recover.scss';
 import './ResetPassword.scss';
 import collage from '../../images/collage.jpg';
+import apiService from '../../services/apiService';
 
 export default function ResetPassword() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [token, setToken] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [resetSuccess, setResetSuccess] = useState<boolean>(false);
+
+  // Extraer token de la URL al cargar el componente
+  useEffect(() => {
+    const urlToken = searchParams.get('token');
+    if (urlToken) {
+      setToken(urlToken);
+    }
+  }, [searchParams]);
 
   // Checklist visual para contraseña
   const passwordChecks = {
@@ -22,31 +36,121 @@ export default function ResetPassword() {
 
   const validate = (): Record<string, string> => {
     const next: Record<string, string> = {};
-    if (!password) next.password = 'La contraseña es requerida';
-    if (password && password.length < 8) next.password = 'Mínimo 8 caracteres';
-    if (password && !/[A-Z]/.test(password)) next.password = 'Debe incluir al menos una mayúscula';
-    if (password && !/[a-z]/.test(password)) next.password = 'Debe incluir al menos una minúscula';
-    if (password && !/[0-9]/.test(password)) next.password = 'Debe incluir al menos un número';
-    if (password && !/[^A-Za-z0-9]/.test(password)) next.password = 'Debe incluir al menos un carácter especial';
-    if (!confirmPassword) next.confirmPassword = 'Confirma tu contraseña';
-    if (password && confirmPassword && password !== confirmPassword) next.confirmPassword = 'Las contraseñas no coinciden';
+    
+    if (!token) {
+      next.token = 'Token de recuperación requerido';
+    }
+    
+    if (!password) {
+      next.password = 'La contraseña es requerida';
+    } else {
+      // Validación según documentación del backend
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        next.password = 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo';
+      }
+    }
+    
+    if (!confirmPassword) {
+      next.confirmPassword = 'Confirma tu contraseña';
+    } else if (password && confirmPassword && password !== confirmPassword) {
+      next.confirmPassword = 'Las contraseñas no coinciden';
+    }
+    
     return next;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    const v = validate();
-    setErrors(v);
+    const validationErrors = validate();
+    setErrors(validationErrors);
     setTouched({ password: true, confirmPassword: true });
-    if (Object.keys(v).length === 0) {
+    
+    if (Object.keys(validationErrors).length === 0) {
       setIsLoading(true);
-      setTimeout(() => {
-        // Aquí se confirmaría el cambio de contraseña contra la API
+      
+      try {
+        // Según la documentación, el endpoint espera: token, password, confirmPassword
+        const response = await apiService.resetPassword(token, password, confirmPassword);
+        
+        if (response.success) {
+          setResetSuccess(true);
+          // Redirigir al login después de 3 segundos
+          setTimeout(() => {
+            navigate('/login');
+          }, 3000);
+        } else {
+          setErrors({ general: response.message || 'Error al restablecer la contraseña' });
+        }
+      } catch (error) {
+        setErrors({ general: 'Error de conexión. Por favor, intenta de nuevo.' });
+      } finally {
         setIsLoading(false);
-        alert('Contraseña actualizada.');
-      }, 1200);
+      }
     }
   };
+
+  // Si el reset fue exitoso, mostrar pantalla de confirmación
+  if (resetSuccess) {
+    return (
+      <div className="login-page login-page--bg-hero">
+        <div className="login-page__bg-gradient login-page__bg-gradient--1" />
+        <div className="login-page__bg-gradient login-page__bg-gradient--2" />
+
+        <div className="login-page__container">
+          <div className="login-form">
+            <h1 className="login-form__title">¡Contraseña actualizada!</h1>
+            <p className="login-form__subtitle">
+              Tu contraseña ha sido restablecida exitosamente.
+            </p>
+            <p className="login-form__subtitle">
+              Serás redirigido al login en unos segundos...
+            </p>
+
+            <div className="login-form__register">
+              <Link to="/login" className="login-form__link login-form__link--bold">Ir al login ahora</Link>
+            </div>
+          </div>
+
+          <div className="login-hero">
+            <img src={collage} alt="Collage" className="login-hero__image" />
+            <div className="login-hero__overlay" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Si no hay token, mostrar error
+  if (!token && searchParams.get('token') === null) {
+    return (
+      <div className="login-page login-page--bg-hero">
+        <div className="login-page__bg-gradient login-page__bg-gradient--1" />
+        <div className="login-page__bg-gradient login-page__bg-gradient--2" />
+
+        <div className="login-page__container">
+          <div className="login-form">
+            <h1 className="login-form__title">Enlace inválido</h1>
+            <p className="login-form__subtitle">
+              Este enlace de recuperación no es válido o ha expirado.
+            </p>
+            <p className="login-form__subtitle">
+              Por favor, solicita un nuevo enlace de recuperación.
+            </p>
+
+            <div className="login-form__register">
+              <Link to="/recover" className="login-form__link login-form__link--bold">Solicitar nuevo enlace</Link>
+            </div>
+          </div>
+
+          <div className="login-hero">
+            <img src={collage} alt="Collage" className="login-hero__image" />
+            <div className="login-hero__overlay" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-page login-page--bg-hero">
@@ -59,6 +163,12 @@ export default function ResetPassword() {
           <p className="login-form__subtitle">Ingresa y confirma tu nueva contraseña</p>
 
           <form onSubmit={handleSubmit} className="login-form__form">
+            {errors.general && (
+              <div className="form-field__error" style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                {errors.general}
+              </div>
+            )}
+            
             <div className="form-field">
               <label className="form-field__label">Nueva contraseña</label>
               <div className="form-field__input-wrapper">

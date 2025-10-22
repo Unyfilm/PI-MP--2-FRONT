@@ -1,10 +1,17 @@
 import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import './UnyFilmHeader.scss';
 
 // Tipos locales para el header
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
+/**
+ * UnyFilmHeaderProps
+ *
+ * Props for the UnyFilm header component which includes search and profile actions.
+ */
 interface UnyFilmHeaderProps {
   searchQuery: string;
   onSearch: (query: string) => void;
@@ -12,7 +19,13 @@ interface UnyFilmHeaderProps {
 }
 
 /**
- * Header component with fixed search and profile
+ * UnyFilmHeader
+ *
+ * Header component with a persistent search bar and user profile menu.
+ * Follows camelCase for handlers and PascalCase for prop interfaces.
+ *
+ * @param {UnyFilmHeaderProps} props - Header props
+ * @returns {JSX.Element} Header UI
  */
 export default function UnyFilmHeader({ 
   searchQuery, 
@@ -104,9 +117,13 @@ export default function UnyFilmHeader({
 }
 
 /**
- * Profile dropdown menu component
- * @param {Object} props - Component props
- * @param {Function} props.onClose - Close handler
+ * UnyFilmDropdown
+ *
+ * Profile dropdown menu rendered under the header profile button.
+ * Closes on outside click and exposes navigation actions including logout.
+ *
+ * @param {{ onClose: () => void }} props - Close handler
+ * @returns {JSX.Element} Dropdown UI
  */
 interface DropdownProps {
   onClose: () => void;
@@ -114,9 +131,15 @@ interface DropdownProps {
 
 function UnyFilmDropdown({ onClose }: DropdownProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
-    setIsVisible(true);
+    // Pequeño delay para asegurar que el DOM esté listo
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 10);
+
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
       if (!target?.closest('.unyfilm-header__profile')) {
@@ -125,33 +148,37 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [onClose]);
 
   const handleMenuClick = (action: 'profile' | 'notifications' | 'settings' | 'help' | 'logout') => {
     if (action === 'profile') {
-      window.location.assign('/profile');
+      navigate('/profile');
+      onClose();
       return;
     }
-    console.log(`Menu clicked: ${action}`);
+    if (action === 'logout') {
+      logout();
+      navigate('/login');
+      onClose();
+      return;
+    }
     onClose();
   };
 
   return (
-    <div className={`unyfilm-dropdown ${isVisible ? 'unyfilm-dropdown--visible' : ''}`}>
-      <div className="unyfilm-dropdown__header">
-        <div className="unyfilm-dropdown__user-info">
-          <div className="unyfilm-dropdown__avatar">
-            <User size={24} />
-          </div>
-          <div className="unyfilm-dropdown__details">
-            <span className="unyfilm-dropdown__name">Usuario</span>
-            <span className="unyfilm-dropdown__email">usuario@unyfilm.com</span>
-          </div>
-        </div>
-      </div>
-      
-      <div className="unyfilm-dropdown__divider"></div>
+    <div 
+      className={`unyfilm-dropdown ${isVisible ? 'unyfilm-dropdown--visible' : ''}`}
+      style={{
+        position: 'absolute',
+        zIndex: 9999,
+        top: '50px',
+        right: '0'
+      }}
+    >
       
       <div className="unyfilm-dropdown__menu">
         <MenuItem 
@@ -187,12 +214,12 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
 }
 
 /**
- * Menu item component
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.icon - Icon component
- * @param {string} props.text - Menu text
- * @param {boolean} props.danger - Whether it's a danger action
- * @param {Function} props.onClick - Click handler
+ * MenuItem
+ *
+ * Stateless item for the profile dropdown menu.
+ *
+ * @param {{icon: React.ReactNode; text: string; danger?: boolean; onClick: () => void}} props - Item props
+ * @returns {JSX.Element} Menu item UI
  */
 interface MenuItemProps {
   icon: ReactNode;

@@ -1,4 +1,11 @@
-// Tipos compartidos para toda la aplicación UnyFilm
+/**
+ * Shared TypeScript types for the UnyFilm frontend
+ *
+ * Conventions
+ * - PascalCase for exported interfaces and types
+ * - camelCase for properties and function names
+ * - Descriptive names to reflect purpose and usage
+ */
 
 // Tipos de vista de la aplicación
 export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap';
@@ -10,8 +17,10 @@ export interface MovieData {
   rating?: number;
   year?: number;
   genre?: string;
+  genres?: string[];
   description?: string;
   image?: string;
+  duration?: number;
 }
 
 // Tipos para datos de película al hacer click
@@ -23,6 +32,7 @@ export interface MovieClickData {
   year?: number;
   genre?: string;
   description?: string;
+  duration?: number;
 }
 
 // Tipos para formularios
@@ -157,12 +167,18 @@ export interface ApiResponse<T = any> {
 
 export interface User {
   id: number;
-  nombres: string;
-  apellidos: string;
-  edad: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  nombres?: string;     // Compatibilidad con formato de registro
+  apellidos?: string;   // Compatibilidad con formato de registro
+  edad?: string;        // Compatibilidad con formato de registro
+  age?: number;         // Campo real del backend
   email: string;
   password?: string;
+  profilePicture?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface AuthResponse {
@@ -196,7 +212,7 @@ export interface Movie {
   genre?: string;
   description?: string;
   image?: string; // pelis P (cards pequeñas)
-  imageG?: string; // pelis G (card grande)
+  imageG?: string; // Portadas (card grande)
   duration?: number;
   bitRate?: number;
   frameRate?: number;
@@ -218,11 +234,18 @@ export interface ApiService {
   updateUser: (id: number, userData: Partial<User>) => Promise<ApiResponse<User>>;
   deleteUser: (id: number) => Promise<ApiResponse<void>>;
 
+  // Profile API
+  getProfile: () => Promise<ApiResponse<User>>;
+  updateProfile: (profileData: { firstName: string; lastName: string; age: number; email: string }) => Promise<ApiResponse<User>>;
+  deleteAccount: (password: string) => Promise<ApiResponse<void>>;
+
   // Authentication API
   login: (credentials: LoginCredentials) => Promise<ApiResponse<AuthResponse>>;
   register: (userData: RegisterData) => Promise<ApiResponse<AuthResponse>>;
   logout: () => Promise<ApiResponse<void>>;
   recoverPassword: (email: string) => Promise<ApiResponse<void>>;
+  resetPassword: (token: string, newPassword: string, confirmPassword: string) => Promise<ApiResponse<void>>;
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<ApiResponse<void>>;
 }
 
 // Tipos para request options

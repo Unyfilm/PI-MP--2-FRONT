@@ -1,14 +1,21 @@
 /**
- * Auth Service - integra con el backend real
- * Endpoints: /api/auth/login, /api/auth/register, /api/auth/logout
+ * AuthService
+ *
+ * Integration layer with the real backend authentication endpoints.
+ * Endpoints used: /api/auth/login, /api/auth/register, /api/auth/logout
+ *
+ * Naming conventions:
+ * - camelCase for function and variable names
+ * - PascalCase for exported interfaces and types
+ * - UPPER_CASE for constant-like configuration values
  */
 import { API_CONFIG } from '../config/environment';
 
-// Derivar raíz del backend (sin /api) para componer rutas como /api/*
+// Derive backend root (without /api) to compose routes like /api/*
 const ENV_BASE = (API_CONFIG.BASE_URL || 'http://localhost:5000').replace(/\/$/, '');
 const ROOT_URL = ENV_BASE.replace(/\/api$/, '');
 
-// Headers por defecto
+// Default headers
 const defaultHeaders: HeadersInit = {
   'Content-Type': 'application/json',
   'Accept': 'application/json'
@@ -19,13 +26,14 @@ const authHeaders = (): HeadersInit => ({
   Authorization: `Bearer ${localStorage.getItem('token') || ''}`
 });
 
-// Tipos específicos del backend para auth
+// Backend-specific types for auth
 export interface BackendUser {
   _id: string;
   username: string;
   email: string;
   firstName?: string;
   lastName?: string;
+  age?: number;
   profilePicture?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -59,6 +67,14 @@ export interface RegisterInput {
 
 export interface AuthData { user: BackendUser; token: string; }
 
+/**
+ * Parse a fetch Response into JSON when possible, otherwise
+ * return a generic error wrapper preserving the HTTP message.
+ *
+ * @template T - Expected success payload type
+ * @param {Response} res - Fetch response
+ * @returns {Promise<BackendResponse<T>>} Parsed backend response
+ */
 const handleJson = async <T>(res: Response): Promise<BackendResponse<T>> => {
   const contentType = res.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
@@ -69,6 +85,15 @@ const handleJson = async <T>(res: Response): Promise<BackendResponse<T>> => {
   return { success: false, message: text || `HTTP ${res.status}`, error: text } as BackendErrorResponse;
 };
 
+/**
+ * Perform a typed HTTP request against the backend with timeout and
+ * unified error handling.
+ *
+ * @template T - Expected success payload type
+ * @param {string} path - API path beginning with /api
+ * @param {RequestInit} [init] - Fetch init options
+ * @returns {Promise<BackendResponse<T>>} Backend response wrapper
+ */
 const request = async <T>(path: string, init?: RequestInit): Promise<BackendResponse<T>> => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), Number(import.meta.env.VITE_API_TIMEOUT) || 30000);
@@ -84,8 +109,12 @@ const request = async <T>(path: string, init?: RequestInit): Promise<BackendResp
 };
 
 export const authService = {
+  /**
+   * Login with email and password
+   * @param {LoginInput} input - Credentials { email, password }
+   * @returns {Promise<BackendResponse<AuthData>>} Auth payload on success
+   */
   async login(input: LoginInput) {
-    console.debug('[Auth] POST', `${ROOT_URL}/api/auth/login`, { email: input.email });
     const res = await request<AuthData>('/api/auth/login', {
       method: 'POST',
       headers: defaultHeaders,
@@ -103,6 +132,11 @@ export const authService = {
     return res;
   },
 
+  /**
+   * Register a new user
+   * @param {RegisterInput} input - Registration input from UI
+   * @returns {Promise<BackendResponse<AuthData>>} Auth payload on success
+   */
   async register(input: RegisterInput) {
     // Mapear campos del formulario (español) al backend (inglés)
     const age = parseInt(input.edad || '0', 10);
@@ -126,10 +160,6 @@ export const authService = {
       age: age  // debe ser NUMBER no string
     };
 
-    console.debug('[Auth] POST', `${ROOT_URL}/api/auth/register`, payload);
-    console.debug('[Auth] URL completa:', `${ROOT_URL}/api/auth/register`);
-    console.debug('[Auth] Headers:', defaultHeaders);
-    console.debug('[Auth] Body stringified:', JSON.stringify(payload));
     
     const res = await request<AuthData>('/api/auth/register', {
       method: 'POST',
@@ -146,6 +176,10 @@ export const authService = {
     return res;
   },
 
+  /**
+   * Logout current user and invalidate token server-side
+   * @returns {Promise<BackendResponse<void>>} Result of the logout request
+   */
   async logout() {
     const res = await request<void>('/api/auth/logout', {
       method: 'POST',

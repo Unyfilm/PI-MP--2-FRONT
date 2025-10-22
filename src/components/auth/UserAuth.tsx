@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, Save, Trash2, LogOut, Key } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import './UserAuth.css';
 
 // User interface
@@ -135,15 +138,21 @@ export default function UserAuth() {
     setRecoveryForm({ email: '' });
   };
 
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  
+  // Hooks para cerrar modales al hacer clic fuera
+  const loginModalRef = useClickOutside(() => setShowLogin(false));
+  const registerModalRef = useClickOutside(() => setShowRegister(false));
+  const profileModalRef = useClickOutside(() => setShowProfile(false));
+  const recoveryModalRef = useClickOutside(() => setShowPasswordRecovery(false));
+
   /**
    * Handle user logout
    */
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUser(null);
-    setShowProfile(false);
-    localStorage.removeItem('unyfilm-user');
-    localStorage.removeItem('unyfilm-logged-in');
+    logout();
+    navigate('/login');
   };
 
   /**
@@ -193,7 +202,7 @@ export default function UserAuth() {
 
       {/* Login Modal */}
       {showLogin && (
-        <div className="user-auth__modal">
+        <div className="user-auth__modal" ref={loginModalRef}>
           <div className="user-auth__modal-content">
             <div className="user-auth__modal-header">
               <h2>Iniciar Sesión</h2>
@@ -256,7 +265,7 @@ export default function UserAuth() {
 
       {/* Register Modal */}
       {showRegister && (
-        <div className="user-auth__modal">
+        <div className="user-auth__modal" ref={registerModalRef}>
           <div className="user-auth__modal-content">
             <div className="user-auth__modal-header">
               <h2>Registrarse</h2>
@@ -348,7 +357,7 @@ export default function UserAuth() {
 
       {/* Profile Modal */}
       {showProfile && (
-        <div className="user-auth__modal">
+        <div className="user-auth__modal" ref={profileModalRef}>
           <div className="user-auth__modal-content">
             <div className="user-auth__modal-header">
               <h2>Mi Perfil</h2>
@@ -448,7 +457,7 @@ export default function UserAuth() {
 
       {/* Password Recovery Modal */}
       {showPasswordRecovery && (
-        <div className="user-auth__modal">
+        <div className="user-auth__modal" ref={recoveryModalRef}>
           <div className="user-auth__modal-content">
             <div className="user-auth__modal-header">
               <h2>Recuperar Contraseña</h2>

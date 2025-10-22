@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom';
 import '../login/Login.scss';
 import './Recover.scss';
 import collage from '../../images/collage.jpg';
+import apiService from '../../services/apiService';
 
 export default function Recover() {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [touched, setTouched] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [emailSent, setEmailSent] = useState<boolean>(false);
 
   const validateEmail = (value: string): string => {
     if (!value) return 'El correo electrónico es requerido';
@@ -18,20 +20,61 @@ export default function Recover() {
     return '';
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const err = validateEmail(email);
     setError(err);
     setTouched(true);
+    
     if (!err) {
       setIsLoading(true);
-      setTimeout(() => {
-        // Aquí iría la llamada a API para enviar el correo de recuperación
+      
+      try {
+        const response = await apiService.recoverPassword(email);
+        
+        if (response.success) {
+          setEmailSent(true);
+        } else {
+          setError(response.message || 'Error al enviar el correo de recuperación');
+        }
+      } catch (error) {
+        setError('Error de conexión. Por favor, intenta de nuevo.');
+      } finally {
         setIsLoading(false);
-        alert('Si el correo existe, enviaremos instrucciones de recuperación.');
-      }, 1200);
+      }
     }
   };
+
+  // Si el correo fue enviado exitosamente, mostrar pantalla de confirmación
+  if (emailSent) {
+    return (
+      <div className="login-page login-page--bg-hero">
+        <div className="login-page__bg-gradient login-page__bg-gradient--1" />
+        <div className="login-page__bg-gradient login-page__bg-gradient--2" />
+
+        <div className="login-page__container">
+          <div className="login-form">
+            <h1 className="login-form__title">¡Correo enviado!</h1>
+            <p className="login-form__subtitle">
+              Si tu correo está registrado en nuestro sistema, recibirás un enlace para restablecer tu contraseña.
+            </p>
+            <p className="login-form__subtitle">
+              Revisa tu bandeja de entrada (y la carpeta de spam) y sigue las instrucciones del correo.
+            </p>
+
+            <div className="login-form__register">
+              <Link to="/login" className="login-form__link login-form__link--bold">Volver al login</Link>
+            </div>
+          </div>
+
+          <div className="login-hero">
+            <img src={collage} alt="Collage" className="login-hero__image" />
+            <div className="login-hero__overlay" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-page login-page--bg-hero">

@@ -129,7 +129,6 @@ class CloudinaryService {
 
       return await response.json();
     } catch (error) {
-      console.error('Cloudinary upload error:', error);
       throw new Error(`Failed to upload video: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -154,7 +153,6 @@ class CloudinaryService {
 
       return await response.json();
     } catch (error) {
-      console.error('Cloudinary get video info error:', error);
       throw new Error(`Failed to get video information: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -245,7 +243,6 @@ class CloudinaryService {
 
       return await response.json();
     } catch (error) {
-      console.error('Cloudinary delete error:', error);
       throw new Error(`Failed to delete video: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

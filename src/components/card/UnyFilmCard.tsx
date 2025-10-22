@@ -15,8 +15,6 @@ interface MovieClickData {
 
 interface UnyFilmCardProps {
   title: string;
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
   onMovieClick: (movie: MovieClickData) => void;
   image?: string;
   fallbackImage?: string;
@@ -31,8 +29,6 @@ interface UnyFilmCardProps {
  */
 export default function UnyFilmCard({ 
   title, 
-  isFavorite, 
-  onToggleFavorite, 
   onMovieClick,
   image,
   fallbackImage,
@@ -54,12 +50,6 @@ export default function UnyFilmCard({
     setImageError(true);
   };
 
-  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (onToggleFavorite) {
-      onToggleFavorite();
-    }
-  };
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -112,29 +102,23 @@ export default function UnyFilmCard({
           </div>
         )}
         
-        <button
-          onClick={handleFavoriteClick}
-          className={`unyfilm-card__favorite ${isFavorite ? 'unyfilm-card__favorite--active' : ''}`}
-          aria-label={isFavorite ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
-        >
-          <Heart
-            size={16}
-            fill={isFavorite ? 'currentColor' : 'none'}
-            stroke="currentColor"
-          />
-        </button>
         
       </div>
       
       <div className="unyfilm-card__content">
         <h3 className="unyfilm-card__title">{title}</h3>
         <div className="unyfilm-card__meta">
-          {year && <span className="unyfilm-card__year">{year}</span>}
+          {year && year > 1900 && <span className="unyfilm-card__year">{String(year)}</span>}
           {genre && <span className="unyfilm-card__genre">{genre}</span>}
-          {rating && (
+          {rating && rating > 0 && (
             <span className="unyfilm-card__rating">
               <Star size={14} />
-              {rating}
+              {rating.toFixed(1)}
+            </span>
+          )}
+          {(!rating || rating === 0) && (
+            <span className="unyfilm-card__rating unyfilm-card__rating--no-rating">
+              Sin puntuación
             </span>
           )}
         </div>
@@ -145,12 +129,12 @@ export default function UnyFilmCard({
           <h3 className="unyfilm-card__overlay-title">{title}</h3>
           
           <div className="unyfilm-card__overlay-meta">
-            {rating && rating >= 4.5 && (
+            {rating && rating > 0 && rating >= 4.5 && (
               <span className="unyfilm-card__overlay-badge unyfilm-card__overlay-badge--trending">
                 Trending
               </span>
             )}
-            {rating && rating >= 4.8 && (
+            {rating && rating > 0 && rating >= 4.8 && (
               <span className="unyfilm-card__overlay-badge unyfilm-card__overlay-badge--top">
                 Top 10
               </span>
@@ -160,14 +144,19 @@ export default function UnyFilmCard({
                 Nuevo
               </span>
             )}
-            {rating && (
+            {rating && rating > 0 && (
               <div className="unyfilm-card__overlay-rating">
                 <Star size={12} />
-                {rating}
+                {rating.toFixed(1)}
               </div>
             )}
-            {year && (
-              <span className="unyfilm-card__overlay-year">{year}</span>
+            {(!rating || rating === 0) && (
+              <div className="unyfilm-card__overlay-rating unyfilm-card__overlay-rating--no-rating">
+                Sin puntuación
+              </div>
+            )}
+            {year && year > 1900 && (
+              <span className="unyfilm-card__overlay-year">{String(year)}</span>
             )}
             {genre && (
               <span className="unyfilm-card__overlay-genre">{genre}</span>

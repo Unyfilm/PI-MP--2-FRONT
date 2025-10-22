@@ -1,211 +1,80 @@
-/**
- * Movies Data for UnyFilm
- * @fileoverview Complete movie data with Cloudinary videos and metadata
- */
+// IDs reales de películas desde MongoDB
+// =====================================
 
-import type { Movie } from '../types';
+// IDs de películas reales de la base de datos (9 películas disponibles)
+export const movieIds = [
+  "68f84e9aba5b03d95f2d6ce1", // Superman (2025)
+  "68f84e9aba5b03d95f2d6ce2", // Mortal Kombat 2
+  "68f84e9aba5b03d95f2d6ce3", // Tron: Ares
+  "68f84e9aba5b03d95f2d6ce4", // Avatar: El Origen del Agua
+  "68f84e9aba5b03d95f2d6ce5", // Primate (2026)
+  "68f84e9aba5b03d95f2d6ce6", // Depredador: Tierras Salvajes
+  "68f84e9aba5b03d95f2d6ce7", // Jujutsu Kaisen: Execution
+  "68f84e9aba5b03d95f2d6ce8", // Frankenstein (2025)
+  "68f84e9aba5b03d95f2d6ce9", // Kimetsu no Yaiba: Castillo Infinito
+];
 
-export const moviesData: Movie[] = [
+// Configuración para el carrusel y secciones
+export const movieConfig = {
+  featuredMovieId: "68f84e9aba5b03d95f2d6ce1", // Superman (2025) como película destacada - ID REAL
+};
+
+// Configuración de secciones para el home con películas reales organizadas por categoría
+export const homeSections = [
   {
-    id: 1,
-    title: "Mortal Kombat 2",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760675010/MORTAL_KOMBAT_2_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2025_ns6i1g.mp4",
-    cloudinaryPublicId: "MORTAL_KOMBAT_2_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2025_ns6i1g",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760675010/MORTAL_KOMBAT_2_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2025_ns6i1g.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760675010/mortal-kombat-2-thumb.jpg",
-    image: new URL('../images/pelis P/mortal kombat 2.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/mortal kombat 2.jpg', import.meta.url).href,
-    genre: "Acción",
-    year: 2025,
-    rating: 4.5,
-    description: "Tras la primera entrega, los guerreros de Earthrealm, ahora con el campeón Johnny Cage, se preparan para el verdadero torneo de Mortal Kombat",
-    synopsis: "Tras la primera entrega, los guerreros de Earthrealm, ahora con el campeón Johnny Cage, se preparan para el verdadero torneo de Mortal Kombat",
-    genres: ["Acción", "Fantasía", "Artes Marciales"],
-    duration: 120,
-    createdAt: "2024-01-15T10:00:00Z"
+    id: 'trending',
+    title: 'En Tendencia',
+    movieIds: [
+      "68f84e9aba5b03d95f2d6ce1", // Superman (2025)
+      "68f84e9aba5b03d95f2d6ce2", // Mortal Kombat 2
+      "68f84e9aba5b03d95f2d6ce3", // Tron: Ares
+    ]
   },
   {
-    id: 2,
-    title: "Tron Ares",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760675001/Tron__Ares___Tr%C3%A1iler_oficial___Doblado_dksfhb.mp4",
-    cloudinaryPublicId: "Tron__Ares___Tr%C3%A1iler_oficial___Doblado_dksfhb",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760675001/Tron__Ares___Tr%C3%A1iler_oficial___Doblado_dksfhb.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760675001/tron-ares-thumb.jpg",
-    image: new URL('../images/pelis P/tron ares.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/tron ares.jpg', import.meta.url).href,
-    genre: "Ciencia Ficción",
-    year: 2025,
-    rating: 4.2,
-    description: "La historia sigue a Ares, un programa de inteligencia artificial extremadamente avanzado, que es enviado desde el mundo digital al mundo real en una misión arriesgada.",
-    synopsis: "La historia sigue a Ares, un programa de inteligencia artificial extremadamente avanzado, que es enviado desde el mundo digital al mundo real en una misión arriesgada. Su llegada supone el primer contacto entre la humanidad y la IA, lo que desafía los límites tecnológicos y éticos existentes.",
-    genres: ["Ciencia Ficción"],
-    duration: 135,
-    createdAt: "2024-01-16T10:00:00Z"
+    id: 'popular',
+    title: 'Populares',
+    movieIds: [
+      "68f84e9aba5b03d95f2d6ce4", // Avatar: El Origen del Agua
+      "68f84e9aba5b03d95f2d6ce7", // Jujutsu Kaisen: Execution
+      "68f84e9aba5b03d95f2d6ce9", // Kimetsu no Yaiba: Castillo Infinito
+    ]
   },
   {
-    id: 3,
-    title: "Avatar - El Camino Del Agua",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760675000/videoplayback_p15xzq.mp4",
-    cloudinaryPublicId: "videoplayback_p15xzq",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760675000/videoplayback_p15xzq.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760675000/avatar-camino-agua-thumb.jpg",
-    image: new URL('../images/pelis P/avatar el camino del agua.jpeg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/avatar el camino del agua.jpeg', import.meta.url).href,
-    genre: "Ciencia Ficción",
-    year: 2022,
-    rating: 4.8,
-    description: "Después de vivir en paz con su familia en Pandora, Jake y Neytiri deben huir cuando las fuerzas humanas regresan para continuar su misión de explotación",
-    synopsis: "Después de vivir en paz con su familia en Pandora, Jake y Neytiri deben huir cuando las fuerzas humanas, representadas por la RDA y lideradas por el reencarnado coronel Quaritch en un avatar, regresan para continuar su misión de explotación",
-    genres: ["Ciencia Ficción", "Acción", "Aventura"],
-    duration: 192,
-    createdAt: "2024-01-17T10:00:00Z"
+    id: 'kids',
+    title: 'Para toda la familia',
+    movieIds: [
+      "68f84e9aba5b03d95f2d6ce1", // Superman (2025)
+      "68f84e9aba5b03d95f2d6ce4", // Avatar: El Origen del Agua
+      "68f84e9aba5b03d95f2d6ce9", // Kimetsu no Yaiba: Castillo Infinito
+    ]
   },
   {
-    id: 4,
-    title: "PRIMATE",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674999/PRIMATE_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2026_Terror_caeew7.mp4",
-    cloudinaryPublicId: "PRIMATE_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2026_Terror_caeew7",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674999/PRIMATE_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2026_Terror_caeew7.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760674999/primate-thumb.jpg",
-    image: new URL('../images/pelis P/primate.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/primate.jpg', import.meta.url).href,
-    genre: "Terror",
-    year: 2026,
-    rating: 3.8,
-    description: "La trama sigue a Lucy, quien regresa a casa para reencontrarse con su familia y su mascota chimpancé Ben. Durante una fiesta en la piscina, Ben contrae la rabia",
-    synopsis: "La trama sigue a Lucy, quien regresa a casa para reencontrarse con su familia y su mascota chimpancé Ben. Durante una fiesta en la piscina, Ben contrae la rabia, lo que lo convierte en una amenaza agresiva. Los jóvenes, liderados por Lucy, se atrincheran en la piscina mientras intentan idear una estrategia para sobrevivir al chimpancé furioso",
-    genres: ["Slasher", "Suspense", "Terror"],
-    duration: 95,
-    createdAt: "2024-01-18T10:00:00Z"
+    id: 'action',
+    title: 'Acción y Aventura',
+    movieIds: [
+      "68f84e9aba5b03d95f2d6ce1", // Superman (2025)
+      "68f84e9aba5b03d95f2d6ce2", // Mortal Kombat 2
+      "68f84e9aba5b03d95f2d6ce3", // Tron: Ares
+      "68f84e9aba5b03d95f2d6ce6", // Depredador: Tierras Salvajes
+    ]
   },
   {
-    id: 5,
-    title: "Jujutsu Kaisen - Ejecución",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674998/JUJUTSU_KAISEN__Ejecuci%C3%B3n___TR%C3%81ILER_OFICIAL_rfztyf.mp4",
-    cloudinaryPublicId: "JUJUTSU_KAISEN__Ejecuci%C3%B3n___TR%C3%81ILER_OFICIAL_rfztyf",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674998/JUJUTSU_KAISEN__Ejecuci%C3%B3n___TR%C3%81ILER_OFICIAL_rfztyf.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760674998/jujutsu-kaisen-thumb.jpg",
-    image: new URL('../images/pelis P/jujutsu kaisen.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/jujutsu kaisen.jpg', import.meta.url).href,
-    genre: "Acción",
-    year: 2025,
-    rating: 4.6,
-    description: "Tras los acontecimientos de shibuya, diez colonias en Japón se transforman en nidos de maldiciones en un plan orquestado por Noritoshi Kamo",
-    synopsis: "Tras los acontecimientos de shibuya, diez colonias en Japón se transforman en nidos de maldiciones en un plan orquestado por Noritoshi Kamo, el hechicero más perverso de la historia. Con el inicio del mortal Culling Game, el hechicero de Grado Especial Yuta Okkotsu es asignado para ejecutar a Yuji por sus presuntos crímenes.",
-    genres: ["Acción", "Fantasía", "Horror Sobrenatural"],
-    duration: 110,
-    createdAt: "2024-01-19T10:00:00Z"
+    id: 'sci-fi',
+    title: 'Ciencia Ficción',
+    movieIds: [
+      "68f84e9aba5b03d95f2d6ce3", // Tron: Ares
+      "68f84e9aba5b03d95f2d6ce4", // Avatar: El Origen del Agua
+      "68f84e9aba5b03d95f2d6ce5", // Primate (2026)
+    ]
   },
   {
-    id: 6,
-    title: "El Caballero de los Siete Reinos",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674998/EL_CABALLERO_DE_LOS_SIETE_REINOS_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2025_xwjzzo.mp4",
-    cloudinaryPublicId: "EL_CABALLERO_DE_LOS_SIETE_REINOS_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2025_xwjzzo",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674998/EL_CABALLERO_DE_LOS_SIETE_REINOS_Tr%C3%A1iler_Espa%C3%B1ol_Latino_2025_xwjzzo.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760674998/caballero-siete-reinos-thumb.jpg",
-    image: new URL('../images/pelis P/el caballero de los sierte reinos.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/el caballero de los sierte reinos.jpg', import.meta.url).href,
-    genre: "Fantasía",
-    year: 2025,
-    rating: 4.3,
-    description: "Ser Duncan el Alto, un caballero ingenuo pero valiente, y su joven escudero, Egg, quienes viajan por Poniente un siglo antes de Juego de Tronos",
-    synopsis: "Ser Duncan el Alto, un caballero ingenuo pero valiente, y su joven escudero, Egg, quienes viajan por Poniente un siglo antes de Juego de Tronos. La historia explora su amistad mientras se enfrentan a destinos, enemigos y hazañas peligrosas durante una época de paz relativa bajo el reinado Targaryen",
-    genres: ["Fantasía Heroica", "Drama", "Aventura"],
-    duration: 150,
-    createdAt: "2024-01-20T10:00:00Z"
-  },
-  {
-    id: 7,
-    title: "Depredador - Tierras Salvajes",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674997/DEPREDADOR__TIERRAS_SALVAJES_Tr%C3%A1iler_3_Espa%C3%B1ol_Latino_2025_zigmux.mp4",
-    cloudinaryPublicId: "DEPREDADOR__TIERRAS_SALVAJES_Tr%C3%A1iler_3_Espa%C3%B1ol_Latino_2025_zigmux",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674997/DEPREDADOR__TIERRAS_SALVAJES_Tr%C3%A1iler_3_Espa%C3%B1ol_Latino_2025_zigmux.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760674997/depredador-tierras-salvajes-thumb.jpg",
-    image: new URL('../images/pelis P/depredador tierras salvajes.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/depredador tierras salvajes.jpg', import.meta.url).href,
-    genre: "Ciencia Ficción",
-    year: 2025,
-    rating: 4.1,
-    description: "La nueva entrega de la franquicia DEPREDADOR está ambientada en un futuro distante, en un planeta remoto",
-    synopsis: "La nueva entrega de la franquicia DEPREDADOR está ambientada en un futuro distante, en un planeta remoto, donde un joven depredador (Dimitrius Schuster-Koloamatangi), desterrado por su clan, encuentra una aliada inesperada en Thia (Elle Fanning) y emprende un peligroso viaje en busca de un digno oponente.",
-    genres: ["Ciencia Ficción", "Terror", "Acción", "Aventura"],
-    duration: 125,
-    createdAt: "2024-01-21T10:00:00Z"
-  },
-  {
-    id: 8,
-    title: "Frankenstein (2025)",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674997/Frankenstein___Guillermo_del_Toro___Official_Trailer___Netflix_oahh3j.mp4",
-    cloudinaryPublicId: "Frankenstein___Guillermo_del_Toro___Official_Trailer___Netflix_oahh3j",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674997/Frankenstein___Guillermo_del_Toro___Official_Trailer___Netflix_oahh3j.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760674997/frankenstein-thumb.jpg",
-    image: new URL('../images/pelis P/frankenstein.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/frankenstein.jpg', import.meta.url).href,
-    genre: "Terror",
-    year: 2025,
-    rating: 4.4,
-    description: "La historia universal cuenta cómo la obsesión de un doctor por revivir a los muertos y darles la vida de manera científica",
-    synopsis: "La historia universal cuenta cómo la obsesión de un doctor por revivir a los muertos y darles la vida de manera científica hace que, sorprendentemente, 'nazca' el monstruo Frankenstein. Después de indagar y emplear su valioso tiempo en documentarse y estudiar si su plan podría tener buenos resultados, sabe que debe adquirir miembros del cuerpo de muertos.",
-    genres: ["Terror", "Drama", "Ciencia Ficción"],
-    duration: 140,
-    createdAt: "2024-01-22T10:00:00Z"
-  },
-  {
-    id: 9,
-    title: "Demon Slayer Kimetsu no Yaiba The Movie: Infinity Castle",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674997/Demon_Slayer__Kimetsu_no_Yaiba_Castillo_Infinito_-_Tr%C3%A1iler_Oficial_cynkvy.mp4",
-    cloudinaryPublicId: "Demon_Slayer__Kimetsu_no_Yaiba_Castillo_Infinito_-_Tr%C3%A1iler_Oficial_cynkvy",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760674997/Demon_Slayer__Kimetsu_no_Yaiba_Castillo_Infinito_-_Tr%C3%A1iler_Oficial_cynkvy.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760674997/demon-slayer-thumb.jpg",
-    image: new URL('../images/pelis P/kimetsu no yaiba.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/kimetsu no yaiba.jpg', import.meta.url).href,
-    genre: "Acción",
-    year: 2025,
-    rating: 4.7,
-    description: "El Cuerpo de Cazadores de Demonios se enfrenta a los Doce Kizuki restantes antes de enfrentarse a Muzan en el Castillo del Infinito",
-    synopsis: "El Cuerpo de Cazadores de Demonios se enfrenta a los Doce Kizuki restantes antes de enfrentarse a Muzan en el Castillo del Infinito para derrotarlo de una vez por todas.",
-    genres: ["Acción", "Aventura", "Fantasía Oscura", "Drama", "Animación"],
-    duration: 105,
-    createdAt: "2024-01-23T10:00:00Z"
-  },
-  {
-    id: 10,
-    title: "Superman",
-    videoUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760673516/Superman___Tr%C3%A1iler_Oficial___Doblado_xqwa1x.mp4",
-    cloudinaryPublicId: "Superman___Tr%C3%A1iler_Oficial___Doblado_xqwa1x",
-    cloudinaryUrl: "https://res.cloudinary.com/dlyqtvvxv/video/upload/v1760673516/Superman___Tr%C3%A1iler_Oficial___Doblado_xqwa1x.mp4",
-    thumbnailUrl: "https://res.cloudinary.com/dlyqtvvxv/image/upload/v1760673516/superman-thumb.jpg",
-    image: new URL('../images/pelis P/superman.jpg', import.meta.url).href,
-    imageG: new URL('../images/pelis G/superman.jpg', import.meta.url).href,
-    genre: "Acción",
-    year: 2025,
-    rating: 4.0,
-    description: "Lex Luthor orquestra un plan para terminar con Superman de una vez por todas",
-    synopsis: "Lex Luthor orquestra un plan para terminar con Superman de una vez por todas. ¿Podrán la intrépida periodista Lois Lane y el compañero de cuatro patas de Superman, Krypto, ayudarlo antes de que sea demasiado tarde?",
-    genres: ["Acción", "Aventura", "Fantasía", "Ciencia Ficción"],
-    duration: 130,
-    createdAt: "2024-01-24T10:00:00Z"
+    id: 'horror',
+    title: 'Terror y Suspenso',
+    movieIds: [
+      "68f84e9aba5b03d95f2d6ce6", // Depredador: Tierras Salvajes
+      "68f84e9aba5b03d95f2d6ce8", // Frankenstein (2025)
+    ]
   }
 ];
 
-// Export genres for filtering
-export const availableGenres = [
-  "Acción",
-  "Ciencia Ficción", 
-  "Terror",
-  "Fantasía",
-  "Drama",
-  "Aventura",
-  "Slasher",
-  "Suspense",
-  "Fantasía Heroica",
-  "Horror Sobrenatural",
-  "Fantasía Oscura",
-  "Animación",
-  "Artes Marciales"
-];
-
-// Export years for filtering
-export const availableYears = [2022, 2025, 2026];
-
-export default moviesData;
+export default movieIds;

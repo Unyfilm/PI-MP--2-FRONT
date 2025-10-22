@@ -71,7 +71,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,11 +79,23 @@
   animation: fadeIn 0.3s ease;
 }
 
+.usability-help-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}
+
 .usability-help-content {
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
   border-radius: 16px;
   padding: 30px;
   max-width: 800px;
+  position: relative;
+  z-index: 1003;
   max-height: 80vh;
   overflow-y: auto;
   border: 1px solid rgba(255, 255, 255, 0.1);
