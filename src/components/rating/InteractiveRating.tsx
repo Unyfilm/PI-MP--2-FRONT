@@ -71,7 +71,7 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       setIsSubmitting(true);
       
       if (userRating) {
-        await updateRating(userRating.id, rating);
+        await updateRating(userRating.id, rating, movieId);
         setUserRating({ ...userRating, rating });
       } else {
         const newRating = await rateMovie(movieId, rating);
