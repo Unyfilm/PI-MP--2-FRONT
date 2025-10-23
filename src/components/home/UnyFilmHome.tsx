@@ -6,6 +6,7 @@ import { movieService, type Movie } from '../../services/movieService';
 import './UnyFilmHome.css';
 
 type MovieClickData = {
+  _id?: string;
   title: string;
   index: number;
   videoUrl: string;
@@ -285,7 +286,9 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
                 key={`${sectionId}-${movie._id}-${index}`}
                 title={movie.title}
                 image={movie.poster || '/images/default-movie.jpg'}
+                movieId={movie._id}
                 onMovieClick={() => handleMovieClick({
+                  _id: movie._id,
                   title: movie.title,
                   index: index,
                   videoUrl: movie.videoUrl || '',

@@ -140,6 +140,7 @@ export default function MovieApp() {
   const handleMovieClick = (movie: MovieClickData): void => {
     // Crear datos de película directamente desde los datos recibidos
     const fullMovieData: MovieData = {
+      _id: movie._id,
       title: movie.title,
       videoUrl: movie.videoUrl || '',
       rating: movie.rating || 0,
