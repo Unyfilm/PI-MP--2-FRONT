@@ -253,6 +253,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
             <UnyFilmCard
                 key={movie._id || index}
               title={movie.title}
+              movieId={movie._id} // NUEVO: Pasar el ID de la película
               onMovieClick={() => handleMovieClick({ 
                 title: movie.title, 
                 index: index,
@@ -272,6 +273,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
               fallbackImage={movie.trailer}
               genre={movie.genre[0] || ''}
               year={movie.releaseDate && movie.releaseDate !== 'Invalid Date' ? new Date(movie.releaseDate).getFullYear() : 0}
+              rating={movie.rating?.average || 0}
             />
           );
         })}
