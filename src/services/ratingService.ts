@@ -9,7 +9,6 @@
 
 import { API_CONFIG } from '../config/environment';
 import { ratingCache } from './ratingCache';
-import { shouldAttemptApiCall } from '../utils/apiHealthCheck';
 
 export interface RatingStats {
   movieId: string;
@@ -60,19 +59,8 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
       };
     }
 
-    // Check if we should attempt API calls
-    const shouldAttempt = await shouldAttemptApiCall();
-    if (!shouldAttempt) {
-      console.warn('API appears to be unavailable, returning default stats');
-      const defaultStats = {
-        movieId,
-        averageRating: 0,
-        totalRatings: 0,
-        distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
-      };
-      ratingCache.set(movieId, defaultStats);
-      return defaultStats;
-    }
+    // Skip health check for now to avoid unnecessary requests
+    // The API endpoints are working, so we can proceed directly
 
     const url = `${API_CONFIG.BASE_URL}/ratings/movie/${movieId}/stats`;
     
@@ -221,9 +209,10 @@ export const rateMovie = async (movieId: string, rating: number): Promise<boolea
  * Update existing rating
  * @param ratingId - The rating ID to update
  * @param rating - New rating value (1-5)
+ * @param movieId - The movie ID for cache invalidation
  * @returns Promise<boolean> - Success status
  */
-export const updateRating = async (ratingId: string, rating: number): Promise<boolean> => {
+export const updateRating = async (ratingId: string, rating: number, movieId?: string): Promise<boolean> => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -248,7 +237,7 @@ export const updateRating = async (ratingId: string, rating: number): Promise<bo
 
     const data: RatingResponse = await response.json();
     
-    if (data.success) {
+    if (data.success && movieId) {
       // Invalidate cache when rating is updated
       ratingCache.invalidate(movieId);
     }
