@@ -25,7 +25,9 @@ export const checkApiHealth = async (): Promise<boolean> => {
 
   try {
     // Try to make a simple request to check if API is available
-    const response = await fetch(`${API_CONFIG.BASE_URL}/health`, {
+    // Use the base URL without /api for health check
+    const baseUrl = API_CONFIG.BASE_URL.replace('/api', '');
+    const response = await fetch(`${baseUrl}/health`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
