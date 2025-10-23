@@ -575,28 +575,46 @@
   outline: 2px solid white;
   outline-offset: 2px;
 }
-/* Estilos para el sistema de rating en las cards */
+/* Estilos para el sistema de rating visual en las cards */
 .unyfilm-card__rating-stars {
-  margin: 8px 0;
-  padding: 8px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 4px 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.unyfilm-card__rating-stars .stars-container {
+/* Integración con VisualRatingStars */
+.unyfilm-card__rating-stars .visual-rating-stars {
+  width: 100%;
   justify-content: center;
+}
+
+.unyfilm-card__rating-stars .visual-rating-stars__container {
+  justify-content: center;
+  gap: 2px;
+}
+
+.unyfilm-card__rating-stars .visual-rating-stars__stars {
   gap: 4px;
 }
 
-.unyfilm-card__rating-stars .star {
-  font-size: 18px !important;
-  cursor: pointer;
+/* Responsive adjustments for different card sizes */
+@media (max-width: 480px) {
+  .unyfilm-card__rating-stars .visual-star--small {
+    font-size: 14px !important;
+  }
 }
 
-.unyfilm-card__rating-stars .rating-text {
-  display: none;
+@media (min-width: 481px) and (max-width: 768px) {
+  .unyfilm-card__rating-stars .visual-star--small {
+    font-size: 16px !important;
+  }
 }
 
-.unyfilm-card__rating-stars .average-rating {
-  display: none;
+@media (min-width: 769px) {
+  .unyfilm-card__rating-stars .visual-star--small {
+    font-size: 18px !important;
+  }
 }
