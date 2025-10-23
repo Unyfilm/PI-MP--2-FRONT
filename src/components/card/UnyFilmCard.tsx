@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Heart, Play, Star } from 'lucide-react';
+import RatingStars from '../rating/RatingStars';
 import './UnyFilmCard.css';
 
 interface MovieClickData {
@@ -22,6 +23,7 @@ interface UnyFilmCardProps {
   rating?: number;
   year?: number;
   description?: string;
+  movieId?: string; 
 }
 
 /**
@@ -35,7 +37,8 @@ export default function UnyFilmCard({
   genre,
   rating,
   year,
-  description
+  description,
+  movieId 
 }: UnyFilmCardProps) {
   const [isHover, setIsHover] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -49,7 +52,6 @@ export default function UnyFilmCard({
     }
     setImageError(true);
   };
-
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -101,12 +103,25 @@ export default function UnyFilmCard({
             <span className="unyfilm-card__placeholder-text">{title}</span>
           </div>
         )}
-        
-        
       </div>
       
       <div className="unyfilm-card__content">
         <h3 className="unyfilm-card__title">{title}</h3>
+        
+        {/* NUEVO: SISTEMA DE RATING */}
+        {movieId && (
+          <div className="unyfilm-card__rating-stars">
+            <RatingStars 
+              movieId={movieId}
+              readonly={false}
+              showAverage={false}
+              onRatingChange={(newRating) => {
+                console.log(`Calificación ${newRating} para ${title}`);
+              }}
+            />
+          </div>
+        )}
+        
         <div className="unyfilm-card__meta">
           {year && year > 1900 && <span className="unyfilm-card__year">{String(year)}</span>}
           {genre && <span className="unyfilm-card__genre">{genre}</span>}
