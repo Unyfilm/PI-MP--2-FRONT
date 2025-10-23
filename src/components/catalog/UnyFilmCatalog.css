@@ -38,6 +38,35 @@
   max-width: 500px;
 }
 
+/* Search Mode Indicator */
+.unyfilm-catalog__search-mode {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.search-mode-indicator {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.search-mode-indicator.server {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.search-mode-indicator.local {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
 .unyfilm-catalog__search-input-wrapper {
   position: relative;
   display: flex;
@@ -200,7 +229,9 @@
 }
 
 .unyfilm-catalog__grid--grid {
-  grid-template-columns: repeat(auto-fit, minmax(146px, 1fr)); /* Width: 145.59px */
+  grid-template-columns: repeat(auto-fill, 146px); /* Tamaño fijo para evitar expansión */
+  justify-content: center; /* Centrar las cards cuando hay pocas */
+  gap: 25px;
 }
 
 .unyfilm-catalog__grid--list {
@@ -284,7 +315,8 @@
 /* Responsive Design */
 @media (max-width: 1400px) {
   .unyfilm-catalog__grid--grid {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Scaled down proportionally */
+    grid-template-columns: repeat(auto-fill, 130px); /* Tamaño fijo escalado */
+    justify-content: center;
   }
 }
 
@@ -294,7 +326,10 @@
     padding: 30px 40px;
   }
   
-  .unyfilm-catalog__grid--grid { grid-template-columns: repeat(2, 1fr); }
+  .unyfilm-catalog__grid--grid { 
+    grid-template-columns: repeat(auto-fill, 120px);
+    justify-content: center;
+  }
   
   .unyfilm-catalog__title-section {
     flex-direction: column;
@@ -315,7 +350,10 @@
     padding: 20px;
   }
   
-  .unyfilm-catalog__grid--grid { grid-template-columns: repeat(2, 1fr); }
+  .unyfilm-catalog__grid--grid { 
+    grid-template-columns: repeat(auto-fill, 110px);
+    justify-content: center;
+  }
   
   .unyfilm-catalog__header {
     flex-direction: column;
@@ -346,7 +384,10 @@
 }
 
 @media (max-width: 540px) {
-  .unyfilm-catalog__grid--grid { grid-template-columns: 1fr; }
+  .unyfilm-catalog__grid--grid { 
+    grid-template-columns: repeat(auto-fill, 100px);
+    justify-content: center;
+  }
 }
 
 /* Animation Enhancements */
