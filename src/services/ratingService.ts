@@ -75,7 +75,6 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
     }
 
     const url = `${API_CONFIG.BASE_URL}/ratings/movie/${movieId}/stats`;
-    console.log('Making request to:', url);
     
     const response = await fetch(url, {
       method: 'GET',

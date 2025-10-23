@@ -62,18 +62,29 @@ export interface MovieUrls {
 
 // Detect environment and set default API URL
 const isProduction = import.meta.env.PROD || import.meta.env.VITE_NODE_ENV === 'production';
-const defaultApiUrl = isProduction 
-  ? 'https://pi-mp-2-back-prod.onrender.com/api' 
-  : 'http://localhost:5000/api';
+
+// Force correct API URL for production
+const getApiBaseUrl = () => {
+  if (isProduction) {
+    // In production, always use the correct URL with /api
+    return 'https://pi-mp-2-back-prod.onrender.com/api';
+  } else {
+    // In development, use environment variable or default
+    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+  }
+};
+
+const apiBaseUrl = getApiBaseUrl();
 
 // Debug logging for production
 if (isProduction) {
   console.log('Production environment detected');
-  console.log('API_BASE_URL will be:', import.meta.env.VITE_API_BASE_URL || defaultApiUrl);
+  console.log('API_BASE_URL will be:', apiBaseUrl);
+  console.log('VITE_API_BASE_URL from env:', import.meta.env.VITE_API_BASE_URL);
 }
 
 export const API_CONFIG: ApiConfig = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || defaultApiUrl,
+  BASE_URL: apiBaseUrl,
   TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || (isProduction ? 30000 : 10000),
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000
