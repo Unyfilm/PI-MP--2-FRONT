@@ -3,6 +3,7 @@ import { Play, Heart, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, 
 import UnyFilmCard from '../card/UnyFilmCard';
 import { movieConfig, homeSections } from '../../data/moviesData';
 import { movieService, type Movie } from '../../services/movieService';
+import { useRealRating } from '../../hooks/useRealRating';
 import './UnyFilmHome.css';
 
 type MovieClickData = {
@@ -53,6 +54,9 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [featuredMovies, setFeaturedMovies] = useState<Movie[]>([]);
   const carouselIntervalRef = useRef<number | null>(null);
+
+  // Hook para calificaciones reales
+  const { hasRealRatings, averageRating, totalRatings } = useRealRating(featuredMovie?._id);
 
   // Función eliminada - ya no necesaria
 
@@ -425,7 +429,7 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               <span className="hero-genre">{featuredMovie.genre[0] || 'N/A'}</span>
               <span className="hero-rating">
                 <Star size={16} />
-                {featuredMovie.rating?.average || 'N/A'}
+                {hasRealRatings ? averageRating.toFixed(1) : '0'}
               </span>
               <span className="hero-duration">{featuredMovie.duration ? `${featuredMovie.duration} min` : 'N/A'}</span>
             </div>
@@ -438,10 +442,11 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               <button 
                 className="hero-btn hero-btn--primary"
                 onClick={() => handleMovieClick({
+                  _id: featuredMovie._id,
                   title: featuredMovie.title,
                   index: featuredIndex,
                   videoUrl: featuredMovie.videoUrl || '',
-                  rating: featuredMovie.rating?.average || 0,
+                  rating: hasRealRatings ? averageRating : 0,
                   year: new Date(featuredMovie.releaseDate || '').getFullYear() || 0,
                   genre: featuredMovie.genre[0] || '',
                   description: featuredMovie.description || '',

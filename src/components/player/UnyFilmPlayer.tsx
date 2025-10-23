@@ -3,6 +3,7 @@ import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X } fro
 import { Cloudinary } from '@cloudinary/url-gen';
 // @ts-ignore
 import InteractiveRating from '../rating/InteractiveRating';
+import { useRealRating } from '../../hooks/useRealRating';
 import type { EnhancedPlayerProps } from '../../types';
 import type { RatingStats } from '../../services/ratingService';
 import './UnyFilmPlayer.css';
@@ -34,6 +35,9 @@ export default function UnyFilmPlayer({
 
   // Cloudinary instance
   const cld = new Cloudinary({ cloud: { cloudName: 'dlyqtvvxv' } });
+
+  // Hook para calificaciones reales
+  const { hasRealRatings, averageRating } = useRealRating(movie?._id);
 
   // Handle rating update
   const handleRatingUpdate = (newStats: RatingStats) => {
@@ -271,7 +275,7 @@ export default function UnyFilmPlayer({
           <div className="unyfilm-movie-header">
             <h1 className="unyfilm-movie-title-main">{movie?.title || 'Película'}</h1>
             <div className="unyfilm-movie-rating">
-              <span className="star">★</span> {movie?.rating || 'N/A'}/5
+              <span className="star">★</span> {hasRealRatings ? averageRating.toFixed(1) : '0'}/5
             </div>
           </div>
         </div>
