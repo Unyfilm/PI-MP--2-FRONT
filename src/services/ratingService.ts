@@ -9,6 +9,7 @@
 
 import { API_CONFIG } from '../config/environment';
 import { ratingCache } from './ratingCache';
+import { shouldAttemptApiCall } from '../utils/apiHealthCheck';
 
 export interface RatingStats {
   movieId: string;
@@ -48,7 +49,35 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
       return cached;
     }
 
-    const response = await fetch(`${API_CONFIG.BASE_URL}/ratings/movie/${movieId}/stats`, {
+    // Validate movieId before making request
+    if (!movieId || movieId.trim() === '') {
+      console.warn('Invalid movieId provided to getMovieRatingStats');
+      return {
+        movieId: movieId || 'unknown',
+        averageRating: 0,
+        totalRatings: 0,
+        distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+      };
+    }
+
+    // Check if we should attempt API calls
+    const shouldAttempt = await shouldAttemptApiCall();
+    if (!shouldAttempt) {
+      console.warn('API appears to be unavailable, returning default stats');
+      const defaultStats = {
+        movieId,
+        averageRating: 0,
+        totalRatings: 0,
+        distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+      };
+      ratingCache.set(movieId, defaultStats);
+      return defaultStats;
+    }
+
+    const url = `${API_CONFIG.BASE_URL}/ratings/movie/${movieId}/stats`;
+    console.log('Making request to:', url);
+    
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -57,6 +86,18 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        // Movie has no ratings yet - this is normal, return default stats
+        const defaultStats = {
+          movieId,
+          averageRating: 0,
+          totalRatings: 0,
+          distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+        };
+        // Cache the default stats to avoid repeated 404s
+        ratingCache.set(movieId, defaultStats);
+        return defaultStats;
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -71,7 +112,10 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
       throw new Error(data.message || 'Error al obtener estadísticas de calificación');
     }
   } catch (error) {
-    console.error('Error fetching movie rating stats:', error);
+    // Only log errors that are not 404s (which are expected for movies without ratings)
+    if (error instanceof Error && !error.message.includes('404')) {
+      console.error('Error fetching movie rating stats:', error);
+    }
     // Return default stats if API fails
     return {
       movieId,
