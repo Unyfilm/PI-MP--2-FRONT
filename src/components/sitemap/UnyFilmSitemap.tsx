@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Mail, Phone, Globe } from 'lucide-react';
 import './UnyFilmSitemap.css';
 
@@ -17,25 +18,25 @@ export default function UnyFilmSitemap() {
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">Soluciones</h3>
           <ul className="unyfilm-sitemap__list">
-            <li><a href="#catalog">Catálogo de Películas</a></li>
-            <li><a href="#trending">Películas en Tendencia</a></li>
-            <li><a href="#popular">Populares</a></li>
-            <li><a href="#kids">Para toda la familia</a></li>
-            <li><a href="#action">Acción y Aventura</a></li>
-            <li><a href="#comedy">Comedia</a></li>
-            <li><a href="#drama">Drama</a></li>
+            <li><Link to="/catalog">Catálogo de Películas</Link></li>
+            <li><Link to="/catalog">Películas en Tendencia</Link></li>
+            <li><Link to="/catalog">Populares</Link></li>
+            <li><Link to="/catalog">Para toda la familia</Link></li>
+            <li><Link to="/catalog">Acción y Aventura</Link></li>
+            <li><Link to="/catalog">Comedia</Link></li>
+            <li><Link to="/catalog">Drama</Link></li>
           </ul>
         </div>
 
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">Cuenta de usuario</h3>
           <ul className="unyfilm-sitemap__list">
-            <li><a href="#login">Iniciar sesión</a></li>
-            <li><a href="#register">Registrarse</a></li>
-            <li><a href="#profile">Mi perfil</a></li>
-            <li><a href="#favorites">Mis favoritos</a></li>
-            <li><a href="#history">Historial</a></li>
-            <li><a href="#settings">Configuración</a></li>
+            <li><Link to="/login">Iniciar sesión</Link></li>
+            <li><Link to="/register">Registrarse</Link></li>
+            <li><Link to="/profile">Mi perfil</Link></li>
+            <li><Link to="/profile">Mis favoritos</Link></li>
+            <li><Link to="/profile">Historial</Link></li>
+            <li><Link to="/profile/edit">Configuración</Link></li>
           </ul>
         </div>
 
@@ -53,9 +54,9 @@ export default function UnyFilmSitemap() {
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">Contacto</h3>
           <ul className="unyfilm-sitemap__list">
-            <li><Mail size={14}/> contacto@unyfilm.com</li>
-            <li><Phone size={14}/> +1 (555) 123-4567</li>
-            <li><Globe size={14}/> www.unyfilm.com</li>
+            <li><a href="mailto:contacto@unyfilm.com"><Mail size={14}/> contacto@unyfilm.com</a></li>
+            <li><a href="tel:+15551234567"><Phone size={14}/> +1 (555) 123-4567</a></li>
+            <li><a href="https://www.unyfilm.com" target="_blank" rel="noopener noreferrer"><Globe size={14}/> www.unyfilm.com</a></li>
           </ul>
         </div>
       </div>

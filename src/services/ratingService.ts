@@ -50,7 +50,6 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
 
     // Validate movieId before making request
     if (!movieId || movieId.trim() === '') {
-      console.warn('Invalid movieId provided to getMovieRatingStats');
       return {
         movieId: movieId || 'unknown',
         averageRating: 0,
@@ -101,7 +100,7 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
   } catch (error) {
     // Only log errors that are not 404s (which are expected for movies without ratings)
     if (error instanceof Error && !error.message.includes('404')) {
-      console.error('Error fetching movie rating stats:', error);
+      // Error fetching movie rating stats
     }
     // Return default stats if API fails
     return {
@@ -141,7 +140,6 @@ export const getUserRating = async (movieId: string): Promise<UserRating | null>
         return null;
       }
       // Only log actual errors (not 404s)
-      console.error(`Error fetching user rating: ${response.status}`);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -155,7 +153,7 @@ export const getUserRating = async (movieId: string): Promise<UserRating | null>
   } catch (error) {
     // Only log if it's not a 404 (which is expected)
     if (error instanceof Error && !error.message.includes('404')) {
-      console.error('Error fetching user rating:', error);
+      // Error fetching user rating
     }
     return null;
   }
@@ -200,7 +198,7 @@ export const rateMovie = async (movieId: string, rating: number): Promise<boolea
     
     return data.success;
   } catch (error) {
-    console.error('Error rating movie:', error);
+    // Error rating movie
     return false;
   }
 };
@@ -244,7 +242,7 @@ export const updateRating = async (ratingId: string, rating: number, movieId?: s
     
     return data.success;
   } catch (error) {
-    console.error('Error updating rating:', error);
+    // Error updating rating
     return false;
   }
 };
@@ -283,7 +281,7 @@ export const deleteRating = async (movieId: string): Promise<boolean> => {
     
     return data.success;
   } catch (error) {
-    console.error('Error deleting rating:', error);
+    // Error deleting rating
     return false;
   }
 };
