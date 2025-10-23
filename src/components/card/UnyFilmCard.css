@@ -575,3 +575,28 @@
   outline: 2px solid white;
   outline-offset: 2px;
 }
+/* Estilos para el sistema de rating en las cards */
+.unyfilm-card__rating-stars {
+  margin: 8px 0;
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.unyfilm-card__rating-stars .stars-container {
+  justify-content: center;
+  gap: 4px;
+}
+
+.unyfilm-card__rating-stars .star {
+  font-size: 18px !important;
+  cursor: pointer;
+}
+
+.unyfilm-card__rating-stars .rating-text {
+  display: none;
+}
+
+.unyfilm-card__rating-stars .average-rating {
+  display: none;
+}
