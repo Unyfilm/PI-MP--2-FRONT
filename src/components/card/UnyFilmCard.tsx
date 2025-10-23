@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, Play, Star } from 'lucide-react';
-import RatingStars from '../rating/RatingStars';
+import VisualRatingStars from '../rating/VisualRatingStars';
+import { getMovieRatingStats, type RatingStats } from '../../services/ratingService';
 import './UnyFilmCard.css';
 
 interface MovieClickData {
@@ -43,6 +44,35 @@ export default function UnyFilmCard({
   const [isHover, setIsHover] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
+  const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
+  const [isLoadingRating, setIsLoadingRating] = useState(false);
+
+  // Load rating statistics when component mounts or movieId changes
+  useEffect(() => {
+    const loadRatingStats = async () => {
+      if (!movieId) return;
+      
+      try {
+        setIsLoadingRating(true);
+        // Cache will make this much faster on subsequent loads
+        const stats = await getMovieRatingStats(movieId);
+        setRatingStats(stats);
+      } catch (error) {
+        console.error('Error loading rating stats:', error);
+        // Set default stats if API fails
+        setRatingStats({
+          movieId,
+          averageRating: rating || 0,
+          totalRatings: 0,
+          distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+        });
+      } finally {
+        setIsLoadingRating(false);
+      }
+    };
+
+    loadRatingStats();
+  }, [movieId, rating]);
 
   const handleImageError = () => {
     if (!imageError && fallbackImage) {
@@ -108,16 +138,14 @@ export default function UnyFilmCard({
       <div className="unyfilm-card__content">
         <h3 className="unyfilm-card__title">{title}</h3>
         
-        {/* NUEVO: SISTEMA DE RATING */}
-        {movieId && (
+        {/* SISTEMA DE RATING VISUAL */}
+        {movieId && ratingStats && (
           <div className="unyfilm-card__rating-stars">
-            <RatingStars 
-              movieId={movieId}
-              readonly={false}
-              showAverage={false}
-              onRatingChange={(newRating) => {
-                console.log(`Calificación ${newRating} para ${title}`);
-              }}
+            <VisualRatingStars
+              averageRating={ratingStats.averageRating}
+              totalRatings={ratingStats.totalRatings}
+              size="small"
+              showCount={false}
             />
           </div>
         )}
@@ -125,17 +153,6 @@ export default function UnyFilmCard({
         <div className="unyfilm-card__meta">
           {year && year > 1900 && <span className="unyfilm-card__year">{String(year)}</span>}
           {genre && <span className="unyfilm-card__genre">{genre}</span>}
-          {rating && rating > 0 && (
-            <span className="unyfilm-card__rating">
-              <Star size={14} />
-              {rating.toFixed(1)}
-            </span>
-          )}
-          {(!rating || rating === 0) && (
-            <span className="unyfilm-card__rating unyfilm-card__rating--no-rating">
-              Sin puntuación
-            </span>
-          )}
         </div>
       </div>
 
@@ -158,17 +175,6 @@ export default function UnyFilmCard({
               <span className="unyfilm-card__overlay-badge unyfilm-card__overlay-badge--new">
                 Nuevo
               </span>
-            )}
-            {rating && rating > 0 && (
-              <div className="unyfilm-card__overlay-rating">
-                <Star size={12} />
-                {rating.toFixed(1)}
-              </div>
-            )}
-            {(!rating || rating === 0) && (
-              <div className="unyfilm-card__overlay-rating unyfilm-card__overlay-rating--no-rating">
-                Sin puntuación
-              </div>
             )}
             {year && year > 1900 && (
               <span className="unyfilm-card__overlay-year">{String(year)}</span>

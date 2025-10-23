@@ -12,6 +12,7 @@ export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap';
 
 // Tipos de datos de película
 export interface MovieData {
+  _id?: string;
   title: string;
   videoUrl: string;
   rating?: number;
@@ -25,6 +26,7 @@ export interface MovieData {
 
 // Tipos para datos de película al hacer click
 export interface MovieClickData {
+  _id?: string;
   title: string;
   index?: number;
   videoUrl?: string;

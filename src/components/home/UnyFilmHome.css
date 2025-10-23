@@ -403,6 +403,16 @@
     0 1px 3px rgba(49, 42, 111, 0.7);
 }
 
+.hero-rating svg {
+  fill: #fbbf24 !important;
+  color: #fbbf24 !important;
+}
+
+.unyfilm-home__hero-meta .hero-rating svg {
+  fill: #fbbf24 !important;
+  color: #fbbf24 !important;
+}
+
 .unyfilm-home__hero-description {
   font-size: clamp(14px, 2vw, 18px);
   line-height: 1.6;

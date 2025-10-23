@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
+// @ts-ignore
+import InteractiveRating from '../rating/InteractiveRating';
 import type { EnhancedPlayerProps } from '../../types';
+import type { RatingStats } from '../../services/ratingService';
 import './UnyFilmPlayer.css';
 
 export default function UnyFilmPlayer({ 
@@ -24,12 +27,20 @@ export default function UnyFilmPlayer({
   const [subtitlesEnabled, setSubtitlesEnabled] = useState<boolean>(showSubtitles);
   const [subtitleTrack, setSubtitleTrack] = useState<TextTrack | null>(null);
   const [qualityChangeMessage, setQualityChangeMessage] = useState<string>('');
+  const [, setRatingStats] = useState<RatingStats | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
 
   // Cloudinary instance
   const cld = new Cloudinary({ cloud: { cloudName: 'dlyqtvvxv' } });
+
+  // Handle rating update
+  const handleRatingUpdate = (newStats: RatingStats) => {
+    setRatingStats(newStats);
+    // Notify parent component if needed
+    console.log('Rating updated:', newStats);
+  };
 
 
   useEffect(() => {
@@ -241,6 +252,13 @@ export default function UnyFilmPlayer({
   return (
     <div className="unyfilm-player-wrapper">
       <div className="unyfilm-player-page">
+        {/* Mosaico animado de fondo */}
+        <div className="unyfilm-player-mosaic" aria-hidden="true">
+          {Array.from({ length: 200 }).map((_, i) => (
+            <span key={i} className="unyfilm-player-mosaic__tile" />
+          ))}
+        </div>
+        
         <button 
           onClick={onClose}
           className="unyfilm-player-close-btn"
@@ -431,6 +449,15 @@ export default function UnyFilmPlayer({
                 ))}
               </div>
             </div>
+          )}
+
+          {/* Sistema de Calificación Interactiva */}
+          {movie && movie._id && (
+            <InteractiveRating
+              movieId={movie._id}
+              movieTitle={movie.title || 'Película'}
+              onRatingUpdate={handleRatingUpdate}
+            />
           )}
 
           {/* Secciones de calificación y comentarios eliminadas */}
