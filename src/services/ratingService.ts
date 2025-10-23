@@ -209,9 +209,10 @@ export const rateMovie = async (movieId: string, rating: number): Promise<boolea
  * Update existing rating
  * @param ratingId - The rating ID to update
  * @param rating - New rating value (1-5)
+ * @param movieId - The movie ID for cache invalidation
  * @returns Promise<boolean> - Success status
  */
-export const updateRating = async (ratingId: string, rating: number): Promise<boolean> => {
+export const updateRating = async (ratingId: string, rating: number, movieId?: string): Promise<boolean> => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -236,7 +237,7 @@ export const updateRating = async (ratingId: string, rating: number): Promise<bo
 
     const data: RatingResponse = await response.json();
     
-    if (data.success) {
+    if (data.success && movieId) {
       // Invalidate cache when rating is updated
       ratingCache.invalidate(movieId);
     }
