@@ -76,12 +76,7 @@ const getApiBaseUrl = () => {
 
 const apiBaseUrl = getApiBaseUrl();
 
-// Debug logging for production
-if (isProduction) {
-  console.log('Production environment detected');
-  console.log('API_BASE_URL will be:', apiBaseUrl);
-  console.log('VITE_API_BASE_URL from env:', import.meta.env.VITE_API_BASE_URL);
-}
+// Debug logging for production - removed console logs
 
 export const API_CONFIG: ApiConfig = {
   BASE_URL: apiBaseUrl,

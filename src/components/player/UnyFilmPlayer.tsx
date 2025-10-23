@@ -43,7 +43,6 @@ export default function UnyFilmPlayer({
   const handleRatingUpdate = (newStats: RatingStats) => {
     setRatingStats(newStats);
     // Notify parent component if needed
-    console.log('Rating updated:', newStats);
   };
 
 

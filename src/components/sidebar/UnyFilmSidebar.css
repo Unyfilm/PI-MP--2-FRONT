@@ -13,8 +13,9 @@
   flex-direction: column;
   align-items: center;
   gap: 30px;
-  z-index: 100;
+  z-index: 1000;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
 }
 
 /* Logo Section */
@@ -58,6 +59,8 @@
   color: rgba(255, 255, 255, 0.6);
   position: relative;
   overflow: hidden;
+  z-index: 1001;
+  pointer-events: auto;
 }
 
 .unyfilm-sidebar__nav-icon::before {

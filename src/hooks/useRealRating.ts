@@ -32,7 +32,6 @@ export const useRealRating = (movieId: string | undefined) => {
           setHasRealRatings(false);
         }
       } catch (error) {
-        console.error('Error loading rating stats:', error);
         setRatingStats(null);
         setHasRealRatings(false);
       } finally {

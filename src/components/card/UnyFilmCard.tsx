@@ -58,7 +58,6 @@ export default function UnyFilmCard({
         const stats = await getMovieRatingStats(movieId);
         setRatingStats(stats);
       } catch (error) {
-        console.error('Error loading rating stats:', error);
         // Set default stats if API fails
         setRatingStats({
           movieId,
