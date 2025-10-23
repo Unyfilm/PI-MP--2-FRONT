@@ -66,6 +66,12 @@ const defaultApiUrl = isProduction
   ? 'https://pi-mp-2-back-prod.onrender.com/api' 
   : 'http://localhost:5000/api';
 
+// Debug logging for production
+if (isProduction) {
+  console.log('Production environment detected');
+  console.log('API_BASE_URL will be:', import.meta.env.VITE_API_BASE_URL || defaultApiUrl);
+}
+
 export const API_CONFIG: ApiConfig = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL || defaultApiUrl,
   TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || (isProduction ? 30000 : 10000),
