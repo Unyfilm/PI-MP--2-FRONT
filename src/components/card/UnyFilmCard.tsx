@@ -50,7 +50,7 @@ export default function UnyFilmCard({
   // Load rating statistics when component mounts or movieId changes
   useEffect(() => {
     const loadRatingStats = async () => {
-      if (!movieId) return;
+      if (!movieId || movieId.trim() === '') return;
       
       try {
         setIsLoadingRating(true);
