@@ -9,7 +9,6 @@
 
 import { API_CONFIG } from '../config/environment';
 import { ratingCache } from './ratingCache';
-import { shouldAttemptApiCall } from '../utils/apiHealthCheck';
 
 export interface RatingStats {
   movieId: string;
@@ -60,19 +59,8 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
       };
     }
 
-    // Check if we should attempt API calls
-    const shouldAttempt = await shouldAttemptApiCall();
-    if (!shouldAttempt) {
-      console.warn('API appears to be unavailable, returning default stats');
-      const defaultStats = {
-        movieId,
-        averageRating: 0,
-        totalRatings: 0,
-        distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
-      };
-      ratingCache.set(movieId, defaultStats);
-      return defaultStats;
-    }
+    // Skip health check for now to avoid unnecessary requests
+    // The API endpoints are working, so we can proceed directly
 
     const url = `${API_CONFIG.BASE_URL}/ratings/movie/${movieId}/stats`;
     
