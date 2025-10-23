@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Home, Film, User, Info, Map, Mail, Phone, Globe, Heart, History, Settings } from 'lucide-react';
+import { Home, Film, User, Info, Map, Mail, Phone, Globe, Heart, History } from 'lucide-react';
 import './Footer.css';
 
 /**
@@ -87,18 +87,18 @@ export default function Footer() {
               Contacto
             </h3>
             <div className="footer__contact">
-              <div className="footer__contact-item">
+              <a href="mailto:contacto@unyfilm.com" className="footer__contact-item">
                 <Mail size={16} />
                 <span>contacto@unyfilm.com</span>
-              </div>
-              <div className="footer__contact-item">
+              </a>
+              <a href="tel:+15551234567" className="footer__contact-item">
                 <Phone size={16} />
                 <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="footer__contact-item">
+              </a>
+              <a href="https://www.unyfilm.com" target="_blank" rel="noopener noreferrer" className="footer__contact-item">
                 <Globe size={16} />
                 <span>www.unyfilm.com</span>
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -110,9 +110,9 @@ export default function Footer() {
               © 2025 UnyFilm. Todos los derechos reservados.
             </p>
             <div className="footer__bottom-links">
-              <button className="footer__bottom-link">Términos de Servicio</button>
-              <button className="footer__bottom-link">Política de Privacidad</button>
-              <button className="footer__bottom-link">Cookies</button>
+              <a href="#terms" className="footer__bottom-link">Términos de Servicio</a>
+              <a href="#privacy" className="footer__bottom-link">Política de Privacidad</a>
+              <a href="#cookies" className="footer__bottom-link">Cookies</a>
             </div>
           </div>
         </div>

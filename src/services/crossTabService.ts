@@ -28,35 +28,25 @@ class CrossTabService {
    */
   init() {
     if (this.isListening) {
-      console.log('🔄 [CROSS-TAB] Ya está escuchando, ignorando inicialización');
       return;
     }
-
-    console.log('🚀 [CROSS-TAB] Inicializando servicio cross-tab...');
 
     try {
       // Usar BroadcastChannel si está disponible (navegadores modernos)
       if (typeof BroadcastChannel !== 'undefined') {
-        console.log('📡 [CROSS-TAB] BroadcastChannel disponible, configurando...');
         this.broadcastChannel = new BroadcastChannel('unyfilm-realtime');
-        
+
         this.broadcastChannel.onmessage = (event) => {
-          console.log('🔄 [CROSS-TAB] Evento recibido de otra pestaña:', event.data);
           this.handleCrossTabEvent(event.data);
         };
-
-        console.log('✅ [CROSS-TAB] BroadcastChannel inicializado correctamente');
       } else {
-        console.log('💾 [CROSS-TAB] BroadcastChannel no disponible, usando localStorage...');
         // Fallback a localStorage para navegadores más antiguos
         this.setupLocalStorageListener();
-        console.log('✅ [CROSS-TAB] localStorage listener inicializado');
       }
 
       this.isListening = true;
-      console.log('🎉 [CROSS-TAB] Servicio cross-tab completamente inicializado');
     } catch (error) {
-      console.error('❌ [CROSS-TAB] Error inicializando:', error);
+      // Error inicializando cross-tab service
     }
   }
 
@@ -68,10 +58,9 @@ class CrossTabService {
       if (event.key === 'unyfilm-realtime-event' && event.newValue) {
         try {
           const crossTabEvent: CrossTabEvent = JSON.parse(event.newValue);
-          console.log('🔄 [CROSS-TAB] Evento de localStorage:', crossTabEvent);
           this.handleCrossTabEvent(crossTabEvent);
         } catch (error) {
-          console.error('❌ [CROSS-TAB] Error parseando evento de localStorage:', error);
+          // Error parseando evento de localStorage
         }
       }
     });
@@ -96,17 +85,10 @@ class CrossTabService {
    * Enviar evento a otras pestañas
    */
   broadcastToOtherTabs(event: CrossTabEvent) {
-    console.log('📡 [CROSS-TAB] Intentando enviar evento a otras pestañas:', event);
-    console.log('📡 [CROSS-TAB] Estado del servicio:', {
-      isListening: this.isListening,
-      hasBroadcastChannel: !!this.broadcastChannel
-    });
-
     try {
       if (this.broadcastChannel) {
         // Usar BroadcastChannel (preferido)
         this.broadcastChannel.postMessage(event);
-        console.log('✅ [CROSS-TAB] Evento enviado via BroadcastChannel:', event);
       } else {
         // Usar localStorage como fallback
         localStorage.setItem('unyfilm-realtime-event', JSON.stringify(event));
@@ -114,10 +96,9 @@ class CrossTabService {
         setTimeout(() => {
           localStorage.removeItem('unyfilm-realtime-event');
         }, 100);
-        console.log('✅ [CROSS-TAB] Evento enviado via localStorage:', event);
       }
     } catch (error) {
-      console.error('❌ [CROSS-TAB] Error enviando evento:', error);
+      // Error enviando evento cross-tab
     }
   }
 
@@ -130,7 +111,6 @@ class CrossTabService {
       this.broadcastChannel = null;
     }
     this.isListening = false;
-    console.log('🔌 [CROSS-TAB] Conexión cerrada');
   }
 }
 

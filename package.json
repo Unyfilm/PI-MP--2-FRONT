@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "type-check": "npx tsc --noEmit",
     "lint": "echo 'Linting not configured yet'",
+    "test": "vitest",
+    "test:run": "vitest run",
     "ci": "npm run type-check && npm run build"
   },
   "keywords": [
@@ -32,13 +34,18 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.14",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.0.4",
+    "jsdom": "^27.0.1",
     "sass": "^1.93.2",
     "tailwindcss": "^4.1.14",
     "typescript": "~5.9.3",
-    "vite": "^7.1.7"
+    "vite": "^7.1.7",
+    "vitest": "^4.0.1"
   },
   "overrides": {
     "rollup": "^4.0.0"

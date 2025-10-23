@@ -114,8 +114,15 @@
 .usability-help-header h2 {
   font-size: 28px;
   font-weight: 700;
-  margin: 0;
+  margin: 0 0 10px 0;
   color: #6366f1;
+}
+
+.help-subtitle {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0 0 20px 0;
+  font-style: italic;
 }
 
 .usability-help-close {
@@ -209,36 +216,426 @@
   color: white;
 }
 
-.usability-shortcuts-list {
+.usability-shortcuts-categories {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.usability-shortcuts-category {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.usability-shortcuts-category:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.usability-shortcuts-category h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.usability-shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .usability-shortcut {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 15px;
+  padding: 10px 12px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.usability-shortcut:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateX(4px);
 }
 
 .usability-shortcut kbd {
-  background: #374151;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
   font-size: 12px;
+  color: white;
   font-weight: 600;
-  border: 1px solid #4b5563;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  min-width: 90px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .usability-shortcut span {
-  color: #d1d5db;
+  color: #e5e7eb;
   font-size: 14px;
+  font-weight: 400;
+}
+
+/* Heurísticas de Usabilidad */
+.usability-heuristic {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.usability-heuristic:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+.usability-heuristic h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #6366f1;
+}
+
+.usability-heuristic p {
+  color: #d1d5db;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.usability-heuristic ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.usability-heuristic li {
+  color: #e5e7eb;
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.usability-heuristic li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+/* Demos de usabilidad */
+.usability-demo {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Indicadores de estado */
+.status-indicator {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-indicator.loading {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-indicator.success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-indicator.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Elementos familiares */
+.familiar-elements {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.familiar-elements .icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+/* Elementos de control */
+.control-elements {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.demo-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* Demostración de consistencia */
+.consistency-demo {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.consistent-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.consistent-btn.primary {
+  background: #6366f1;
+  color: white;
+}
+
+.consistent-btn.secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.consistent-btn.danger {
+  background: #ef4444;
+  color: white;
+}
+
+/* Prevención de errores */
+.error-prevention {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.validated-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: white;
+  font-size: 14px;
+}
+
+.validated-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.validation-message {
+  color: #10b981;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Ayudas de reconocimiento */
+.recognition-aids {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.recognition-aids span {
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.recognition-aids span:hover {
+  transform: scale(1.2);
+}
+
+/* Ejemplos de heurísticas */
+.heuristic-example {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #d1d5db;
+  line-height: 1.5;
+}
+
+/* Pautas WCAG */
+.usability-wcag {
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  margin-top: 20px;
+}
+
+.usability-wcag h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  color: white;
+}
+
+.usability-wcag-guidelines {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.usability-wcag-guideline {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.usability-wcag-guideline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.usability-wcag-guideline h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #6366f1;
+}
+
+.usability-wcag-guideline p {
+  color: #d1d5db;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.usability-wcag-guideline ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.usability-wcag-guideline li {
+  color: #e5e7eb;
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.usability-wcag-guideline li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+/* Demostración de contraste */
+.contrast-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contrast-example {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.contrast-example.high {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+.contrast-example.medium {
+  background: #374151;
+  color: #d1d5db;
+}
+
+.contrast-example.low {
+  background: #4b5563;
+  color: #9ca3af;
+}
+
+/* Demostración de teclado */
+.keyboard-demo {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.focusable-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.focusable-btn:focus {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+.keyboard-hint {
+  color: #9ca3af;
+  font-size: 12px;
+  font-style: italic;
 }
 
 .usability-notifications {
@@ -321,11 +718,27 @@
     font-size: 24px;
   }
   
-  .usability-shortcuts-list {
+  .usability-shortcuts-categories {
     grid-template-columns: 1fr;
+  }
+  
+  .usability-shortcuts-list {
+    gap: 6px;
   }
   
   .usability-notification {
     max-width: 250px;
+  }
+  
+  .usability-wcag-guidelines {
+    grid-template-columns: 1fr;
+  }
+  
+  .usability-heuristic {
+    padding: 16px;
+  }
+  
+  .usability-demo {
+    padding: 12px;
   }
 }
