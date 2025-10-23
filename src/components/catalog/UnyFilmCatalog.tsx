@@ -255,6 +255,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
               title={movie.title}
               movieId={movie._id} // NUEVO: Pasar el ID de la película
               onMovieClick={() => handleMovieClick({ 
+                _id: movie._id,
                 title: movie.title, 
                 index: index,
                 videoUrl: movie.videoUrl || '',
