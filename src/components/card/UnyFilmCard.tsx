@@ -88,6 +88,7 @@ export default function UnyFilmCard({
     e.stopPropagation();
     if (onMovieClick) {
       onMovieClick({ 
+        _id: movieId,
         title, 
         image, 
         genre, 
