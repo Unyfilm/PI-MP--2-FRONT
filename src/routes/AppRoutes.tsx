@@ -6,6 +6,7 @@ import Recover from '../components/recover/Recover';
 import ResetPassword from '../components/recover/ResetPassword';
 import Profile from '../components/profile/Profile';
 import ProfileEdit from '../components/profile/ProfileEdit';
+import LandingPage from '../components/landing/LandingPage';
 import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 
 /**
@@ -21,8 +22,8 @@ import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Ruta raíz: redirige a home si está autenticado, sino a login */}
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      {/* Ruta raíz: landing page pública */}
+      <Route path="/" element={<LandingPage />} />
       
       {/* Rutas públicas (solo accesibles sin autenticación) */}
       <Route 
