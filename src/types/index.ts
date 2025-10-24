@@ -7,8 +7,10 @@
  * - Descriptive names to reflect purpose and usage
  */
 
+// Tipos de vista de la aplicación
 export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap' | 'favorites';
 
+// Tipos de datos de película
 export interface MovieData {
   _id?: string;
   title: string;
@@ -22,6 +24,7 @@ export interface MovieData {
   duration?: number;
 }
 
+// Tipos para datos de película al hacer click
 export interface MovieClickData {
   _id?: string;
   title: string;
@@ -34,6 +37,7 @@ export interface MovieClickData {
   duration?: number;
 }
 
+// Tipos para formularios
 export interface LoginFormData {
   email: string;
   password: string;
@@ -47,16 +51,19 @@ export interface RegisterFormData {
   password: string;
 }
 
+// Tipos para props de componentes
 export interface BaseComponentProps {
   className?: string;
   id?: string;
 }
 
+// Tipos para componentes de autenticación
 export interface AuthProps {
   onLogin?: (data: LoginFormData) => void;
   onRegister?: (data: RegisterFormData) => void;
 }
 
+// Tipos para componentes de película
 export interface MovieCardProps extends BaseComponentProps {
   title: string;
   isFavorite: boolean;
@@ -69,17 +76,20 @@ export interface MovieCardProps extends BaseComponentProps {
   description?: string;
 }
 
+// Tipos para componentes de navegación
 export interface NavigationProps extends BaseComponentProps {
   currentView: ViewType;
   setCurrentView: (view: ViewType) => void;
 }
 
+// Tipos para componentes de búsqueda
 export interface SearchProps {
   searchQuery: string;
   onSearch: (query: string) => void;
   onSearchSubmit: (query: string) => void;
 }
 
+// Tipos para componentes de lista de películas
 export interface MovieListProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
@@ -88,31 +98,38 @@ export interface MovieListProps {
   onMovieClick: (movie: MovieClickData) => void;
 }
 
+// Tipos para reproductor de video
 export interface PlayerProps {
   movie: MovieData;
   onClose: () => void;
 }
 
+// Tipos para características de usabilidad
 export interface UsabilityFeaturesProps extends BaseComponentProps {
   onToggleTheme?: () => void;
   onToggleLanguage?: () => void;
 }
 
+// Tipos para características de accesibilidad
 export interface AccessibilityFeaturesProps extends BaseComponentProps {
   onToggleHighContrast?: () => void;
   onToggleScreenReader?: () => void;
 }
 
+// Tipos para footer
 
+// Tipos para eventos
 export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 export type ButtonClickEvent = React.MouseEvent<HTMLButtonElement>;
 export type FormSubmitEvent = React.FormEvent<HTMLFormElement>;
 
+// Tipos para estados de carga
 export interface LoadingState {
   isLoading: boolean;
   error?: string;
 }
 
+// Tipos para configuración de la aplicación
 export interface AppConfig {
   apiUrl: string;
   version: string;
@@ -120,12 +137,14 @@ export interface AppConfig {
 }
 
 
+// Tipos para paginación
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
 }
 
+// Tipos para filtros
 export interface FilterProps {
   genre?: string;
   year?: number;
@@ -133,6 +152,7 @@ export interface FilterProps {
   onFilterChange: (filters: Partial<FilterProps>) => void;
 }
 
+// Tipos para API Service
 export interface ApiConfig {
   BASE_URL: string;
   TIMEOUT: number;
@@ -202,22 +222,26 @@ export interface Movie {
 }
 
 export interface ApiService {
+  // Movies API
   getMovies: () => Promise<ApiResponse<Movie[]>>;
   getMovie: (id: number) => Promise<ApiResponse<Movie>>;
   createMovie: (movieData: Omit<Movie, 'id' | 'createdAt'>) => Promise<ApiResponse<Movie>>;
   updateMovie: (id: number, movieData: Partial<Movie>) => Promise<ApiResponse<Movie>>;
   deleteMovie: (id: number) => Promise<ApiResponse<void>>;
 
+  // Users API
   getUsers: () => Promise<ApiResponse<User[]>>;
   getUser: (id: number) => Promise<ApiResponse<User>>;
   createUser: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<ApiResponse<User>>;
   updateUser: (id: number, userData: Partial<User>) => Promise<ApiResponse<User>>;
   deleteUser: (id: number) => Promise<ApiResponse<void>>;
 
+  // Profile API
   getProfile: () => Promise<ApiResponse<User>>;
   updateProfile: (profileData: { firstName: string; lastName: string; age: number; email: string }) => Promise<ApiResponse<User>>;
   deleteAccount: (password: string) => Promise<ApiResponse<void>>;
 
+  // Authentication API
   login: (credentials: LoginCredentials) => Promise<ApiResponse<AuthResponse>>;
   register: (userData: RegisterData) => Promise<ApiResponse<AuthResponse>>;
   logout: () => Promise<ApiResponse<void>>;
@@ -226,12 +250,14 @@ export interface ApiService {
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<ApiResponse<void>>;
 }
 
+// Tipos para request options
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: string;
   headers?: Record<string, string>;
 }
 
+// Tipos para localStorage keys
 export type StorageKeys = 
   | 'unyfilm-token'
   | 'unyfilm-user'
@@ -239,6 +265,7 @@ export type StorageKeys =
   | 'unyfilm-movies'
   | 'unyfilm-users';
 
+// Tipos para Cloudinary
 export interface CloudinaryUploadResponse {
   public_id: string;
   version: number;
@@ -283,6 +310,7 @@ export interface CloudinaryVideoInfo {
   created_at: string;
 }
 
+// Tipos para componentes de subida de video
 export interface VideoUploadProps {
   onUploadSuccess: (response: CloudinaryUploadResponse) => void;
   onUploadError: (error: string) => void;
@@ -293,6 +321,7 @@ export interface VideoUploadProps {
   tags?: string[];
 }
 
+// Tipos para reproductor mejorado
 export interface EnhancedPlayerProps extends PlayerProps {
   cloudinaryPublicId?: string;
   quality?: 'auto' | 'high' | 'medium' | 'low';

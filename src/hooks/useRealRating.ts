@@ -23,6 +23,7 @@ export const useRealRating = (movieId: string | undefined) => {
         setIsLoading(true);
         const stats = await getMovieRatingStats(movieId);
         
+        // Solo considerar que hay calificaciones reales si totalRatings > 0
         if (stats.totalRatings > 0) {
           setRatingStats(stats);
           setHasRealRatings(true);

@@ -20,6 +20,7 @@ export function useRealtimeRatings({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Función para cargar estadísticas
   const loadRatingStats = useCallback(async () => {
     if (!movieId) return;
 
@@ -38,12 +39,14 @@ export function useRealtimeRatings({
     }
   }, [movieId]);
 
+  // Cargar estadísticas iniciales
   useEffect(() => {
     if (autoLoad) {
       loadRatingStats();
     }
   }, [autoLoad, loadRatingStats]);
 
+  // Escuchar eventos de actualización en tiempo real
   useEffect(() => {
     if (!enableRealtime || !movieId) return;
 
@@ -54,6 +57,7 @@ export function useRealtimeRatings({
       
       if (updatedMovieId === movieId) {
         console.log('🔄 [HOOK] Rating actualizado, recargando estadísticas para:', movieId);
+        // Recargar estadísticas cuando se actualiza un rating
         loadRatingStats();
       }
     };
@@ -84,6 +88,7 @@ export function useRealtimeRatings({
       }
     };
 
+    // Escuchar eventos
     window.addEventListener('rating-updated', handleRatingUpdate as EventListener);
     window.addEventListener('rating-stats-updated', handleStatsUpdate as EventListener);
     window.addEventListener('cache-invalidated', handleCacheInvalidation as EventListener);

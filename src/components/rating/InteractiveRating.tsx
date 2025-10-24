@@ -36,16 +36,20 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
     try {
       setIsLoading(true);
       
+      // Validar movieId antes de hacer peticiones
       if (!movieId || movieId.trim() === '') {
         console.warn('MovieId inválido en InteractiveRating');
         return;
       }
       
+      // Cargar estadísticas de la película (con cache)
       const stats = await getMovieRatingStats(movieId);
       setRatingStats(stats);
       
+      // Solo intentar cargar calificación del usuario si hay token
       const token = localStorage.getItem('token');
       if (token) {
+        // Cargar calificación del usuario de forma silenciosa y no bloqueante
         getUserRating(movieId)
           .then(userRatingData => {
             if (userRatingData) {

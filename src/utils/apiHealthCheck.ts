@@ -18,11 +18,14 @@ const HEALTH_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
 export const checkApiHealth = async (): Promise<boolean> => {
   const now = Date.now();
   
+  // Return cached result if it's recent
   if (isApiHealthy !== null && (now - lastHealthCheck) < HEALTH_CHECK_INTERVAL) {
     return isApiHealthy;
   }
 
   try {
+    // Try to make a simple request to check if API is available
+    // Use the base URL without /api for health check
     const baseUrl = API_CONFIG.BASE_URL.replace('/api', '');
     const response = await fetch(`${baseUrl}/health`, {
       method: 'GET',
@@ -54,10 +57,12 @@ export const checkApiHealth = async (): Promise<boolean> => {
  * @returns Promise<boolean> - True if we should attempt API calls
  */
 export const shouldAttemptApiCall = async (): Promise<boolean> => {
+  // In development, always attempt API calls
   if (import.meta.env.DEV) {
     return true;
   }
   
+  // In production, check API health first
   return await checkApiHealth();
 };
 

@@ -81,6 +81,7 @@ export const useFavorites = (): UseFavoritesReturn => {
       const result = await favoriteService.addToFavorites(movieId, notes, rating);
       
       if (result.success && result.data) {
+        // Agregar a la lista local
         setFavorites(prev => {
           const exists = prev.some(fav => fav._id === result.data!._id);
           if (!exists) {
@@ -120,6 +121,7 @@ export const useFavorites = (): UseFavoritesReturn => {
       const result = await favoriteService.removeFromFavorites(favoriteId);
       
       if (result.success) {
+        // Remover de la lista local
         setFavorites(prev => prev.filter(fav => fav._id !== favoriteId));
         console.log('✅ Successfully removed from favorites');
         return { success: true };
@@ -154,6 +156,7 @@ export const useFavorites = (): UseFavoritesReturn => {
       const result = await favoriteService.updateFavorite(favoriteId, updates);
       
       if (result.success && result.data) {
+        // Actualizar en la lista local
         setFavorites(prev => prev.map(fav => 
           fav._id === favoriteId ? { ...fav, ...updates } : fav
         ));
@@ -180,12 +183,14 @@ export const useFavorites = (): UseFavoritesReturn => {
    */
   const isMovieInFavorites = useCallback(async (movieId: string): Promise<boolean> => {
     try {
+      // Si ya tenemos los favoritos cargados, usar el cache local
       if (isLoaded && favorites.length >= 0) {
         const isFavorite = favorites.some(fav => fav.movieId._id === movieId);
         console.log(`🔍 Cache local - Película ${movieId} ${isFavorite ? 'está' : 'no está'} en favoritos`);
         return isFavorite;
       }
       
+      // Solo hacer petición al backend si no tenemos datos locales
       console.log(`🌐 Petición al backend para verificar ${movieId}`);
       return await favoriteService.isMovieInFavorites(movieId);
     } catch (error) {
@@ -251,6 +256,7 @@ export const useFavorites = (): UseFavoritesReturn => {
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'token' && !e.newValue) {
+        // Token eliminado, limpiar favoritos
         clearFavorites();
       }
     };

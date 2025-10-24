@@ -7,8 +7,6 @@ import App from "./App";
 // Importar estilos en orden correcto: main.scss incluye variables y mixins, luego estilos globales
 import "./styles/main.scss";
 import "./index.scss";
-// Importar diagnóstico rápido para producción
-import './utils/quickDiagnostic';
 
 /**
  * Ensures the root element exists before rendering the app.

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X, Heart } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
+// @ts-ignore
 import InteractiveRating from '../rating/InteractiveRating';
 import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
@@ -33,17 +34,21 @@ export default function UnyFilmPlayer({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
 
+  // Cloudinary instance
   const cld = new Cloudinary({ cloud: { cloudName: 'dlyqtvvxv' } });
 
+  // Hook para calificaciones en tiempo real
   const { ratingStats, loadRatingStats } = useRealtimeRatings({
     movieId: movie?._id || '',
     autoLoad: true,
     enableRealtime: true
   });
 
+  // Calcular valores derivados
   const hasRealRatings = ratingStats && ratingStats.totalRatings > 0;
   const averageRating = ratingStats?.averageRating || 0;
 
+  // Debug: Log cuando cambien las estadísticas
   useEffect(() => {
     console.log('📊 Player: Rating stats actualizadas:', {
       movieId: movie?._id,
@@ -53,6 +58,7 @@ export default function UnyFilmPlayer({
     });
   }, [ratingStats, hasRealRatings, averageRating, movie?._id]);
 
+  // Forzar re-render cuando cambien las estadísticas
   const [forceUpdate, setForceUpdate] = useState(0);
   useEffect(() => {
     if (ratingStats) {
@@ -60,6 +66,7 @@ export default function UnyFilmPlayer({
     }
   }, [ratingStats]);
 
+  // Forzar actualización cuando cambie el movieId
   useEffect(() => {
     if (movie?._id) {
       console.log('🔄 Player: Recargando estadísticas para película:', movie._id);
@@ -67,6 +74,7 @@ export default function UnyFilmPlayer({
     }
   }, [movie?._id, loadRatingStats]);
 
+  // Listener directo para debug - verificar si los eventos llegan
   useEffect(() => {
     if (!movie?._id) return;
 
@@ -83,6 +91,7 @@ export default function UnyFilmPlayer({
       }
     };
 
+    // Escuchar todos los eventos de rating
     window.addEventListener('rating-updated', handleRatingUpdate as EventListener);
     window.addEventListener('rating-stats-updated', handleRatingUpdate as EventListener);
     window.addEventListener('ratingUpdated', handleRatingUpdate as EventListener);
@@ -94,10 +103,13 @@ export default function UnyFilmPlayer({
     };
   }, [movie?._id, loadRatingStats]);
 
+  // Hook para favoritos
   const { isMovieInFavorites, addToFavorites, removeFromFavorites, getFavoriteById } = useFavoritesContext();
 
+  // Handle rating update
   const handleRatingUpdate = (newStats: RatingStats) => {
     setRatingStats(newStats);
+    // Notify parent component if needed
   };
 
 
@@ -109,6 +121,7 @@ export default function UnyFilmPlayer({
     const handleLoadedMetadata = () => {
       setDuration(video.duration);
       
+      // Inicializar subtítulos si están habilitados
       if (subtitlesEnabled && !subtitleTrack) {
         const track = video.addTextTrack('subtitles', 'Subtítulos', 'es');
         track.mode = 'showing';
@@ -205,9 +218,11 @@ export default function UnyFilmPlayer({
     onQualityChange?.(newQuality);
     
     if (videoRef.current && movie?.videoUrl) {
+      // Usar transformaciones manuales de Cloudinary
       let newVideoUrl = '';
       const baseUrl = movie.videoUrl;
       
+      // Si es Cloudinary, aplicar transformaciones
       if (baseUrl.includes('cloudinary.com')) {
         const urlParts = baseUrl.split('/');
         const publicIdWithVersion = urlParts[urlParts.length - 1];
@@ -230,12 +245,15 @@ export default function UnyFilmPlayer({
             newVideoUrl = baseUrl; // Usar URL original
         }
         
+        // Guardar tiempo actual para continuar desde donde estaba
         const currentTime = videoRef.current.currentTime;
         const wasPlaying = !videoRef.current.paused;
         
+        // Cambiar la fuente del video
         videoRef.current.src = newVideoUrl;
         videoRef.current.load();
         
+        // Restaurar tiempo y estado de reproducción
         videoRef.current.addEventListener('loadedmetadata', () => {
           videoRef.current!.currentTime = currentTime;
           if (wasPlaying) {
@@ -243,6 +261,7 @@ export default function UnyFilmPlayer({
           }
         }, { once: true });
         
+        // Mostrar mensaje de confirmación
         const qualityNames = {
           'auto': 'Automática',
           'high': 'Alta (1080p)',
@@ -261,10 +280,12 @@ export default function UnyFilmPlayer({
     setSubtitlesEnabled(newSubtitlesEnabled);
     onSubtitleToggle?.(newSubtitlesEnabled);
     
+    // Activar/desactivar subtítulos en el video
     if (videoRef.current) {
       const video = videoRef.current;
       
       if (newSubtitlesEnabled) {
+        // Crear pista de subtítulos si no existe
         if (!subtitleTrack) {
           const track = video.addTextTrack('subtitles', 'Subtítulos', 'es');
           track.mode = 'showing';
@@ -273,6 +294,7 @@ export default function UnyFilmPlayer({
           subtitleTrack.mode = 'showing';
         }
       } else {
+        // Ocultar subtítulos
         if (subtitleTrack) {
           subtitleTrack.mode = 'hidden';
         }

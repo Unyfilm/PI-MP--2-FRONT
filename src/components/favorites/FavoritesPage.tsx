@@ -33,13 +33,20 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     mostFavoritedGenre: 'N/A'
   });
 
+  /**
+   * Cargar favoritos al montar el componente (optimizado)
+   */
   useEffect(() => {
+    // Solo cargar si no hay favoritos y no está cargando
     if (!isLoaded && favorites.length === 0 && !loading) {
       console.log('📋 FavoritesPage: Cargando favoritos...');
       loadFavorites();
     }
   }, [isLoaded, favorites.length, loading, loadFavorites]);
 
+  /**
+   * Actualizar estadísticas cuando cambien los favoritos
+   */
   useEffect(() => {
     const currentStats = getStats();
     setStats({
@@ -49,6 +56,9 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   }, [favorites, getStats]);
 
 
+  /**
+   * Obtener género más favorito
+   */
   const getMostFavoritedGenre = (byGenre: Record<string, number>): string => {
     const entries = Object.entries(byGenre);
     if (entries.length === 0) return 'N/A';
@@ -60,6 +70,9 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     return mostFavorited;
   };
 
+  /**
+   * Manejar eliminación de favorito
+   */
   const handleRemoveFavorite = async (favoriteId: string, movieTitle: string) => {
     if (isRemoving) return;
     
@@ -81,11 +94,17 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     }
   };
 
+  /**
+   * Manejar recarga de favoritos
+   */
   const handleRefresh = async () => {
     console.log('🔄 Refreshing favorites...');
     await loadFavorites();
   };
 
+  /**
+   * Renderizar estado de carga
+   */
   if (loading && favorites.length === 0) {
     return (
       <div className="favorites-page">
@@ -97,6 +116,9 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     );
   }
 
+  /**
+   * Renderizar estado de error
+   */
   if (error) {
     return (
       <div className="favorites-page">
@@ -108,6 +130,9 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     );
   }
 
+  /**
+   * Renderizar estado vacío
+   */
   if (favorites.length === 0) {
     return (
       <div className="favorites-page">
@@ -124,6 +149,9 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     );
   }
 
+  /**
+   * Renderizar lista de favoritos
+   */
   return (
     <div className="favorites-page">
       <div className="favorites-page__header">
@@ -133,6 +161,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
         </div>
       </div>
 
+      {/* Estadísticas */}
       <div className="favorites-page__stats">
         <div className="stat-card">
           <div className="stat-icon">
@@ -155,6 +184,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
         </div>
       </div>
 
+      {/* Lista de favoritos */}
       <div className="favorites-page__grid">
         {favorites.map((favorite) => (
           <div key={favorite._id} className="favorite-card">
@@ -169,6 +199,8 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
               movieId={favorite.movieId._id}
               onMovieClick={onMovieClick}
             />
+            
+            {/* Información adicional del favorito */}
             {(favorite.notes || favorite.rating) && (
               <div className="favorite-card__info">
                 {favorite.notes && (
