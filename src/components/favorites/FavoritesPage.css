@@ -111,10 +111,11 @@
 }
 
 .favorites-page__stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
   margin-bottom: 3rem;
+  flex-wrap: wrap;
 }
 
 .stat-card {
@@ -126,6 +127,8 @@
   align-items: center;
   gap: 1rem;
   transition: all 0.3s ease;
+  min-width: 200px;
+  max-width: 250px;
 }
 
 .stat-card:hover {
@@ -214,8 +217,14 @@
   }
   
   .favorites-page__stats {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: center;
     gap: 1rem;
+  }
+  
+  .stat-card {
+    min-width: 100%;
+    max-width: 100%;
   }
   
   .favorites-page__grid {

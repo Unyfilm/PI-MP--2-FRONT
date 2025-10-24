@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Heart, Trash2, Star, Calendar, Tag, Play, RefreshCw } from 'lucide-react';
+import { Heart, Trash2, Calendar, Tag, Play, RefreshCw } from 'lucide-react';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import { type Favorite } from '../../services/favoriteService';
 import UnyFilmCard from '../card/UnyFilmCard';
@@ -30,7 +30,6 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   const [isRemoving, setIsRemoving] = useState<string | null>(null);
   const [stats, setStats] = useState({
     totalFavorites: 0,
-    averageRating: 0,
     mostFavoritedGenre: 'N/A'
   });
 
@@ -52,21 +51,10 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     const currentStats = getStats();
     setStats({
       totalFavorites: currentStats.total,
-      averageRating: calculateAverageRating(favorites),
       mostFavoritedGenre: getMostFavoritedGenre(currentStats.byGenre)
     });
   }, [favorites, getStats]);
 
-  /**
-   * Calcular rating promedio
-   */
-  const calculateAverageRating = (favorites: Favorite[]): number => {
-    const ratedFavorites = favorites.filter(fav => fav.rating && fav.rating > 0);
-    if (ratedFavorites.length === 0) return 0;
-    
-    const totalRating = ratedFavorites.reduce((sum, fav) => sum + (fav.rating || 0), 0);
-    return Math.round((totalRating / ratedFavorites.length) * 10) / 10;
-  };
 
   /**
    * Obtener género más favorito
@@ -182,16 +170,6 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
           <div className="stat-content">
             <div className="stat-value">{stats.totalFavorites}</div>
             <div className="stat-label">Total Favoritos</div>
-          </div>
-        </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon">
-            <Star size={20} />
-          </div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.averageRating}</div>
-            <div className="stat-label">Rating Promedio</div>
           </div>
         </div>
         
