@@ -30,10 +30,8 @@ export const useClickOutside = <T extends HTMLElement = HTMLDivElement>(callback
       }
     };
 
-    // Add listener on mount
     document.addEventListener('mousedown', handleClickOutside);
 
-    // Cleanup listener on unmount
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };

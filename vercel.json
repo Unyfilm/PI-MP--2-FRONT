@@ -17,7 +17,10 @@
   ],
   "env": {
     "VITE_NODE_ENV": "production",
-    "VITE_API_BASE_URL": "https://pi-mp-2-back-prod.onrender.com/api"
+    "VITE_API_BASE_URL": "https://pi-mp-2-back-prod.onrender.com/api",
+    "VITE_API_TIMEOUT": "30000",
+    "VITE_ENABLE_DEBUG": "false",
+    "VITE_ENABLE_ANALYTICS": "true"
   },
   "buildCommand": "npm ci && npm run build",
   "installCommand": "npm ci"

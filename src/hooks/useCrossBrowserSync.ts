@@ -18,17 +18,14 @@ export const useCrossBrowserSync = () => {
   });
 
   useEffect(() => {
-    // Iniciar sincronización entre navegadores
     console.log('🌐 [HOOK] Iniciando sincronización entre navegadores...');
     crossBrowserService.startPolling();
 
-    // Actualizar estado cada segundo
     const statusInterval = setInterval(() => {
       const currentStatus = getCrossBrowserStatus();
       setStatus(currentStatus);
     }, 1000);
 
-    // Cleanup al desmontar
     return () => {
       clearInterval(statusInterval);
       console.log('🌐 [HOOK] Limpiando sincronización entre navegadores...');
