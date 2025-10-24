@@ -54,7 +54,7 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
   const [featuredMovies, setFeaturedMovies] = useState<Movie[]>([]);
   const carouselIntervalRef = useRef<number | null>(null);
 
-  const { hasRealRatings, averageRating, totalRatings } = useRealRating(featuredMovie?._id);
+  const { hasRealRatings, averageRating } = useRealRating(featuredMovie?._id);
   const getHeroImage = (movie: Movie): string => {
     if (movie.port) return movie.port;
     

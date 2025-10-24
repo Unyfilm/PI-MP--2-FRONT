@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { HelpCircle, AlertTriangle, CheckCircle, Info, Zap, Shield, Eye, Globe, ArrowLeft, Users, Settings, Brain, Accessibility } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { HelpCircle, AlertTriangle, CheckCircle, Info, Zap, Shield, Eye, Globe, ArrowLeft, Brain, Accessibility } from 'lucide-react';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import './UsabilityFeatures.css';
 
@@ -19,8 +19,7 @@ export default function UsabilityFeatures() {
   const helpModalRef = useClickOutside(() => setShowHelp(false));
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   
-  // Debounce para evitar múltiples ejecuciones
-  const lastKeyPress = useRef<number>(0);
+  // Debounce para evitar múltiples ejecuciones (variable removida, no utilizada)
 
   // Funciones auxiliares para los atajos
   const focusSidebar = () => {
@@ -223,7 +222,7 @@ export default function UsabilityFeatures() {
     // Agregar event listeners para los atajos
     const handleKeyDown = (event: KeyboardEvent) => {
       // Prevenir atajos del navegador solo para nuestros atajos
-      if (event.altKey || (event.key === ' ' && !event.target?.matches('input, textarea'))) {
+      if (event.altKey || (event.key === ' ' && event.target && 'matches' in event.target && !(event.target as Element).matches('input, textarea'))) {
         event.preventDefault();
       }
 
@@ -270,7 +269,7 @@ export default function UsabilityFeatures() {
       }
 
       // Reproductor de video
-      if (event.key === ' ' && !event.target?.matches('input, textarea')) {
+      if (event.key === ' ' && event.target && 'matches' in event.target && !(event.target as Element).matches('input, textarea')) {
         toggleVideoPlayback();
         return;
       }

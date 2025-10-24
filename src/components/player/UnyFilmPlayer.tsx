@@ -54,7 +54,7 @@ export default function UnyFilmPlayer({
     });
   }, [ratingStats, hasRealRatings, averageRating, movie?._id]);
 
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [_forceUpdate, setForceUpdate] = useState(0);
   useEffect(() => {
     if (ratingStats) {
       setForceUpdate(prev => prev + 1);
