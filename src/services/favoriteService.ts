@@ -377,10 +377,6 @@ class FavoriteService {
                 throw new Error(PRODUCTION_ERROR_MESSAGES.AUTH_ERROR);
               }
 
-      if (response.status === 403) {
-        throw new Error('Error del servidor: No se pudo agregar a favoritos (403)');
-      }
-
               if (response.status === 409) {
                 throw new Error(PRODUCTION_ERROR_MESSAGES.CONFLICT);
               }
