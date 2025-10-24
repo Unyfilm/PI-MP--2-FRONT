@@ -147,12 +147,18 @@ class FavoriteService {
    * The backend expects a MongoDB ObjectId, not a number
    * @private
    * @returns {Promise<string>} User ID as ObjectId
-   * @throws {Error} When no user data is found
+   * @throws {Error} When no user data is found or user is not authenticated
    */
   private async getUserId(): Promise<string> {
     const userData = localStorage.getItem('auth:user');
+    const token = localStorage.getItem('token');
+    
     if (!userData) {
-      throw new Error('No user data found');
+      throw new Error('No user data found - user not authenticated');
+    }
+    
+    if (!token) {
+      throw new Error('No authentication token found - user not logged in');
     }
     
     try {
@@ -163,31 +169,46 @@ class FavoriteService {
         user,
         userId,
         userIdType: typeof userId,
-        userIdValue: userId
+        userIdValue: userId,
+        hasToken: !!token
       });
       
+      // Prioridad 1: ObjectId del JWT token (más confiable)
       const tokenObjectId = this.extractObjectIdFromToken();
       if (tokenObjectId) {
         console.log('✅ ObjectId extraído del JWT token:', tokenObjectId);
         return tokenObjectId;
       }
       
+      // Prioridad 2: Intentar obtener ObjectId del backend
       if (typeof userId === 'number' || (typeof userId === 'string' && /^\d+$/.test(userId))) {
         console.log('🔍 UserId es un número, obteniendo ObjectId del backend...');
-        return await this.getUserObjectId();
+        try {
+          return await this.getUserObjectId();
+        } catch (backendError) {
+          console.warn('⚠️ Error obteniendo ObjectId del backend, usando temporal:', backendError);
+          return this.generateTemporaryObjectId();
+        }
       }
       
+      // Prioridad 3: Si ya es un ObjectId válido
       if (typeof userId === 'string' && /^[0-9a-fA-F]{24}$/.test(userId)) {
         console.log('✅ UserId es un ObjectId válido');
         return userId;
       }
       
+      // Prioridad 4: Intentar backend como último recurso
       console.log('⚠️ UserId no es ni número ni ObjectId válido, obteniendo del backend...');
-      return await this.getUserObjectId();
+      try {
+        return await this.getUserObjectId();
+      } catch (backendError) {
+        console.warn('⚠️ Error obteniendo ObjectId del backend, usando temporal:', backendError);
+        return this.generateTemporaryObjectId();
+      }
       
     } catch (error) {
       console.error('Error parsing user data:', error);
-      throw new Error('Invalid user data format');
+      throw new Error('Invalid user data format - please log in again');
     }
   }
 
@@ -298,7 +319,8 @@ class FavoriteService {
   }
 
   /**
-   * Generar un ObjectId temporal basado en el userId numérico
+   * Generar un ObjectId temporal CONSISTENTE basado únicamente en el userId
+   * Esto asegura que el mismo usuario siempre tenga el mismo ObjectId temporal
    */
   private generateTemporaryObjectId(): string {
     const userData = localStorage.getItem('auth:user');
@@ -309,15 +331,13 @@ class FavoriteService {
     const user = JSON.parse(userData);
     const userId = user.id;
     
-    const timestamp = Date.now().toString(16);
-    const randomPart = Math.random().toString(16).substring(2, 10);
-    const userIdPart = String(userId).padStart(8, '0');
+    // Generar ObjectId consistente basado únicamente en userId
+    // Formato: 000000000000000000000000 + userId (8 dígitos hex)
+    const userIdHex = userId.toString(16).padStart(8, '0');
+    const consistentObjectId = '000000000000000000000000'.substring(0, 16) + userIdHex;
     
-    const tempObjectId = timestamp + randomPart + userIdPart;
-    const paddedObjectId = tempObjectId.padEnd(24, '0').substring(0, 24);
-    
-    console.log('🔧 ObjectId temporal generado:', paddedObjectId, 'para userId:', userId);
-    return paddedObjectId;
+    console.log('🔧 ObjectId temporal CONSISTENTE generado:', consistentObjectId, 'para userId:', userId);
+    return consistentObjectId;
   }
 
   /**
