@@ -8,7 +8,7 @@ import './UnyFilmCatalog.css';
 /**
  * Catalog page component with movie grid and filters
  */
-export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick, searchQuery: initialSearchQuery }: UnyFilmCatalogProps) {
+export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: _toggleFavorite, onMovieClick, searchQuery: initialSearchQuery }: UnyFilmCatalogProps) {
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [viewMode, setViewMode] = useState('grid');

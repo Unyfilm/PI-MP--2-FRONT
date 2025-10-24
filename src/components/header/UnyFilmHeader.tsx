@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, User, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -55,12 +55,7 @@ export default function UnyFilmHeader({
     }
   };
 
-  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (onSearchSubmit) {
-      onSearchSubmit(searchQuery);
-    }
-  };
+  // Form submission is handled automatically through onChange debounce
 
   const handleProfileClick = () => {
     setShowProfileMenu(!showProfileMenu);
