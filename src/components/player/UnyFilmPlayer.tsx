@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X, Heart } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
 // @ts-ignore
 import InteractiveRating from '../rating/InteractiveRating';
-import { useRealRating } from '../../hooks/useRealRating';
+import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
+import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import type { EnhancedPlayerProps } from '../../types';
 import type { RatingStats } from '../../services/ratingService';
 import './UnyFilmPlayer.css';
@@ -36,8 +37,74 @@ export default function UnyFilmPlayer({
   // Cloudinary instance
   const cld = new Cloudinary({ cloud: { cloudName: 'dlyqtvvxv' } });
 
-  // Hook para calificaciones reales
-  const { hasRealRatings, averageRating } = useRealRating(movie?._id);
+  // Hook para calificaciones en tiempo real
+  const { ratingStats, loadRatingStats } = useRealtimeRatings({
+    movieId: movie?._id || '',
+    autoLoad: true,
+    enableRealtime: true
+  });
+
+  // Calcular valores derivados
+  const hasRealRatings = ratingStats && ratingStats.totalRatings > 0;
+  const averageRating = ratingStats?.averageRating || 0;
+
+  // Debug: Log cuando cambien las estadísticas
+  useEffect(() => {
+    console.log('📊 Player: Rating stats actualizadas:', {
+      movieId: movie?._id,
+      ratingStats,
+      hasRealRatings,
+      averageRating
+    });
+  }, [ratingStats, hasRealRatings, averageRating, movie?._id]);
+
+  // Forzar re-render cuando cambien las estadísticas
+  const [forceUpdate, setForceUpdate] = useState(0);
+  useEffect(() => {
+    if (ratingStats) {
+      setForceUpdate(prev => prev + 1);
+    }
+  }, [ratingStats]);
+
+  // Forzar actualización cuando cambie el movieId
+  useEffect(() => {
+    if (movie?._id) {
+      console.log('🔄 Player: Recargando estadísticas para película:', movie._id);
+      loadRatingStats();
+    }
+  }, [movie?._id, loadRatingStats]);
+
+  // Listener directo para debug - verificar si los eventos llegan
+  useEffect(() => {
+    if (!movie?._id) return;
+
+    const handleRatingUpdate = (event: CustomEvent) => {
+      console.log('🎯 [PLAYER] Evento recibido directamente:', {
+        eventType: event.type,
+        movieId: movie._id,
+        eventDetail: event.detail
+      });
+      
+      if (event.detail?.movieId === movie._id) {
+        console.log('🎯 [PLAYER] Evento para esta película, forzando recarga');
+        loadRatingStats();
+      }
+    };
+
+    // Escuchar todos los eventos de rating
+    window.addEventListener('rating-updated', handleRatingUpdate as EventListener);
+    window.addEventListener('rating-stats-updated', handleRatingUpdate as EventListener);
+    window.addEventListener('ratingUpdated', handleRatingUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('rating-updated', handleRatingUpdate as EventListener);
+      window.removeEventListener('rating-stats-updated', handleRatingUpdate as EventListener);
+      window.removeEventListener('ratingUpdated', handleRatingUpdate as EventListener);
+    };
+  }, [movie?._id, loadRatingStats]);
+
+  // Hook para favoritos
+  const { isMovieInFavorites, addToFavorites, removeFromFavorites, getFavoriteById } = useFavoritesContext();
 
   // Handle rating update
   const handleRatingUpdate = (newStats: RatingStats) => {
@@ -273,8 +340,37 @@ export default function UnyFilmPlayer({
         <div className="unyfilm-movie-info-section" style={{paddingBottom: 10}}>
           <div className="unyfilm-movie-header">
             <h1 className="unyfilm-movie-title-main">{movie?.title || 'Película'}</h1>
-            <div className="unyfilm-movie-rating">
-              <span className="star">★</span> {hasRealRatings ? averageRating.toFixed(1) : '0'}/5
+            <div className="unyfilm-movie-controls">
+              <div className="unyfilm-movie-rating">
+                <span className="star">★</span> {hasRealRatings ? averageRating.toFixed(1) : '0'}/5
+                {/* Debug info */}
+                <small style={{fontSize: '10px', opacity: 0.7, marginLeft: '8px'}}>
+                  ({ratingStats?.totalRatings || 0} ratings)
+                </small>
+              </div>
+              <button 
+                className={`unyfilm-favorite-btn ${movie?._id && isMovieInFavorites(movie._id) ? 'active' : ''}`}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (!movie?._id) return;
+                  
+                  try {
+                    if (isMovieInFavorites(movie._id)) {
+                      const favorite = getFavoriteById(movie._id);
+                      if (favorite) {
+                        await removeFromFavorites(favorite._id);
+                      }
+                    } else {
+                      await addToFavorites(movie._id);
+                    }
+                  } catch (error) {
+                    console.error('Error toggling favorite:', error);
+                  }
+                }}
+                title={movie?._id && isMovieInFavorites(movie._id) ? 'Eliminar de favoritos' : 'Agregar a favoritos'}
+              >
+                <Heart size={20} />
+              </button>
             </div>
           </div>
         </div>

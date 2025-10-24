@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { getMovieRatingStats, getUserRating, rateMovie, updateRating, deleteRating } from '../../services/ratingService';
+import { broadcastRatingUpdate } from '../../hooks/useRatingUpdates';
 import type { RatingStats } from '../../services/ratingService';
 import './InteractiveRating.css';
 
@@ -80,6 +81,9 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       
       await loadRatingData();
       
+      // Disparar evento global para notificar a otros componentes
+      broadcastRatingUpdate(movieId, rating, userRating ? 'update' : 'create');
+      
       if (onRatingUpdate && ratingStats) {
         onRatingUpdate(ratingStats);
       }
@@ -97,6 +101,9 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       await deleteRating(movieId);
       setUserRating(null);
       await loadRatingData();
+      
+      // Disparar evento global para notificar a otros componentes
+      broadcastRatingUpdate(movieId, 0, 'delete');
       
       if (onRatingUpdate && ratingStats) {
         onRatingUpdate(ratingStats);
