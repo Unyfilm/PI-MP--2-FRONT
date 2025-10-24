@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:production": "NODE_ENV=production vite build --config vite.config.production.ts",
     "preview": "vite preview",
     "type-check": "npx tsc --noEmit",
     "lint": "echo 'Linting not configured yet'",
     "test": "vitest",
     "test:run": "vitest run",
-    "ci": "npm run type-check && npm run build"
+    "ci": "npm run type-check && npm run build",
+    "verify:production": "node scripts/verify-production.js"
   },
   "keywords": [
     "react",

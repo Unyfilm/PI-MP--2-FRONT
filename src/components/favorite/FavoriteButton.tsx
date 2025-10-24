@@ -33,11 +33,9 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   const [isMovieFavorite, setIsMovieFavorite] = useState(false);
   const [favoriteId, setFavoriteId] = useState<string | null>(null);
   
-  // Verificar si la película está en favoritos usando el contexto global (sin peticiones)
   useEffect(() => {
     const checkFavoriteStatus = () => {
       try {
-        // Usar el contexto global de favoritos (sin peticiones al backend)
         const isFavorite = isMovieInFavorites(movieId);
         const favorite = getFavoriteById(movieId);
         
@@ -51,11 +49,8 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     };
     
     checkFavoriteStatus();
-  }, [movieId, favorites, isMovieInFavorites, getFavoriteById]); // Dependencias del contexto
+  }, [movieId, favorites, isMovieInFavorites, getFavoriteById]);
 
-  /**
-   * Manejar toggle de favoritos
-   */
   const handleToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -70,7 +65,6 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     
     try {
       if (isMovieFavorite && favoriteId) {
-        // Eliminar de favoritos
         console.log('🗑️ Removing from favorites:', movieId);
         const result = await removeFromFavorites(favoriteId);
         
@@ -83,14 +77,12 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
           console.error('❌ Failed to remove from favorites:', result.message);
         }
       } else {
-        // Agregar a favoritos
         console.log('➕ Adding to favorites:', movieId);
         const result = await addToFavorites(movieId);
         
         if (result.success) {
           console.log('✅ Successfully added to favorites');
           setIsMovieFavorite(true);
-          // Actualizar favoriteId si está disponible en la respuesta
           if (result.data && result.data._id) {
             setFavoriteId(result.data._id);
           }
@@ -103,14 +95,10 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
       console.error('❌ Error toggling favorite:', error);
     } finally {
       setIsToggling(false);
-      // Mantener animación por un momento
       setTimeout(() => setIsAnimating(false), 600);
     }
   };
 
-  /**
-   * Obtener clases CSS según el tamaño
-   */
   const getSizeClasses = (): string => {
     switch (size) {
       case 'small':

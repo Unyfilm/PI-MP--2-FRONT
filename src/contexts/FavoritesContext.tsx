@@ -8,6 +8,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useFavorites } from '../hooks/useFavorites';
 import { type Favorite } from '../services/favoriteService';
+import { PRODUCTION_FAVORITES_CONFIG, FAVORITES_PRODUCTION_ERRORS, FAVORITES_PRODUCTION_MESSAGES } from './FavoritesContext.production';
 
 interface FavoritesContextType {
   favorites: Favorite[];
@@ -31,12 +32,10 @@ interface FavoritesProviderProps {
 export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }) => {
   const favoritesHook = useFavorites();
   
-  // Función optimizada para verificar si una película está en favoritos (sin peticiones)
   const isMovieInFavorites = (movieId: string): boolean => {
     return favoritesHook.favorites.some(fav => fav.movieId._id === movieId);
   };
 
-  // Función optimizada para obtener favorito por movieId (sin peticiones)
   const getFavoriteById = (movieId: string): Favorite | null => {
     return favoritesHook.favorites.find(fav => fav.movieId._id === movieId) || null;
   };
