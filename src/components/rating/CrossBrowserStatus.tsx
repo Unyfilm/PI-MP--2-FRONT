@@ -8,7 +8,7 @@ const CrossBrowserStatus: React.FC = () => {
   const { browserId, isActive, pollInterval } = useCrossBrowserSync();
 
   // Solo mostrar en desarrollo
-  if (process.env.NODE_ENV !== 'development') {
+  if (import.meta.env.MODE !== 'development') {
     return null;
   }
 
