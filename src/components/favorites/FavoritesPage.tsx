@@ -1,8 +1,8 @@
 /**
- * Página de Favoritos
+ * Favorites Page
  * 
- * Muestra la lista de películas favoritas del usuario
- * con funcionalidad de eliminación y estadísticas.
+ * Displays the user's list of favorite movies
+ * with removal functionality and statistics.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -35,7 +35,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   });
 
   /**
-   * Cargar favoritos al montar el componente (optimizado)
+   * Load favorites on component mount (only if not loaded)
    */
   useEffect(() => {
     if (!isLoaded && favorites.length === 0 && !loading) {
@@ -45,7 +45,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   }, [isLoaded, favorites.length, loading, loadFavorites]);
 
   /**
-   * Actualizar estadísticas cuando cambien los favoritos
+   * Update statistics when favorites change
    */
   useEffect(() => {
     const currentStats = getStats();
@@ -57,7 +57,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
 
 
   /**
-   * Obtener género más favorito
+   * Get most favorited genre
    */
   const getMostFavoritedGenre = (byGenre: Record<string, number>): string => {
     const entries = Object.entries(byGenre);
@@ -95,7 +95,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   };
 
   /**
-   * Manejar recarga de favoritos
+   * Handle refresh favorites
    */
   const handleRefresh = async () => {
     console.log('🔄 Refreshing favorites...');
@@ -103,7 +103,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   };
 
   /**
-   * Renderizar estado de carga
+   * Render loading state
    */
   if (loading && favorites.length === 0) {
     return (
@@ -117,7 +117,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   }
 
   /**
-   * Renderizar estado de error
+   * Render error state
    */
   if (error) {
     return (
@@ -131,7 +131,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   }
 
   /**
-   * Renderizar estado vacío
+   * Render empty state
    */
   if (favorites.length === 0) {
     return (
@@ -150,7 +150,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   }
 
   /**
-   * Renderizar lista de favoritos
+   * Render favorites list
    */
   return (
     <div className="favorites-page">
@@ -161,7 +161,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
         </div>
       </div>
 
-      {/* Estadísticas */}
+      {/* Stats */}
       <div className="favorites-page__stats">
         <div className="stat-card">
           <div className="stat-icon">
