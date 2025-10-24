@@ -18,14 +18,17 @@ export const useRealtimeConnection = () => {
   });
 
   useEffect(() => {
+    // Conectar al servicio en tiempo real
     console.log('🔌 [HOOK] Iniciando conexión en tiempo real...');
     realtimeService.connect();
 
+    // Actualizar estado cada segundo
     const statusInterval = setInterval(() => {
       const currentStatus = getRealtimeStatus();
       setStatus(currentStatus);
     }, 1000);
 
+    // Cleanup al desmontar
     return () => {
       clearInterval(statusInterval);
       console.log('🔌 [HOOK] Limpiando conexión en tiempo real...');

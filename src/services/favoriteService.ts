@@ -6,7 +6,6 @@
  */
 
 import { API_CONFIG } from '../config/environment';
-import { PRODUCTION_CONFIG, FAVORITES_ENDPOINTS, PRODUCTION_ERROR_MESSAGES } from '../config/production';
 
 export interface Favorite {
   _id: string;
@@ -50,7 +49,7 @@ class FavoriteService {
   private baseUrl: string;
   private favoritesCache: { [movieId: string]: { isFavorite: boolean; favoriteId?: string } } = {};
   private cacheTimestamp: number = 0;
-  private readonly CACHE_DURATION = PRODUCTION_CONFIG.FAVORITES.CACHE_DURATION;
+  private readonly CACHE_DURATION = 30000; // 30 segundos
 
   constructor() {
     this.baseUrl = API_CONFIG.BASE_URL;
@@ -85,6 +84,7 @@ class FavoriteService {
       const user = JSON.parse(userData);
       const userId = user.id;
       
+      // Debug logging
       console.log('🔍 Debug getUserId:', {
         user,
         userId,
@@ -92,22 +92,26 @@ class FavoriteService {
         userIdValue: userId
       });
       
+      // Intentar extraer ObjectId del JWT token primero
       const tokenObjectId = this.extractObjectIdFromToken();
       if (tokenObjectId) {
         console.log('✅ ObjectId extraído del JWT token:', tokenObjectId);
         return tokenObjectId;
       }
       
+      // Si el userId es un número, necesitamos obtener el ObjectId del backend
       if (typeof userId === 'number' || (typeof userId === 'string' && /^\d+$/.test(userId))) {
         console.log('🔍 UserId es un número, obteniendo ObjectId del backend...');
         return await this.getUserObjectId();
       }
       
+      // Si ya es un ObjectId válido, usarlo directamente
       if (typeof userId === 'string' && /^[0-9a-fA-F]{24}$/.test(userId)) {
         console.log('✅ UserId es un ObjectId válido');
         return userId;
       }
       
+      // Si no es ni número ni ObjectId válido, intentar obtener del backend
       console.log('⚠️ UserId no es ni número ni ObjectId válido, obteniendo del backend...');
       return await this.getUserObjectId();
       
@@ -125,12 +129,14 @@ class FavoriteService {
       const token = localStorage.getItem('token');
       if (!token) return null;
       
+      // Decodificar el JWT token (solo la parte del payload)
       const payload = token.split('.')[1];
       if (!payload) return null;
       
       const decodedPayload = JSON.parse(atob(payload));
       console.log('🔍 JWT payload:', decodedPayload);
       
+      // Verificar si el token está expirado
       if (decodedPayload.exp) {
         const currentTime = Math.floor(Date.now() / 1000);
         const expirationTime = decodedPayload.exp;
@@ -149,6 +155,7 @@ class FavoriteService {
         }
       }
       
+      // Buscar ObjectId en diferentes campos posibles
       const possibleFields = ['_id', 'id', 'userId', 'user_id', 'sub'];
       for (const field of possibleFields) {
         if (decodedPayload[field] && /^[0-9a-fA-F]{24}$/.test(decodedPayload[field])) {
@@ -188,6 +195,7 @@ class FavoriteService {
         console.log('📋 Datos del perfil:', data);
         
         if (data.success && data.data) {
+          // Buscar el ID en diferentes campos posibles
           const possibleIdFields = ['_id', 'id', 'userId', 'user_id'];
           
           for (const field of possibleIdFields) {
@@ -195,11 +203,13 @@ class FavoriteService {
               const userId = data.data[field];
               console.log(`✅ ID encontrado en campo '${field}':`, userId);
               
+              // Si es un ObjectId válido, usarlo
               if (/^[0-9a-fA-F]{24}$/.test(userId)) {
                 console.log('✅ ObjectId válido encontrado:', userId);
                 return userId;
               }
               
+              // Si es un número, generar ObjectId temporal
               if (typeof userId === 'number' || /^\d+$/.test(userId)) {
                 console.log('⚠️ ID es un número, generando ObjectId temporal...');
                 return this.generateTemporaryObjectId();
@@ -235,6 +245,8 @@ class FavoriteService {
     const user = JSON.parse(userData);
     const userId = user.id;
     
+    // Generar un ObjectId temporal basado en el userId
+    // Esto es una solución temporal hasta que el backend proporcione el ObjectId real
     const timestamp = Date.now().toString(16);
     const randomPart = Math.random().toString(16).substring(2, 10);
     const userIdPart = String(userId).padStart(8, '0');
@@ -276,7 +288,7 @@ class FavoriteService {
         ...filters
       });
 
-              const response = await fetch(`${this.baseUrl}${FAVORITES_ENDPOINTS.GET_MY_FAVORITES}?${queryParams}`, {
+      const response = await fetch(`${this.baseUrl}/favorites/me?${queryParams}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -310,6 +322,7 @@ class FavoriteService {
     try {
       const userId = await this.getUserId();
       
+      // Debug logging
       console.log('🔍 Debug addToFavorites:', {
         movieId,
         movieIdLength: movieId.length,
@@ -320,6 +333,7 @@ class FavoriteService {
         rating
       });
 
+      // Validar datos antes de enviar
       if (!movieId || typeof movieId !== 'string' || movieId.trim() === '') {
         throw new Error('ID de película requerido');
       }
@@ -328,6 +342,8 @@ class FavoriteService {
         throw new Error('ID de usuario requerido');
       }
 
+      // Preparar el body con validación
+      // El backend requiere userId en el request body
       const requestBody = {
         userId: String(userId).trim(),
         movieId: String(movieId).trim(),
@@ -335,6 +351,7 @@ class FavoriteService {
         ...(rating !== null && rating !== undefined && rating >= 1 && rating <= 5 && { rating })
       };
 
+      // Validación adicional del formato
       if (!/^[0-9a-fA-F]{24}$/.test(movieId)) {
         console.warn('⚠️ MovieId no parece ser un ObjectId válido:', movieId);
       }
@@ -346,7 +363,7 @@ class FavoriteService {
       console.log('📤 Enviando datos a favoritos:', requestBody);
       console.log('📤 Headers enviados:', this.getAuthHeaders());
 
-              const response = await fetch(`${this.baseUrl}${FAVORITES_ENDPOINTS.ADD_FAVORITE}`, {
+      const response = await fetch(`${this.baseUrl}/favorites`, {
         method: 'POST',
         headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody)
@@ -358,28 +375,33 @@ class FavoriteService {
         headers: Object.fromEntries(response.headers.entries())
       });
 
-              if (response.status === 400) {
-                const errorData = await response.json();
-                console.error('🚨 Error 400 - Datos enviados:', requestBody);
-                console.error('🚨 Error 400 - Respuesta del backend:', errorData);
-                throw new Error(PRODUCTION_ERROR_MESSAGES.VALIDATION_ERROR + ': ' + (errorData.message || 'Datos inválidos'));
-              }
+      // Manejar diferentes códigos de estado
+      if (response.status === 400) {
+        const errorData = await response.json();
+        console.error('🚨 Error 400 - Datos enviados:', requestBody);
+        console.error('🚨 Error 400 - Respuesta del backend:', errorData);
+        throw new Error(`Error de validación: ${errorData.message || 'Datos inválidos'}`);
+      }
 
-              if (response.status === 403) {
-                const errorData = await response.json();
-                console.error('🚨 Error 403 - Datos enviados:', requestBody);
-                console.error('🚨 Error 403 - Respuesta del backend:', errorData);
-                console.error('🚨 Error 403 - Headers de respuesta:', Object.fromEntries(response.headers.entries()));
-                throw new Error(PRODUCTION_ERROR_MESSAGES.AUTH_ERROR + ': ' + (errorData.message || 'No tienes permisos para realizar esta acción'));
-              }
+      if (response.status === 403) {
+        const errorData = await response.json();
+        console.error('🚨 Error 403 - Datos enviados:', requestBody);
+        console.error('🚨 Error 403 - Respuesta del backend:', errorData);
+        console.error('🚨 Error 403 - Headers de respuesta:', Object.fromEntries(response.headers.entries()));
+        throw new Error(`Error de permisos: ${errorData.message || 'No tienes permisos para realizar esta acción'}`);
+      }
 
-              if (response.status === 401) {
-                throw new Error(PRODUCTION_ERROR_MESSAGES.AUTH_ERROR);
-              }
+      if (response.status === 401) {
+        throw new Error('No autorizado. Inicia sesión nuevamente.');
+      }
 
-              if (response.status === 409) {
-                throw new Error(PRODUCTION_ERROR_MESSAGES.CONFLICT);
-              }
+      if (response.status === 403) {
+        throw new Error('Error del servidor: No se pudo agregar a favoritos (403)');
+      }
+
+      if (response.status === 409) {
+        throw new Error('Esta película ya está en tus favoritos');
+      }
 
       const data = await response.json();
       
@@ -401,7 +423,7 @@ class FavoriteService {
    */
   async removeFromFavorites(favoriteId: string): Promise<FavoriteResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}${FAVORITES_ENDPOINTS.REMOVE_FAVORITE}/${favoriteId}`, {
+      const response = await fetch(`${this.baseUrl}/favorites/${favoriteId}`, {
         method: 'DELETE',
         headers: this.getAuthHeaders()
       });
@@ -426,7 +448,7 @@ class FavoriteService {
    */
   async getFavoriteById(favoriteId: string): Promise<FavoriteResponse<Favorite>> {
     try {
-      const response = await fetch(`${this.baseUrl}${FAVORITES_ENDPOINTS.GET_FAVORITE_BY_ID}/${favoriteId}`, {
+      const response = await fetch(`${this.baseUrl}/favorites/me/${favoriteId}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -452,7 +474,7 @@ class FavoriteService {
     rating?: number;
   }): Promise<FavoriteResponse<Favorite>> {
     try {
-      const response = await fetch(`${this.baseUrl}${FAVORITES_ENDPOINTS.UPDATE_FAVORITE}/${favoriteId}`, {
+      const response = await fetch(`${this.baseUrl}/favorites/${favoriteId}`, {
         method: 'PUT',
         headers: this.getAuthHeaders(),
         body: JSON.stringify({
@@ -487,7 +509,7 @@ class FavoriteService {
         limit: limit.toString()
       });
 
-      const response = await fetch(`${this.baseUrl}${FAVORITES_ENDPOINTS.GET_USER_FAVORITES}/${userId}?${queryParams}`, {
+      const response = await fetch(`${this.baseUrl}/favorites/${userId}?${queryParams}`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
@@ -518,12 +540,14 @@ class FavoriteService {
    */
   async isMovieInFavorites(movieId: string): Promise<boolean> {
     try {
+      // ✅ CORRECCIÓN: Verificar autenticación antes de hacer la llamada
       const token = localStorage.getItem('token');
       if (!token) {
         console.log('No hay token de autenticación, retornando false');
         return false;
       }
 
+      // Verificar si tenemos datos en cache y no han expirado
       const now = Date.now();
       if (this.cacheTimestamp > 0 && (now - this.cacheTimestamp) < this.CACHE_DURATION) {
         const cachedResult = this.favoritesCache[movieId];
@@ -533,10 +557,12 @@ class FavoriteService {
         }
       }
 
+      // Si no hay cache, hacer petición al backend
       console.log(`🌐 Petición al backend para verificar ${movieId}`);
       const myFavorites = await this.getMyFavorites(1, 100);
       const isFavorite = myFavorites.data?.favorites.some(fav => fav.movieId._id === movieId) || false;
       
+      // Actualizar cache
       this.favoritesCache[movieId] = { isFavorite, favoriteId: isFavorite ? 'cached' : undefined };
       this.cacheTimestamp = now;
       
@@ -551,6 +577,35 @@ class FavoriteService {
    * Manejo de errores para operaciones de favoritos
    * ✅ CÓDIGOS DE ESTADO VALIDADOS EN PRUEBAS
    */
+  private handleFavoriteError(error: any, operation: string): void {
+    if (error.response?.status) {
+      switch (error.response.status) {
+        case 401:
+          console.error('No autenticado - redirigir al login');
+          // Redirigir al login
+          window.location.href = '/login';
+          break;
+        case 403:
+          console.error('Sin permisos - no puedes gestionar este favorito');
+          alert('No tienes permisos para realizar esta acción');
+          break;
+        case 404:
+          console.error('Favorito no encontrado');
+          alert('El favorito no existe');
+          break;
+        case 409:
+          console.error('La película ya está en favoritos');
+          alert('Esta película ya está en tus favoritos');
+          break;
+        default:
+          console.error(`Error en ${operation}:`, error.response.data?.message);
+          alert(`Error: ${error.response.data?.message}`);
+      }
+    } else {
+      console.error(`Error de conexión en ${operation}:`, error.message);
+      alert('Error de conexión. Verifica tu internet.');
+    }
+  }
 }
 
 export const favoriteService = new FavoriteService();

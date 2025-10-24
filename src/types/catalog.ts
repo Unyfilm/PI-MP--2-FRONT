@@ -1,3 +1,4 @@
+// Tipos para el catálogo
 export interface MovieClickData {
   _id?: string;
   title: string;
