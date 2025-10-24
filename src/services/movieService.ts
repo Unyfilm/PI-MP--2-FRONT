@@ -61,6 +61,12 @@ class MovieService {
       const response = await fetch(`${this.baseUrl}/api/movies/${movieId}`);
       
       if (!response.ok) {
+        // Solo loggear errores 404 de forma silenciosa para evitar spam en consola
+        if (response.status === 404) {
+          console.debug(`Película no encontrada: ${movieId}`);
+        } else {
+          console.error(`Error ${response.status}: ${response.statusText} para película ${movieId}`);
+        }
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
       
@@ -149,6 +155,10 @@ class MovieService {
     try {
       return await this.getMovie(movieId);
     } catch (error) {
+      // Solo loggear errores que no sean 404 para evitar spam
+      if (error instanceof Error && !error.message.includes('404')) {
+        console.warn(`Error cargando película ${movieId}:`, error.message);
+      }
       return null;
     }
   }

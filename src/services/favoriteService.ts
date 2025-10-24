@@ -18,6 +18,16 @@ export interface Favorite {
     director: string;
     duration: number;
     releaseDate: string;
+    videoUrl?: string;
+    cloudinaryVideoId?: string;
+    synopsis?: string;
+    description?: string;
+    trailer?: string;
+    port?: string;
+    rating?: {
+      average?: number;
+      count?: number;
+    };
   };
   notes?: string;
   rating?: number;

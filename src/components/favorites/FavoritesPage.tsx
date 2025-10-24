@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, Trash2, Calendar, Tag, Play, RefreshCw } from 'lucide-react';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import { type Favorite } from '../../services/favoriteService';
+import { movieService } from '../../services/movieService';
 import UnyFilmCard from '../card/UnyFilmCard';
 import './FavoritesPage.css';
 
@@ -197,7 +198,56 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
               year={new Date(favorite.movieId.releaseDate).getFullYear()}
               description={favorite.notes || ''}
               movieId={favorite.movieId._id}
-              onMovieClick={onMovieClick}
+              onMovieClick={async () => {
+                try {
+                  // Obtener datos completos de la película desde el endpoint de películas
+                  console.log('🎬 FavoritesPage - Obteniendo datos completos de la película:', favorite.movieId._id);
+                  
+                  const fullMovieData = await movieService.getMovie(favorite.movieId._id);
+                  
+                  console.log('🎬 FavoritesPage - Datos completos obtenidos:', {
+                    movieId: fullMovieData._id,
+                    hasVideoUrl: !!fullMovieData.videoUrl,
+                    hasCloudinaryId: !!fullMovieData.cloudinaryVideoId,
+                    hasSynopsis: !!fullMovieData.synopsis
+                  });
+                  
+                  onMovieClick({
+                    _id: fullMovieData._id,
+                    title: fullMovieData.title,
+                    index: 0,
+                    videoUrl: fullMovieData.videoUrl || '',
+                    rating: favorite.rating || fullMovieData.rating?.average || 0,
+                    year: new Date(fullMovieData.releaseDate || '').getFullYear(),
+                    genre: fullMovieData.genre[0] || '',
+                    description: favorite.notes || fullMovieData.description || '',
+                    synopsis: fullMovieData.synopsis || fullMovieData.description,
+                    genres: fullMovieData.genre,
+                    cloudinaryPublicId: fullMovieData.cloudinaryVideoId,
+                    cloudinaryUrl: fullMovieData.videoUrl,
+                    duration: fullMovieData.duration || 0
+                  });
+                } catch (error) {
+                  console.error('❌ Error obteniendo datos completos de la película:', error);
+                  
+                  // Fallback: usar datos del favorito si falla la petición
+                  onMovieClick({
+                    _id: favorite.movieId._id,
+                    title: favorite.movieId.title,
+                    index: 0,
+                    videoUrl: favorite.movieId.videoUrl || '',
+                    rating: favorite.rating || 0,
+                    year: new Date(favorite.movieId.releaseDate).getFullYear(),
+                    genre: favorite.movieId.genre[0] || '',
+                    description: favorite.notes || '',
+                    synopsis: favorite.movieId.synopsis || favorite.movieId.description,
+                    genres: favorite.movieId.genre,
+                    cloudinaryPublicId: favorite.movieId.cloudinaryVideoId,
+                    cloudinaryUrl: favorite.movieId.videoUrl,
+                    duration: favorite.movieId.duration || 0
+                  });
+                }
+              }}
             />
             
             {/* Información adicional del favorito */}

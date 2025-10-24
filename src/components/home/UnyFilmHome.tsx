@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Play, Heart, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull } from 'lucide-react';
+import { Play, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
 import { movieConfig, homeSections } from '../../data/moviesData';
 import { movieService, type Movie } from '../../services/movieService';
@@ -459,14 +459,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               >
                 <Play size={18} />
                 Ver ahora
-              </button>
-              
-              <button 
-                className="hero-btn hero-btn--secondary"
-                onClick={() => {}}
-              >
-                <Heart size={18} />
-                Favoritos
               </button>
             </div>
           </div>
