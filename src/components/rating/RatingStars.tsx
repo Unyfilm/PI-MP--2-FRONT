@@ -1,65 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './RatingStars.scss';
 
 interface RatingStarsProps {
   movieId: string;
+  onRatingChange: (rating: number) => void;
+  initialRating?: number;
+  averageRating?: number;
+  totalRatings?: number;
   readonly?: boolean;
+  size?: 'small' | 'medium' | 'large';
   showAverage?: boolean;
-  onRatingChange?: (rating: number) => void;
 }
 
 const RatingStars: React.FC<RatingStarsProps> = ({
   movieId,
+  onRatingChange,
+  initialRating = 0,
+  averageRating = 0,
+  totalRatings = 0,
   readonly = false,
-  showAverage = false,
-  onRatingChange
+  size = 'medium',
+  showAverage = true
 }) => {
-  const [userRating, setUserRating] = useState<number>(0);
-  const [hoverRating, setHoverRating] = useState<number>(0);
+  const [rating, setRating] = useState(initialRating);
+  const [hover, setHover] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleRating = (rating: number) => {
-    if (readonly) return;
+  // Actualizar rating cuando cambie initialRating
+  useEffect(() => {
+    setRating(initialRating);
+  }, [initialRating]);
+
+  const handleRating = async (selectedRating: number) => {
+    if (readonly || isLoading) return;
     
-    setUserRating(rating);
-    console.log(`Calificando película ${movieId} con ${rating} estrellas`);
+    setIsLoading(true);
     
-    if (onRatingChange) {
-      onRatingChange(rating);
+    try {
+      setRating(selectedRating);
+      await onRatingChange(selectedRating);
+    } catch (error) {
+      console.error('Error setting rating:', error);
+      // Revertir en caso de error
+      setRating(initialRating);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const renderStars = () => {
-    const stars = [];
-    const ratingToShow = hoverRating || userRating;
-
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span
-          key={i}
-          className={`star ${i <= ratingToShow ? 'filled' : ''}`}
-          onClick={() => handleRating(i)}
-          onMouseEnter={() => !readonly && setHoverRating(i)}
-          onMouseLeave={() => !readonly && setHoverRating(0)}
-        >
-          ⭐
-        </span>
-      );
+  const getSizeClass = () => {
+    switch (size) {
+      case 'small': return 'rating-stars--small';
+      case 'large': return 'rating-stars--large';
+      default: return 'rating-stars--medium';
     }
-    return stars;
   };
 
   return (
-    <div className="rating-stars">
+    <div className={`rating-stars ${getSizeClass()} ${readonly ? 'rating-stars--readonly' : ''}`}>
       <div className="stars-container">
-        <div className="stars-row">
-          {renderStars()}
-        </div>
-        {!readonly && (
-          <span className="rating-text">
-            {userRating ? `Tu calificación: ${userRating}/5` : '⭐ Calificar esta película'}
-          </span>
-        )}
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            className={`star-btn ${star <= (hover || rating) ? 'active' : ''} ${isLoading ? 'loading' : ''}`}
+            onClick={() => handleRating(star)}
+            onMouseEnter={() => !readonly && setHover(star)}
+            onMouseLeave={() => !readonly && setHover(0)}
+            disabled={readonly || isLoading}
+            aria-label={`Calificar con ${star} ${star === 1 ? 'estrella' : 'estrellas'}`}
+            title={`${star} ${star === 1 ? 'estrella' : 'estrellas'}`}
+          >
+            <span className="star">⭐</span>
+          </button>
+        ))}
       </div>
+
+      {showAverage && averageRating > 0 && (
+        <div className="rating-info">
+          <span className="average-rating">
+            {averageRating.toFixed(1)} ⭐
+          </span>
+          {totalRatings > 0 && (
+            <span className="total-ratings">
+              ({totalRatings} {totalRatings === 1 ? 'voto' : 'votos'})
+            </span>
+          )}
+        </div>
+      )}
+
+      {!readonly && rating > 0 && (
+        <div className="user-rating">
+          Tu calificación: <strong>{rating} ⭐</strong>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="loading-message">
+          Guardando calificación...
+        </div>
+      )}
     </div>
   );
 };

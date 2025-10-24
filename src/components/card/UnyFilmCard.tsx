@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Heart, Play, Star } from 'lucide-react';
-import VisualRatingStars from '../rating/VisualRatingStars';
-import { getMovieRatingStats, type RatingStats } from '../../services/ratingService';
+import { Play, Star } from 'lucide-react';
+import FavoriteButton from '../favorite/FavoriteButton';
+import RatingStars from '../rating/RatingStars';
+import { favoriteService } from '../../services/favoriteService';
 import './UnyFilmCard.css';
 
 interface MovieClickData {
@@ -13,6 +14,7 @@ interface MovieClickData {
   genre?: string;
   description?: string;
   image?: string;
+  _id?: string;
 }
 
 interface UnyFilmCardProps {
@@ -27,9 +29,6 @@ interface UnyFilmCardProps {
   movieId?: string; 
 }
 
-/**
- * Movie card component with TypeScript types
- */
 export default function UnyFilmCard({ 
   title, 
   onMovieClick,
@@ -42,36 +41,30 @@ export default function UnyFilmCard({
   movieId 
 }: UnyFilmCardProps) {
   const [isHover, setIsHover] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [showMessage, setShowMessage] = useState('');
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
-  const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
-  const [isLoadingRating, setIsLoadingRating] = useState(false);
+  
+  const [userRating, setUserRating] = useState(0);
+  const [averageRating, setAverageRating] = useState(rating || 0);
+  const [totalRatings, setTotalRatings] = useState(0);
 
-  // Load rating statistics when component mounts or movieId changes
   useEffect(() => {
-    const loadRatingStats = async () => {
-      if (!movieId || movieId.trim() === '') return;
+    const loadFavoriteStatus = async () => {
+      if (!movieId) return;
       
+      const temporaryUserId = 'user-current-session';
       try {
-        setIsLoadingRating(true);
-        // Cache will make this much faster on subsequent loads
-        const stats = await getMovieRatingStats(movieId);
-        setRatingStats(stats);
+        const result = await favoriteService.checkIsFavorite(movieId, temporaryUserId);
+        setIsFavorite(result.isFavorite);
       } catch (error) {
-        // Set default stats if API fails
-        setRatingStats({
-          movieId,
-          averageRating: rating || 0,
-          totalRatings: 0,
-          distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
-        });
-      } finally {
-        setIsLoadingRating(false);
+        console.error('Error cargando estado de favorito:', error);
       }
     };
 
-    loadRatingStats();
-  }, [movieId, rating]);
+    loadFavoriteStatus();
+  }, [movieId]);
 
   const handleImageError = () => {
     if (!imageError && fallbackImage) {
@@ -101,7 +94,58 @@ export default function UnyFilmCard({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      handleCardClick(e as any);
+      handleCardClick(e as unknown as React.MouseEvent<HTMLDivElement>);
+    }
+  };
+
+  const handleToggleFavorite = async (movieId: string | undefined) => {
+    if (!movieId) {
+      setShowMessage('❌ ID de película no disponible');
+      setTimeout(() => setShowMessage(''), 3000);
+      return;
+    }
+    
+    const temporaryUserId = 'user-current-session';
+    
+    try {
+      if (!isFavorite) {
+        const result = await favoriteService.addToFavorites(movieId, temporaryUserId);
+        
+        if (result.success) {
+          setShowMessage('🎬 Añadido a favoritos');
+          setIsFavorite(true);
+        } else {
+          setShowMessage('❌ Error: ' + (result.message || 'No se pudo agregar a favoritos'));
+        }
+      } else {
+        const result = await favoriteService.removeFromFavorites(movieId, temporaryUserId);
+        
+        if (result.success) {
+          setShowMessage('🗑️ Eliminado de favoritos');
+          setIsFavorite(false);
+        } else {
+          setShowMessage('❌ Error: ' + (result.message || 'No se pudo eliminar de favoritos'));
+        }
+      }
+    } catch (error) {
+      console.error('Error en favoritos:', error);
+      setShowMessage('❌ Error de conexión con el servidor');
+    } finally {
+      setTimeout(() => setShowMessage(''), 3000);
+    }
+  };
+
+  const handleRatingChange = async (newRating: number) => {
+    try {
+      setUserRating(newRating);
+      console.log(`Película ${movieId} calificada con ${newRating} estrellas`);
+      
+      const newTotal = totalRatings + 1;
+      const newAverage = ((averageRating * totalRatings) + newRating) / newTotal;
+      setAverageRating(newAverage);
+      setTotalRatings(newTotal);
+    } catch (error) {
+      console.error('Error al calificar:', error);
     }
   };
 
@@ -116,6 +160,22 @@ export default function UnyFilmCard({
       aria-label={`Ver película ${title}`}
       className={`unyfilm-card ${isHover ? 'unyfilm-card--hover' : ''}`}
     >
+      {/* BOTÓN DE FAVORITOS */}
+      <div className="unyfilm-card__favorite">
+        <FavoriteButton 
+          movieId={movieId || title}
+          isFavorite={isFavorite}
+          onToggle={() => handleToggleFavorite(movieId)}
+        />
+      </div>
+
+      {/* MENSAJE DE FAVORITOS - CORREGIDO */}
+      {showMessage && (
+        <div className="favorite-message">
+          {showMessage}
+        </div>
+      )}
+
       <div className="unyfilm-card__image-container">
         {!imageError && currentSrc ? (
           <img
@@ -138,15 +198,10 @@ export default function UnyFilmCard({
       <div className="unyfilm-card__content">
         <h3 className="unyfilm-card__title">{title}</h3>
         
-        {/* SISTEMA DE RATING VISUAL */}
-        {movieId && ratingStats && (
-          <div className="unyfilm-card__rating-stars">
-            <VisualRatingStars
-              averageRating={ratingStats.averageRating}
-              totalRatings={ratingStats.totalRatings}
-              size="small"
-              showCount={false}
-            />
+        {rating && rating > 0 && (
+          <div className="unyfilm-card__rating">
+            <Star size={14} fill="currentColor" />
+            {rating.toFixed(1)}
           </div>
         )}
         
@@ -186,6 +241,21 @@ export default function UnyFilmCard({
           
           {description && (
             <p className="unyfilm-card__overlay-description">{description}</p>
+          )}
+
+          {movieId && (
+            <div className="unyfilm-card__rating-section">
+              <RatingStars
+                movieId={movieId}
+                onRatingChange={handleRatingChange}
+                initialRating={userRating}
+                averageRating={averageRating}
+                totalRatings={totalRatings}
+                readonly={false}
+                size="small"
+                showAverage={true}
+              />
+            </div>
           )}
           
           <button className="unyfilm-card__play-button">

@@ -2,99 +2,213 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 12px 0;
-  width: 100%;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   .stars-container {
     display: flex;
+    gap: 8px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+
+    .star-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      position: relative;
+
+      &:hover:not(.loading) {
+        background-color: rgba(255, 215, 0, 0.1);
+        transform: scale(1.2);
+
+        .star {
+          filter: brightness(1.3) saturate(2);
+        }
+      }
+
+      &:active:not(.loading) {
+        transform: scale(0.95);
+      }
+
+      &.active {
+        .star {
+          filter: brightness(1) saturate(3);
+          color: #ffd700;
+        }
+      }
+
+      &.loading {
+        cursor: not-allowed;
+        opacity: 0.6;
+
+        .star {
+          animation: pulse 1.5s infinite;
+        }
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .star {
+        font-size: 2rem;
+        transition: all 0.3s ease;
+        display: block;
+
+        // Estrella no activa
+        &:not(.active) {
+          opacity: 0.6;
+          filter: grayscale(0.3);
+        }
+      }
+    }
+  }
+
+  .rating-info {
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    width: 100%;
-    max-width: 100%;
+    gap: 4px;
+    text-align: center;
 
-    .stars-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      flex-wrap: nowrap;
+    .average-rating {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffd700;
+      background: rgba(255, 215, 0, 0.1);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
     }
 
-    .star {
-      font-size: clamp(16px, 3vw, 32px);
-      color: #ddd;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      flex-shrink: 0;
-      min-width: 0;
-      
-      &:hover {
-        transform: scale(1.3);
-        color: #ffc107;
-        text-shadow: 0 0 20px rgba(255, 193, 7, 0.8);
-      }
-      
-      &.filled {
-        color: #ffc107;
-        text-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
-      }
+    .total-ratings {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-style: italic;
     }
+  }
 
-    .rating-text {
-      font-size: 13px;
-      color: #aaa;
-      font-weight: 500;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 4px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+  .user-rating {
+    font-size: 1rem;
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 6px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    font-weight: 500;
+  }
+
+  .loading-message {
+    font-size: 0.9rem;
+    color: #2196F3;
+    font-style: italic;
+    animation: fadeInOut 2s infinite;
+  }
+}
+
+// Tamaños
+.rating-stars--small {
+  padding: 12px;
+  
+  .stars-container {
+    gap: 4px;
+    
+    .star-btn .star {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .rating-info .average-rating {
+    font-size: 1rem;
+  }
+}
+
+.rating-stars--large {
+  padding: 20px;
+  
+  .stars-container {
+    gap: 12px;
+    
+    .star-btn .star {
+      font-size: 2.5rem;
+    }
+  }
+  
+  .rating-info .average-rating {
+    font-size: 1.4rem;
+  }
+}
+
+.rating-stars--readonly {
+  .star-btn {
+    cursor: default;
+    
+    &:hover {
+      background: none;
+      transform: none;
     }
   }
 }
 
-/* SISTEMA DE RATING - ESTILOS PROFESIONALES */
-.unyfilm-card__rating-stars {
-  margin: 4px 0;
-  padding: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+// Animaciones
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 
-.unyfilm-card__rating-stars .rating-stars {
-  padding: 0;
-  width: auto;
+@keyframes fadeInOut {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 
-// Efectos de animación
-@keyframes starPop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.4); }
-  100% { transform: scale(1.2); }
+// Estados de focus para accesibilidad
+.star-btn:focus {
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
 }
 
-.star.filled {
-  animation: starPop 0.3s ease-out;
+.star-btn:focus:not(:focus-visible) {
+  outline: none;
 }
 
 // Responsive
 @media (max-width: 768px) {
   .rating-stars {
+    padding: 12px;
+    gap: 8px;
+
     .stars-container {
-      .star {
-        font-size: 28px;
-      }
+      gap: 6px;
       
-      .rating-text {
-        font-size: 12px;
-        padding: 3px 10px;
+      .star-btn .star {
+        font-size: 1.8rem;
       }
+    }
+
+    .rating-info .average-rating {
+      font-size: 1.1rem;
+    }
+  }
+
+  .rating-stars--small {
+    .stars-container .star-btn .star {
+      font-size: 1.3rem;
+    }
+  }
+
+  .rating-stars--large {
+    .stars-container .star-btn .star {
+      font-size: 2.2rem;
     }
   }
 }
