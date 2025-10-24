@@ -10,22 +10,41 @@
 import { API_CONFIG } from '../config/environment';
 import { ratingCache } from './ratingCache';
 
+/**
+ * Interface for movie rating statistics
+ * @interface RatingStats
+ */
 export interface RatingStats {
+  /** Movie ID */
   movieId: string;
+  /** Average rating value */
   averageRating: number;
+  /** Total number of ratings */
   totalRatings: number;
+  /** Distribution of ratings by star count */
   distribution: {
     [key: string]: number;
   };
 }
 
+/**
+ * Interface for user rating
+ * @interface UserRating
+ */
 export interface UserRating {
+  /** Rating ID */
   id: string;
+  /** Movie ID */
   movieId: string;
+  /** User ID */
   userId: string;
+  /** Rating value (1-5) */
   rating: number;
+  /** Optional review text */
   review?: string;
+  /** Creation timestamp */
   createdAt: string;
+  /** Last update timestamp */
   updatedAt: string;
 }
 

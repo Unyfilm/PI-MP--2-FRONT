@@ -1,72 +1,134 @@
 /**
  * FavoriteService
  *
- * Servicio para manejar operaciones de favoritos con la API del backend.
- * Implementa la nueva lógica de endpoints según la guía proporcionada.
+ * Service for handling favorite operations with the backend API.
+ * Implements the new endpoint logic according to the provided guide.
  */
 
 import { API_CONFIG } from '../config/environment';
 
+/**
+ * Interface representing a user's favorite movie
+ * @interface Favorite
+ */
 export interface Favorite {
+  /** Unique identifier for the favorite */
   _id: string;
+  /** User ID who favorited the movie */
   userId: string;
+  /** Movie information */
   movieId: {
+    /** Movie unique identifier */
     _id: string;
+    /** Movie title */
     title: string;
+    /** Movie poster URL */
     poster: string;
+    /** Array of movie genres */
     genre: string[];
+    /** Movie director */
     director: string;
+    /** Movie duration in minutes */
     duration: number;
+    /** Movie release date */
     releaseDate: string;
+    /** Optional video URL */
     videoUrl?: string;
+    /** Optional Cloudinary video ID */
     cloudinaryVideoId?: string;
+    /** Optional movie synopsis */
     synopsis?: string;
+    /** Optional movie description */
     description?: string;
+    /** Optional trailer URL */
     trailer?: string;
+    /** Optional port image URL */
     port?: string;
+    /** Optional rating information */
     rating?: {
       average?: number;
       count?: number;
     };
   };
+  /** Optional user notes for the favorite */
   notes?: string;
+  /** Optional user rating for the movie */
   rating?: number;
+  /** Creation timestamp */
   createdAt: string;
+  /** Last update timestamp */
   updatedAt: string;
 }
 
+/**
+ * Generic response interface for favorite operations
+ * @interface FavoriteResponse
+ * @template T - Type of data returned
+ */
 export interface FavoriteResponse<T = any> {
+  /** Whether the operation was successful */
   success: boolean;
+  /** Response message */
   message: string;
+  /** Optional response data */
   data?: T;
+  /** Optional pagination information */
   pagination?: {
+    /** Current page number */
     currentPage: number;
+    /** Total number of pages */
     totalPages: number;
+    /** Total number of items */
     totalItems: number;
+    /** Number of items per page */
     itemsPerPage: number;
+    /** Whether there is a next page */
     hasNextPage: boolean;
+    /** Whether there is a previous page */
     hasPrevPage: boolean;
   };
 }
 
+/**
+ * Interface for favorite statistics
+ * @interface FavoriteStats
+ */
 export interface FavoriteStats {
+  /** Total number of favorites */
   totalFavorites: number;
+  /** Average rating of favorites */
   averageRating: number;
+  /** Most favorited genre */
   mostFavoritedGenre: string;
 }
 
+/**
+ * Service class for managing user favorites
+ * Handles all favorite-related operations with the backend API
+ * @class FavoriteService
+ */
 class FavoriteService {
+  /** Base URL for API requests */
   private baseUrl: string;
+  /** Cache for favorite status to avoid repeated API calls */
   private favoritesCache: { [movieId: string]: { isFavorite: boolean; favoriteId?: string } } = {};
+  /** Timestamp of last cache update */
   private cacheTimestamp: number = 0;
-  private readonly CACHE_DURATION = 30000; // 30 segundos
+  /** Cache duration in milliseconds (30 seconds) */
+  private readonly CACHE_DURATION = 30000;
 
+  /**
+   * Creates an instance of FavoriteService
+   */
   constructor() {
     this.baseUrl = API_CONFIG.BASE_URL;
   }
 
   /**
-   * Obtener headers de autenticación
+   * Get authentication headers for API requests
+   * @private
+   * @returns {HeadersInit} Headers with authentication token
+   * @throws {Error} When no authentication token is found
    */
   private getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem('token');
@@ -81,8 +143,11 @@ class FavoriteService {
   }
 
   /**
-   * Obtener ID del usuario desde localStorage
-   * El backend espera un ObjectId de MongoDB, no un número
+   * Get user ID from localStorage
+   * The backend expects a MongoDB ObjectId, not a number
+   * @private
+   * @returns {Promise<string>} User ID as ObjectId
+   * @throws {Error} When no user data is found
    */
   private async getUserId(): Promise<string> {
     const userData = localStorage.getItem('auth:user');
@@ -264,8 +329,17 @@ class FavoriteService {
   }
 
   /**
-   * Obtener mis favoritos con paginación y filtros
-   * ✅ CORRECCIÓN VALIDADA: data.data es el array de favoritos, pagination está en el nivel raíz
+   * Get current user's favorites with pagination and filters
+   * @param {number} [page=1] - Page number for pagination
+   * @param {number} [limit=10] - Number of items per page
+   * @param {Object} [filters={}] - Optional filters for favorites
+   * @param {string} [filters.genre] - Filter by genre
+   * @param {string} [filters.fromDate] - Filter from date
+   * @param {string} [filters.toDate] - Filter to date
+   * @param {string} [filters.sort] - Sort field
+   * @param {'asc'|'desc'} [filters.order] - Sort order
+   * @returns {Promise<FavoriteResponse<{ favorites: Favorite[]; pagination: any }>>} Response with favorites and pagination
+   * @throws {Error} When API request fails
    */
   async getMyFavorites(
     page: number = 1, 
@@ -312,8 +386,12 @@ class FavoriteService {
 
 
   /**
-   * Agregar película a favoritos
-   * ✅ CORRECCIÓN VALIDADA: Manejo del error 400 y 403 del backend
+   * Add a movie to user's favorites
+   * @param {string} movieId - The movie ID to add to favorites
+   * @param {string} [notes=''] - Optional notes for the favorite
+   * @param {number|null} [rating=null] - Optional rating for the movie
+   * @returns {Promise<FavoriteResponse<Favorite>>} Response with the created favorite
+   * @throws {Error} When validation fails or API request fails
    */
   async addToFavorites(movieId: string, notes: string = '', rating: number | null = null): Promise<FavoriteResponse<Favorite>> {
     try {
@@ -408,7 +486,10 @@ class FavoriteService {
   }
 
   /**
-   * Eliminar de favoritos
+   * Remove a movie from user's favorites
+   * @param {string} favoriteId - The favorite ID to remove
+   * @returns {Promise<FavoriteResponse>} Response indicating success or failure
+   * @throws {Error} When API request fails
    */
   async removeFromFavorites(favoriteId: string): Promise<FavoriteResponse> {
     try {
@@ -433,7 +514,10 @@ class FavoriteService {
   }
 
   /**
-   * Obtener favorito específico
+   * Get a specific favorite by ID
+   * @param {string} favoriteId - The favorite ID to retrieve
+   * @returns {Promise<FavoriteResponse<Favorite>>} Response with the favorite data
+   * @throws {Error} When API request fails
    */
   async getFavoriteById(favoriteId: string): Promise<FavoriteResponse<Favorite>> {
     try {
@@ -488,8 +572,12 @@ class FavoriteService {
   }
 
   /**
-   * Obtener favoritos de usuario específico
-   * ✅ CORRECCIÓN VALIDADA: data.data es el array de favoritos, pagination está en el nivel raíz
+   * Get favorites for a specific user
+   * @param {string} userId - The user ID to get favorites for
+   * @param {number} [page=1] - Page number for pagination
+   * @param {number} [limit=10] - Number of items per page
+   * @returns {Promise<FavoriteResponse<{ favorites: Favorite[]; pagination: any }>>} Response with favorites and pagination
+   * @throws {Error} When API request fails
    */
   async getUserFavorites(userId: string, page: number = 1, limit: number = 10): Promise<FavoriteResponse<{ favorites: Favorite[]; pagination: any }>> {
     try {
@@ -524,8 +612,10 @@ class FavoriteService {
   }
 
   /**
-   * Verificar si película está en favoritos (optimizado con cache)
-   * ✅ CORRECCIÓN VALIDADA: Usar cache local para evitar peticiones innecesarias
+   * Check if a movie is in user's favorites (optimized with cache)
+   * @param {string} movieId - The movie ID to check
+   * @returns {Promise<boolean>} True if movie is in favorites, false otherwise
+   * @throws {Error} When API request fails
    */
   async isMovieInFavorites(movieId: string): Promise<boolean> {
     try {
@@ -591,5 +681,14 @@ class FavoriteService {
   }
 }
 
+/**
+ * Singleton instance of FavoriteService
+ * @type {FavoriteService}
+ */
 export const favoriteService = new FavoriteService();
+
+/**
+ * Default export of FavoriteService instance
+ * @type {FavoriteService}
+ */
 export default favoriteService;

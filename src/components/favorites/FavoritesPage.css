@@ -9,6 +9,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
   color: #ffffff;
+  padding-top: 6rem; /* Espacio para el header fijo */
 }
 
 .favorites-page__header {
@@ -24,6 +25,8 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  position: relative;
+  z-index: 1; /* Asegurar que esté por encima de otros elementos */
 }
 
 .favorites-page__title h1 {
@@ -162,8 +165,9 @@
 
 .favorites-page__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 2rem;
+  width: 100%;
 }
 
 .favorite-card {
@@ -206,29 +210,135 @@
   font-size: 0.9rem;
 }
 
-/* Responsive */
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .favorites-page {
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .favorites-page {
+    padding: 1.5rem;
+  }
+  
+  .favorites-page__grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .favorites-page {
+    padding-top: 5.5rem; /* Espacio para tablets */
+  }
+  
+  .favorites-page__grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+  
+  .stat-card {
+    min-width: 180px;
+    max-width: 220px;
+  }
+}
+
 @media (max-width: 768px) {
   .favorites-page {
     padding: 1rem;
+    padding-top: 5rem; /* Menos espacio en móviles */
+  }
+  
+  .favorites-page__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem; /* Espacio adicional para separar del header */
   }
   
   .favorites-page__title h1 {
     font-size: 2rem;
+    margin-top: 0.5rem; /* Espacio adicional para el título */
   }
   
   .favorites-page__stats {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    margin-bottom: 2rem;
   }
   
   .stat-card {
     min-width: 100%;
     max-width: 100%;
+    padding: 1rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
   }
   
   .favorites-page__grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+  
+  .favorite-card {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .favorites-page {
+    padding: 0.5rem;
+    padding-top: 4.5rem; /* Espacio ajustado para móviles pequeños */
+  }
+  
+  .favorites-page__header {
+    margin-top: 0.5rem; /* Menos margen en móviles pequeños */
+  }
+  
+  .favorites-page__title h1 {
+    font-size: 1.5rem;
+    margin-top: 0.25rem; /* Espacio mínimo para el título */
+  }
+  
+  .favorites-count {
+    font-size: 1rem;
+  }
+  
+  .favorites-page__stats {
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .stat-card {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+  
+  .stat-value {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+  }
+  
+  .favorites-page__grid {
+    gap: 1rem;
+  }
+  
+  .favorite-card__info {
+    padding: 0.75rem;
+  }
+  
+  .favorite-note {
+    font-size: 0.8rem;
+  }
+  
+  .favorite-rating {
+    font-size: 0.8rem;
   }
 }

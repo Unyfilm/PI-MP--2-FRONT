@@ -14,6 +14,12 @@ import Footer from './footer/Footer';
 import './MovieApp.css';
 import type { MovieData, MovieClickData, ViewType } from '../types';
 
+/**
+ * Main application component
+ * Handles routing, state management, and renders the appropriate views
+ * @component MovieApp
+ * @returns {JSX.Element} The main application component
+ */
 export default function MovieApp() {
   const location = useLocation();
   const navigate = useNavigate();

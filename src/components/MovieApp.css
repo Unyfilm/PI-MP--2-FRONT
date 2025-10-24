@@ -7,8 +7,15 @@
   position: relative;
   display: grid;
   grid-template-columns: 120px 1fr;
+  grid-template-rows: auto 1fr auto; /* Header, Content, Footer */
   gap: 0; /* eliminar gap entre sidebar y contenido */
   overflow-x: hidden; /* evita scroll horizontal */
+}
+
+/* Header */
+.unyfilm-header {
+  grid-column: 2 / -1;
+  grid-row: 1; /* Primera fila del grid */
 }
 
 /* Main Content */
@@ -17,21 +24,44 @@
   overflow-y: auto;
   overflow-x: hidden;
   grid-column: 2 / -1;
-  margin-bottom: 0; /* Remove extra margin since footer is no longer fixed */
-  margin-left: 0; /* eliminar margen izquierdo */
+  grid-row: 2; /* Segunda fila del grid */
+  margin-bottom: 0;
+  margin-left: 0;
+}
+
+/* Footer */
+.footer {
+  grid-column: 2 / -1;
+  grid-row: 3; /* Tercera fila del grid */
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .movie-app-container { grid-template-columns: 0 1fr; }
+  .movie-app-container { 
+    grid-template-columns: 0 1fr; 
+    grid-template-rows: auto 1fr auto;
+  }
   .unyfilm-sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
   .movie-app-container--sidebar-open .unyfilm-sidebar { transform: translateX(0); }
   .movie-app-container--sidebar-open { grid-template-columns: 80px 1fr; }
   .movie-app-container--sidebar-open .sidebar-toggle { display: none; }
+  
+  /* Ajustar footer en tablet */
+  .footer {
+    grid-column: 1 / -1; /* Ocupar todo el ancho en móviles */
+  }
 }
 
 @media (max-width: 768px) {
-  .movie-app-container { grid-template-columns: 0 1fr; }
+  .movie-app-container { 
+    grid-template-columns: 0 1fr; 
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  /* Footer en móviles */
+  .footer {
+    grid-column: 1 / -1; /* Ocupar todo el ancho */
+  }
 }
 
 /* Toggle button (mobile) */

@@ -23,15 +23,28 @@ const authHeaders = (): HeadersInit => ({
   ...defaultHeaders,
   Authorization: `Bearer ${localStorage.getItem('token') || ''}`
 });
+/**
+ * Interface for backend user data
+ * @interface BackendUser
+ */
 export interface BackendUser {
+  /** User unique identifier */
   _id: string;
+  /** Username */
   username: string;
+  /** User email */
   email: string;
+  /** Optional first name */
   firstName?: string;
+  /** Optional last name */
   lastName?: string;
+  /** Optional age */
   age?: number;
+  /** Optional profile picture URL */
   profilePicture?: string;
+  /** Optional creation timestamp */
   createdAt?: string;
+  /** Optional last update timestamp */
   updatedAt?: string;
 }
 
