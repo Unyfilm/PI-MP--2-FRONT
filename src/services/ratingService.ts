@@ -42,13 +42,11 @@ export interface RatingResponse {
  */
 export const getMovieRatingStats = async (movieId: string): Promise<RatingStats> => {
   try {
-    // Check cache first
     const cached = ratingCache.get(movieId);
     if (cached) {
       return cached;
     }
 
-    // Validate movieId before making request
     if (!movieId || movieId.trim() === '') {
       return {
         movieId: movieId || 'unknown',
@@ -57,9 +55,6 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
         distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
       };
     }
-
-    // Skip health check for now to avoid unnecessary requests
-    // The API endpoints are working, so we can proceed directly
 
     const url = `${API_CONFIG.BASE_URL}/ratings/movie/${movieId}/stats`;
     
@@ -73,14 +68,12 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
 
     if (!response.ok) {
       if (response.status === 404) {
-        // Movie has no ratings yet - this is normal, return default stats
         const defaultStats = {
           movieId,
           averageRating: 0,
           totalRatings: 0,
           distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
         };
-        // Cache the default stats to avoid repeated 404s
         ratingCache.set(movieId, defaultStats);
         return defaultStats;
       }
@@ -91,18 +84,14 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
     
     if (data.success && data.data) {
       const stats = data.data as RatingStats;
-      // Cache the result for 5 minutes
       ratingCache.set(movieId, stats);
       return stats;
     } else {
       throw new Error(data.message || 'Error al obtener estadísticas de calificación');
     }
   } catch (error) {
-    // Only log errors that are not 404s (which are expected for movies without ratings)
     if (error instanceof Error && !error.message.includes('404')) {
-      // Error fetching movie rating stats
     }
-    // Return default stats if API fails
     return {
       movieId,
       averageRating: 0,
@@ -135,11 +124,8 @@ export const getUserRating = async (movieId: string): Promise<UserRating | null>
 
     if (!response.ok) {
       if (response.status === 404) {
-        // User hasn't rated this movie - this is completely normal
-        // Don't log anything, just return null silently
         return null;
       }
-      // Only log actual errors (not 404s)
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -151,9 +137,7 @@ export const getUserRating = async (movieId: string): Promise<UserRating | null>
       return null;
     }
   } catch (error) {
-    // Only log if it's not a 404 (which is expected)
     if (error instanceof Error && !error.message.includes('404')) {
-      // Error fetching user rating
     }
     return null;
   }
@@ -192,13 +176,11 @@ export const rateMovie = async (movieId: string, rating: number): Promise<boolea
     const data: RatingResponse = await response.json();
     
     if (data.success) {
-      // Invalidate cache when rating is updated
       ratingCache.invalidate(movieId);
     }
     
     return data.success;
   } catch (error) {
-    // Error rating movie
     return false;
   }
 };
@@ -236,13 +218,11 @@ export const updateRating = async (ratingId: string, rating: number, movieId?: s
     const data: RatingResponse = await response.json();
     
     if (data.success && movieId) {
-      // Invalidate cache when rating is updated
       ratingCache.invalidate(movieId);
     }
     
     return data.success;
   } catch (error) {
-    // Error updating rating
     return false;
   }
 };
@@ -275,13 +255,11 @@ export const deleteRating = async (movieId: string): Promise<boolean> => {
     const data: RatingResponse = await response.json();
     
     if (data.success) {
-      // Invalidate cache when rating is deleted
       ratingCache.invalidate(movieId);
     }
     
     return data.success;
   } catch (error) {
-    // Error deleting rating
     return false;
   }
 };

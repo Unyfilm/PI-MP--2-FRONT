@@ -47,17 +47,14 @@ export default function UnyFilmCard({
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
   const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
 
-  // Load rating statistics when component mounts or movieId changes
   useEffect(() => {
     const loadRatingStats = async () => {
       if (!movieId || movieId.trim() === '') return;
       
       try {
-        // Cache will make this much faster on subsequent loads
         const stats = await getMovieRatingStats(movieId);
         setRatingStats(stats);
       } catch (error) {
-        // Set default stats if API fails
         setRatingStats({
           movieId,
           averageRating: rating || 0,

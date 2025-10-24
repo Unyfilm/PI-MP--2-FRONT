@@ -31,7 +31,6 @@ export const useRatingUpdates = (
   const handleRatingUpdate = useCallback(async (event: CustomEvent<RatingUpdateEvent>) => {
     const { movieId: eventMovieId } = event.detail;
     
-    // Only update if it's for the current movie
     if (eventMovieId === movieId) {
       try {
         const stats = await getMovieRatingStats(movieId);
@@ -45,7 +44,6 @@ export const useRatingUpdates = (
   useEffect(() => {
     let isProcessing = false;
 
-    // Listen for custom rating update events
     const eventHandler = (event: Event) => {
       if (isProcessing) return;
       isProcessing = true;
@@ -53,13 +51,11 @@ export const useRatingUpdates = (
       setTimeout(() => { isProcessing = false; }, 100);
     };
 
-    // Listen for rating-updated events from realtime service
     const realtimeEventHandler = (event: Event) => {
       const customEvent = event as CustomEvent;
       if (customEvent.detail?.movieId === movieId && !isProcessing) {
         isProcessing = true;
         console.log('🔄 [HOOK] Evento de tiempo real recibido:', customEvent.detail);
-        // Recargar estadísticas cuando se recibe un evento de tiempo real
         getMovieRatingStats(movieId)
           .then(stats => {
             console.log('📊 [HOOK] Estadísticas actualizadas:', stats);
@@ -75,7 +71,6 @@ export const useRatingUpdates = (
     window.addEventListener('ratingUpdated', eventHandler);
     window.addEventListener('rating-updated', realtimeEventHandler);
 
-    // Cleanup
     return () => {
       window.removeEventListener('ratingUpdated', eventHandler);
       window.removeEventListener('rating-updated', realtimeEventHandler);
@@ -85,7 +80,6 @@ export const useRatingUpdates = (
   useEffect(() => {
     if (!enablePolling) return;
 
-    // Polling for updates (fallback mechanism)
     const interval = setInterval(async () => {
       try {
         const stats = await getMovieRatingStats(movieId);
