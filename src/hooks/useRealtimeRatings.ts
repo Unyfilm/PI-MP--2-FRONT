@@ -20,7 +20,6 @@ export function useRealtimeRatings({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para cargar estadísticas
   const loadRatingStats = useCallback(async () => {
     if (!movieId) return;
 
@@ -39,14 +38,12 @@ export function useRealtimeRatings({
     }
   }, [movieId]);
 
-  // Cargar estadísticas iniciales
   useEffect(() => {
     if (autoLoad) {
       loadRatingStats();
     }
   }, [autoLoad, loadRatingStats]);
 
-  // Escuchar eventos de actualización en tiempo real
   useEffect(() => {
     if (!enableRealtime || !movieId) return;
 

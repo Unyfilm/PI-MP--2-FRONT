@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { getMovieRatingStats, getUserRating, rateMovie, updateRating, deleteRating } from '../../services/ratingService';
+import { broadcastRatingUpdate } from '../../hooks/useRatingUpdates';
 import type { RatingStats } from '../../services/ratingService';
 import './InteractiveRating.css';
 
@@ -35,20 +36,16 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
     try {
       setIsLoading(true);
       
-      // Validar movieId antes de hacer peticiones
       if (!movieId || movieId.trim() === '') {
         console.warn('MovieId inválido en InteractiveRating');
         return;
       }
       
-      // Cargar estadísticas de la película (con cache)
       const stats = await getMovieRatingStats(movieId);
       setRatingStats(stats);
       
-      // Solo intentar cargar calificación del usuario si hay token
       const token = localStorage.getItem('token');
       if (token) {
-        // Cargar calificación del usuario de forma silenciosa y no bloqueante
         getUserRating(movieId)
           .then(userRatingData => {
             if (userRatingData) {
@@ -56,7 +53,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
             }
           })
           .catch(() => {
-            // Ignorar errores silenciosamente - es normal que no exista calificación
           });
       }
     } catch (error) {
@@ -80,6 +76,9 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       
       await loadRatingData();
       
+      // Disparar evento global para notificar a otros componentes
+      broadcastRatingUpdate(movieId, rating, userRating ? 'update' : 'create');
+      
       if (onRatingUpdate && ratingStats) {
         onRatingUpdate(ratingStats);
       }
@@ -97,6 +96,9 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       await deleteRating(movieId);
       setUserRating(null);
       await loadRatingData();
+      
+      // Disparar evento global para notificar a otros componentes
+      broadcastRatingUpdate(movieId, 0, 'delete');
       
       if (onRatingUpdate && ratingStats) {
         onRatingUpdate(ratingStats);

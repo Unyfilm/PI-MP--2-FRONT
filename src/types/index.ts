@@ -7,53 +7,100 @@
  * - Descriptive names to reflect purpose and usage
  */
 
-// Tipos de vista de la aplicación
-export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap';
+/**
+ * Application view types
+ * @type {ViewType}
+ */
+export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap' | 'favorites';
 
-// Tipos de datos de película
+/**
+ * Interface for movie data
+ * @interface MovieData
+ */
 export interface MovieData {
+  /** Optional movie ID */
   _id?: string;
+  /** Movie title */
   title: string;
+  /** Movie video URL */
   videoUrl: string;
+  /** Optional movie rating */
   rating?: number;
+  /** Optional release year */
   year?: number;
+  /** Optional primary genre */
   genre?: string;
+  /** Optional array of genres */
   genres?: string[];
+  /** Optional movie description */
   description?: string;
+  /** Optional movie image URL */
   image?: string;
+  /** Optional movie duration in minutes */
   duration?: number;
 }
 
-// Tipos para datos de película al hacer click
+/**
+ * Interface for movie click data
+ * @interface MovieClickData
+ */
 export interface MovieClickData {
+  /** Optional movie ID */
   _id?: string;
+  /** Movie title */
   title: string;
+  /** Optional index position */
   index?: number;
+  /** Optional video URL */
   videoUrl?: string;
+  /** Optional movie rating */
   rating?: number;
+  /** Optional release year */
   year?: number;
+  /** Optional primary genre */
   genre?: string;
+  /** Optional movie description */
   description?: string;
+  /** Optional movie duration in minutes */
   duration?: number;
 }
 
-// Tipos para formularios
+/**
+ * Interface for login form data
+ * @interface LoginFormData
+ */
 export interface LoginFormData {
+  /** User email */
   email: string;
+  /** User password */
   password: string;
 }
 
+/**
+ * Interface for registration form data
+ * @interface RegisterFormData
+ */
 export interface RegisterFormData {
+  /** User first name */
   nombres: string;
+  /** User last name */
   apellidos: string;
+  /** User age */
   edad: string;
+  /** User email */
   email: string;
+  /** User password */
   password: string;
 }
 
-// Tipos para props de componentes
+/**
+ * Base interface for component props
+ * @interface BaseComponentProps
+ */
 export interface BaseComponentProps {
+  /** Optional CSS class name */
   className?: string;
+  /** Optional element ID */
   id?: string;
 }
 

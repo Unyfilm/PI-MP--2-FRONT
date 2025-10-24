@@ -79,13 +79,20 @@
   max-width: 100%;
 }
 
-/* Favorite Button */
-.unyfilm-card__favorite {
+/* Favorite Button Container */
+.unyfilm-card__favorite-button {
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 32px;
-  height: 32px;
+  z-index: 25;
+  /* Asegurar que el botón sea clickeable */
+  pointer-events: auto;
+}
+
+/* Estilos para el botón de favoritos dentro de las cards */
+.unyfilm-card__favorite-button .favorite-button {
+  width: 36px;
+  height: 36px;
   background: rgba(0, 0, 0, 0.7);
   border: none;
   border-radius: 50%;
@@ -96,40 +103,61 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: white;
   backdrop-filter: blur(10px);
-  z-index: 20;
-  /* Asegurar que el botón sea clickeable */
-  pointer-events: auto;
-  /* Tamaño original del padding */
-  padding: 6px;
+  padding: 8px;
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
 }
 
-.unyfilm-card__favorite:hover {
+.unyfilm-card__favorite-button .favorite-button:hover {
   background: rgba(0, 0, 0, 0.9);
   transform: scale(1.15);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.unyfilm-card__favorite--active {
+.unyfilm-card__favorite-button .favorite-button--active {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
-.unyfilm-card__favorite--active:hover {
+.unyfilm-card__favorite-button .favorite-button--active:hover {
   transform: scale(1.15);
   box-shadow: 0 6px 16px rgba(239, 68, 68, 0.6);
 }
 
-/* Icono dentro del botón de favoritos - Tamaño original */
-.unyfilm-card__favorite svg {
-  width: 16px;
-  height: 16px;
+/* Animación de pulso para el corazón */
+.unyfilm-card__favorite-button .favorite-button--animating {
+  animation: heartPulse 0.6s ease-in-out;
+}
+
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* Icono dentro del botón de favoritos */
+.unyfilm-card__favorite-button .favorite-button__icon {
+  width: 18px;
+  height: 18px;
   transition: all 0.3s ease;
 }
 
-.unyfilm-card__favorite:hover svg {
+.unyfilm-card__favorite-button .favorite-button:hover .favorite-button__icon {
   transform: scale(1.1);
+}
+
+/* Efecto de llenado del corazón */
+.unyfilm-card__favorite-button .favorite-button__icon--filled {
+  fill: currentColor;
+  animation: heartFill 0.3s ease-in-out;
+}
+
+@keyframes heartFill {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 /* Overlay */
@@ -511,16 +539,19 @@
     font-size: 10px;
   }
   
-  /* Botón de favoritos tamaño original en móviles */
-  .unyfilm-card__favorite {
-    width: 32px;
-    height: 32px;
+  /* Botón de favoritos en móviles */
+  .unyfilm-card__favorite-button {
     top: 8px;
     right: 8px;
+  }
+  
+  .unyfilm-card__favorite-button .favorite-button {
+    width: 32px;
+    height: 32px;
     padding: 6px;
   }
   
-  .unyfilm-card__favorite svg {
+  .unyfilm-card__favorite-button .favorite-button__icon {
     width: 16px;
     height: 16px;
   }

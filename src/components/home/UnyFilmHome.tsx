@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Play, Heart, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull } from 'lucide-react';
+import { Play, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
 import { movieConfig, homeSections } from '../../data/moviesData';
 import { movieService, type Movie } from '../../services/movieService';
@@ -50,35 +50,23 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
   const [error, setError] = useState<string | null>(null);
   const [sectionMovies, setSectionMovies] = useState<Record<string, Movie[]>>({});
   
-  // Estados para el carrusel automático
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [featuredMovies, setFeaturedMovies] = useState<Movie[]>([]);
   const carouselIntervalRef = useRef<number | null>(null);
 
-  // Hook para calificaciones reales
-  const { hasRealRatings, averageRating, totalRatings } = useRealRating(featuredMovie?._id);
-
-  // Función eliminada - ya no necesaria
-
-  // Función para obtener la imagen del hero con fallbacks
+  const { hasRealRatings, averageRating } = useRealRating(featuredMovie?._id);
   const getHeroImage = (movie: Movie): string => {
-    // 1. Usar port (imagen grande) de la API
     if (movie.port) return movie.port;
     
-    // 2. Usar poster como fallback
     if (movie.poster) return movie.poster;
     
-    // 3. Usar trailer como fallback
     if (movie.trailer) return movie.trailer;
     
-    // 4. Usar videoUrl como último recurso
     if (movie.videoUrl) return movie.videoUrl;
     
-    // 5. Fallback por defecto
     return '/images/default-hero.jpg';
   };
 
-  // Función para cambiar a la siguiente película en orden
   const changeToNextMovie = useCallback(async () => {
     if (!featuredMovies.length || featuredMovies.length <= 1 || isTransitioning) {
       return;
@@ -89,30 +77,25 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     try {
       const nextIndex = (featuredIndex + 1) % featuredMovies.length;
       
-      // Cambiar la película inmediatamente pero mantener la transición
       setFeaturedIndex(nextIndex);
       setFeaturedMovie(featuredMovies[nextIndex]);
       
-      // Esperar a que termine la animación completa
       setTimeout(() => {
         setIsTransitioning(false);
-      }, 800); // Tiempo total de la animación (0.8s)
+      }, 800);
     } catch (error) {
       setIsTransitioning(false);
     }
   }, [featuredIndex, featuredMovies, isTransitioning]);
 
-  // Función para iniciar el carrusel automático
   const startCarousel = useCallback(() => {
-    // Limpiar intervalo existente si hay uno
     if (carouselIntervalRef.current) {
       clearInterval(carouselIntervalRef.current);
     }
     
-    // Crear nuevo intervalo
     const interval = setInterval(() => {
       changeToNextMovie();
-    }, 5000); // Cambia cada 5 segundos
+    }, 5000);
     
     carouselIntervalRef.current = interval;
   }, [changeToNextMovie]);
@@ -128,20 +111,16 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
         let availableMovies: Movie[] = [];
         const sectionData: Record<string, Movie[]> = {};
 
-        // Primero intentar obtener todas las películas disponibles
         try {
           availableMovies = await movieService.getAvailableMovies();
         } catch (error) {
         }
 
-        // Cargar películas para el carrusel (hasta 5 películas)
         let carouselMovies: Movie[] = [];
         
-        // Usar las películas disponibles como carrusel
         if (availableMovies.length > 0) {
           carouselMovies = availableMovies.slice(0, 5);
         } else {
-          // Intentar cargar películas específicas para el carrusel como fallback
           const carouselIds = [
             movieConfig.featuredMovieId,
             "68f84e9aba5b03d95f2d6ce2", // Mortal Kombat 2
@@ -156,20 +135,16 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
           }
         }
         
-        // Configurar películas del carrusel
         if (carouselMovies.length > 0) {
           setFeaturedMovies(carouselMovies);
           setFeaturedMovie(carouselMovies[0]);
           setFeaturedIndex(0);
         } else {
         }
-
-        // Cargar películas para cada sección
         for (const section of homeSections) {
           try {
             let movies: Movie[] = [];
             
-            // Usar endpoint específico para trending
             if (section.id === 'trending') {
               try {
                 movies = await movieService.getTrendingMovies();
@@ -180,20 +155,15 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               movies = await movieService.getMovies(section.movieIds);
             }
             
-            // Si no se encontraron películas, usar fallback
             if (movies.length === 0) {
               
-              // Fallback 1: usar películas disponibles
               if (availableMovies.length > 0) {
-                // Tomar hasta 3 películas disponibles para la sección
                 const fallbackMovies = availableMovies.slice(0, 3);
                 sectionData[section.id] = fallbackMovies;
               }
-              // Fallback 2: usar la película destacada si está disponible
               else if (featuredMovieData) {
                 sectionData[section.id] = [featuredMovieData];
               }
-              // Sin fallback final - sección vacía si no hay datos reales
               else {
                 sectionData[section.id] = [];
               }
@@ -202,16 +172,13 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
             }
           } catch (error) {
             
-            // Fallback 1: usar películas disponibles
             if (availableMovies.length > 0) {
               const fallbackMovies = availableMovies.slice(0, 3);
               sectionData[section.id] = fallbackMovies;
             }
-            // Fallback 2: usar la película destacada si está disponible
             else if (featuredMovieData) {
               sectionData[section.id] = [featuredMovieData];
             }
-            // Sin fallback final - sección vacía si no hay datos reales
             else {
               sectionData[section.id] = [];
             }
@@ -226,24 +193,19 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
         }
     };
 
-    // Solo cargar si no hay datos ya cargados
     if (featuredMovies.length === 0 && Object.keys(sectionMovies).length === 0) {
       loadMovies();
     }
   }, []);
 
-  // useEffect separado para manejar el carrusel automático
   useEffect(() => {
     if (featuredMovie && !isLoading && featuredMovies.length > 1) {
-      // Solo iniciar el carrusel si no hay uno activo
       if (!carouselIntervalRef.current) {
-        // Agregar un pequeño delay para evitar parpadeos
         setTimeout(() => {
           startCarousel();
         }, 100);
       }
     } else {
-      // Limpiar el carrusel si no se cumplen las condiciones
       if (carouselIntervalRef.current) {
         clearInterval(carouselIntervalRef.current);
         carouselIntervalRef.current = null;
@@ -264,7 +226,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     }
   }, [onMovieClick]);
 
-  // Componente reutilizable para secciones de películas - memoizado para evitar re-renderizados
   const MovieSection = React.memo(({ title, icon, movies, subtitle, sectionId, handleMovieClick }: { 
     title: string; 
     icon: React.ReactNode; 
@@ -315,7 +276,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     );
   });
 
-  // Componente separado para todas las secciones de películas - completamente memoizado
   const MovieSections = React.memo(({ 
     sectionMovies,
     handleMovieClick 
@@ -360,7 +320,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     );
   });
 
-  // Memoizar las secciones de películas para evitar re-renderizados
   const memoizedMovieSections = useMemo(() => (
     <MovieSections 
       sectionMovies={sectionMovies}
@@ -391,7 +350,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
 
   return (
     <div className="unyfilm-home">
-      {/* Hero Section - Separado para evitar re-renderizado de minicards */}
       {featuredMovie && (
         <div 
           className={`unyfilm-home__hero ${isTransitioning ? 'unyfilm-home__hero--transitioning' : ''}`}
@@ -403,7 +361,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               className="unyfilm-home__hero-image"
               onError={(e) => {
                 const img = e.currentTarget as HTMLImageElement;
-                // Fallback chain: poster -> trailer -> videoUrl -> default
                 if (img.src !== featuredMovie.trailer && featuredMovie.trailer) {
                   img.src = featuredMovie.trailer;
                 } else if (img.src !== featuredMovie.videoUrl && featuredMovie.videoUrl) {
@@ -460,20 +417,11 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
                 <Play size={18} />
                 Ver ahora
               </button>
-              
-              <button 
-                className="hero-btn hero-btn--secondary"
-                onClick={() => {}}
-              >
-                <Heart size={18} />
-                Favoritos
-              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Movie Sections - Completamente memoizadas para evitar re-renderizado */}
       {memoizedMovieSections}
     </div>
   );

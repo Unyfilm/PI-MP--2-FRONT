@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Home, Film, Heart, Users, Settings, LogOut, Eye } from 'lucide-react';
+import { Home, Film, Heart, LogOut, Eye } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import logoImage from '../../images/logo3.png';
@@ -78,18 +78,13 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
             label="Catálogo"
           />
         </Link>
-        <NavIcon 
-          icon={<Heart size={24} strokeWidth={2} />}
-          label="Favoritos"
-        />
-        <NavIcon 
-          icon={<Users size={24} strokeWidth={2} />}
-          label="Usuarios"
-        />
-        <NavIcon 
-          icon={<Settings size={24} strokeWidth={2} />}
-          label="Configuración"
-        />
+        <Link to="/favorites">
+          <NavIcon 
+            active={currentView === 'favorites'} 
+            icon={<Heart size={24} strokeWidth={2} />}
+            label="Favoritos"
+          />
+        </Link>
       </nav>
       
       <div className="unyfilm-sidebar__bottom">
@@ -123,6 +118,7 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
             </>
           )}
         </div>
+        
         
         <NavIcon 
           icon={<LogOut size={24} strokeWidth={2} />}
