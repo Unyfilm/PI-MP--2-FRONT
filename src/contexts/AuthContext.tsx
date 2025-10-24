@@ -79,15 +79,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Verificar token existente al cargar la app
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        // Solo confiar en la clave oficial 'token'. Ignorar 'unyfilm-token' para evitar sesiones viejas.
         const storedToken = localStorage.getItem('token');
         const storedUserRaw = localStorage.getItem('auth:user');
 
-        // Migración/limpieza: si existe solo el token legacy sin el oficial, limpiar para evitar auto-login indeseado
         const legacyToken = localStorage.getItem('unyfilm-token');
         if (!storedToken && legacyToken) {
           localStorage.removeItem('unyfilm-token');
@@ -96,7 +93,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
 
         if (storedToken && storedUserRaw) {
-          // Verificar formato básico de JWT para evitar aceptar strings inválidos
           const isJwtLike = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(storedToken);
           if (!isJwtLike) {
             localStorage.removeItem('token');
@@ -107,7 +103,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setIsLoading(false);
             return;
           }
-          // Validar forma mínima del usuario antes de establecer sesión
           let parsedUser: BackendUser | null = null;
           try {
             parsedUser = JSON.parse(storedUserRaw);
@@ -115,22 +110,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             parsedUser = null;
           }
 
-          // Validación más permisiva - solo verificar que existe un objeto usuario básico
           const isValidUser = !!(
             parsedUser && typeof parsedUser === 'object' &&
             (parsedUser as any).email && typeof (parsedUser as any).email === 'string'
           );
 
-          // Evitar sesiones con el correo de pruebas reportado
           const isBlockedEmail = (parsedUser as any)?.email?.toLowerCase?.() === 'usuariousuario@unyfilm.com';
 
           if (isValidUser && !isBlockedEmail) {
             setToken(storedToken);
             setUser(parsedUser as BackendUser);
-            // No hacer refreshProfile automático para evitar deslogueo en recarga
-            // El usuario puede actualizar su perfil manualmente si lo necesita
           } else {
-            // Solo limpiar si realmente es un email bloqueado, no por validación estricta
             if (isBlockedEmail) {
               localStorage.removeItem('token');
               localStorage.removeItem('unyfilm-token');
@@ -138,15 +128,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               localStorage.removeItem('unyfilm-user');
               localStorage.removeItem('unyfilm-logged-in');
             } else {
-              // Si el usuario no es válido pero no está bloqueado, intentar mantener la sesión
               setToken(storedToken);
               setUser(parsedUser as BackendUser);
             }
           }
         }
       } catch (error) {
-        // No limpiar automáticamente en caso de error, solo logear
-        // La sesión puede seguir funcionando aunque haya errores menores
       } finally {
         setIsLoading(false);
       }
@@ -229,8 +216,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await apiService.updateProfile(profileData);
       
       if (response.success && response.data) {
-        // En lugar de mapear manualmente, vamos a refrescar el perfil completo desde el backend
-        // para asegurarnos de que tenemos los datos más actuales
         const refreshResult = await refreshProfile();
         
         if (refreshResult.success) {
@@ -240,7 +225,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             user: refreshResult.user
           };
         } else {
-          // Si falla el refresh, usar el mapeo manual como fallback
           const updatedUser: BackendUser = {
             _id: user?._id || '',
             username: user?.username || '',
@@ -292,8 +276,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await apiService.getProfile();
       
       if (response.success && response.data) {
-        // Mapear la respuesta del backend al formato BackendUser
-        // Según README, el backend devuelve firstName, lastName, age
         const backendData = response.data;
         const refreshedUser: BackendUser = {
           _id: backendData.id?.toString() || user?._id || '',
@@ -307,10 +289,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           updatedAt: backendData.updatedAt || new Date().toISOString()
         };
         
-        // Actualizar el estado local del usuario
         setUser(refreshedUser);
         
-        // Actualizar el usuario en localStorage
         localStorage.setItem('auth:user', JSON.stringify(refreshedUser));
         
         return { 
@@ -319,14 +299,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           user: refreshedUser
         };
       } else {
-        // No limpiar la sesión si falla el refresh, solo retornar error
         return { 
           success: false, 
           message: response.message || 'Error al cargar el perfil'
         };
       }
     } catch (error: any) {
-      // No limpiar la sesión si hay error de red, solo logear y retornar error
       return { 
         success: false, 
         message: error?.message || 'Error de red al cargar el perfil'
@@ -343,17 +321,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @returns {void}
    */
   const logout = () => {
-    // Limpiar estado local
     setUser(null);
     setToken(null);
     
-    // Limpiar localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('unyfilm-token');
     localStorage.removeItem('auth:user');
     localStorage.removeItem('unyfilm-logged-in');
 
-    // Llamar al backend para invalidar el token (opcional)
     authService.logout().catch(() => {});
   };
 
@@ -372,11 +347,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (response.success) {
         
-        // Limpiar completamente el estado de autenticación
         setUser(null);
         setToken(null);
         
-        // Limpiar localStorage
         localStorage.removeItem('token');
         localStorage.removeItem('unyfilm-token');
         localStorage.removeItem('auth:user');
@@ -412,7 +385,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
     try {
-      // Verificar si hay token válido
       if (!token) {
         return { 
           success: false, 
@@ -428,7 +400,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           message: 'Contraseña actualizada exitosamente' 
         };
       } else {
-        // Si el token es inválido, limpiar la sesión
         if (response.message?.includes('Invalid token') || response.message?.includes('Unauthorized')) {
           logout();
           return { 
@@ -444,7 +415,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       
-      // Manejar errores de conexión específicamente
       if (error?.message?.includes('ERR_CONNECTION_REFUSED') || 
           error?.message?.includes('Failed to fetch') ||
           error?.message?.includes('NetworkError')) {
@@ -454,7 +424,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
       }
       
-      // Manejar errores de autenticación
       if (error?.message?.includes('401') || error?.message?.includes('Unauthorized')) {
         logout();
         return { 
@@ -470,12 +439,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Función para verificar si el token es válido
   const isTokenValid = () => {
     if (!token) return false;
     
     try {
-      // Decodificar el JWT para verificar si está expirado
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Math.floor(Date.now() / 1000);
       return payload.exp > currentTime;
@@ -484,7 +451,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Función para limpiar sesión expirada
   const clearExpiredSession = () => {
     setToken(null);
     setUser(null);
@@ -494,7 +460,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('unyfilm-user');
   };
 
-  // Verificar token al cargar la aplicación
   useEffect(() => {
     if (token && !isTokenValid()) {
       clearExpiredSession();

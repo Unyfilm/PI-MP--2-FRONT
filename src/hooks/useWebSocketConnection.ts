@@ -18,17 +18,14 @@ export const useWebSocketConnection = () => {
   });
 
   useEffect(() => {
-    // Conectar al servicio WebSocket
     console.log('🔌 [HOOK] Iniciando conexión WebSocket...');
     websocketService.connect();
 
-    // Actualizar estado cada segundo
     const statusInterval = setInterval(() => {
       const currentStatus = getWebSocketStatus();
       setStatus(currentStatus);
     }, 1000);
 
-    // Cleanup al desmontar
     return () => {
       clearInterval(statusInterval);
       console.log('🔌 [HOOK] Limpiando conexión WebSocket...');

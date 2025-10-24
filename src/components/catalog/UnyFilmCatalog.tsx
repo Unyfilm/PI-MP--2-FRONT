@@ -19,21 +19,18 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
   const [isSearching, setIsSearching] = useState(false);
   const [searchMode, setSearchMode] = useState<'server' | 'local' | null>(null);
 
-  // Sincronizar searchQuery cuando cambie desde el header
   useEffect(() => {
     if (initialSearchQuery !== undefined) {
       setSearchQuery(initialSearchQuery);
     }
   }, [initialSearchQuery]);
 
-  // Cargar películas desde la API - CATÁLOGO INDEPENDIENTE
   useEffect(() => {
     const loadMovies = async () => {
       try {
         setIsLoading(true);
         setError(null);
         
-        // Usar el endpoint para obtener TODAS las películas
         const moviesData = await movieService.getAllMovies();
         setMovies(moviesData);
         
@@ -47,16 +44,13 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
     loadMovies();
   }, []);
 
-  // Búsqueda híbrida: endpoint + filtrado local
   useEffect(() => {
     const performSearch = async () => {
       if (searchQuery.trim() === '') {
-        // Si no hay búsqueda, cargar todas las películas
         try {
           const allMovies = await movieService.getAllMovies();
           setMovies(allMovies);
         } catch (error) {
-          // Error loading all movies
         }
         return;
       }
@@ -64,10 +58,8 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
       try {
         setIsSearching(true);
         
-        // Primero intentar búsqueda en el servidor
         const searchResults = await movieService.searchMovies(searchQuery);
         
-        // Si no hay resultados del servidor, hacer búsqueda local como fallback
         if (searchResults.length === 0) {
           setSearchMode('local');
           const allMovies = await movieService.getAllMovies();
@@ -84,7 +76,6 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
           setMovies(searchResults);
         }
       } catch (error) {
-        // En caso de error, intentar búsqueda local como fallback
         try {
           setSearchMode('local');
           const allMovies = await movieService.getAllMovies();
@@ -95,24 +86,20 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
           );
           setMovies(localResults);
         } catch (fallbackError) {
-          // Fallback search also failed
         }
       } finally {
         setIsSearching(false);
       }
     };
 
-    // Debounce para evitar demasiadas búsquedas
     const timeoutId = setTimeout(performSearch, 500);
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
-  // Obtener géneros únicos de las películas cargadas
   const availableGenres = Array.from(new Set(movies.flatMap(movie => movie.genre)));
   const genres = ['all', ...availableGenres];
 
   const filteredMovies = movies.filter((movie: Movie) => {
-    // Solo filtrar por género, no por búsqueda (ya viene filtrado del endpoint)
     const matchesGenre = selectedGenre === 'all' || 
       movie.genre.includes(selectedGenre);
     return matchesGenre;
@@ -203,7 +190,6 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
             <button 
               className="unyfilm-catalog__filter-button unyfilm-catalog__reset-btn"
               onClick={() => {
-                // Reset all filters
                 setSelectedGenre('all');
                 setSortBy('title');
                 setSearchQuery('');

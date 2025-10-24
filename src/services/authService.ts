@@ -11,11 +11,9 @@
  */
 import { API_CONFIG } from '../config/environment';
 
-// Derive backend root (without /api) to compose routes like /api/*
 const ENV_BASE = (API_CONFIG.BASE_URL || 'http://localhost:5000').replace(/\/$/, '');
 const ROOT_URL = ENV_BASE.replace(/\/api$/, '');
 
-// Default headers
 const defaultHeaders: HeadersInit = {
   'Content-Type': 'application/json',
   'Accept': 'application/json'
@@ -25,8 +23,6 @@ const authHeaders = (): HeadersInit => ({
   ...defaultHeaders,
   Authorization: `Bearer ${localStorage.getItem('token') || ''}`
 });
-
-// Backend-specific types for auth
 export interface BackendUser {
   _id: string;
   username: string;
@@ -80,7 +76,6 @@ const handleJson = async <T>(res: Response): Promise<BackendResponse<T>> => {
   if (contentType.includes('application/json')) {
     return res.json();
   }
-  // Si no es JSON, crear un error genérico
   const text = await res.text();
   return { success: false, message: text || `HTTP ${res.status}`, error: text } as BackendErrorResponse;
 };
@@ -122,9 +117,7 @@ export const authService = {
     });
     if (res.success) {
       const { token, user } = res.data;
-      // Guardar token según guía
       localStorage.setItem('token', token);
-      // Compatibilidad con código existente
       localStorage.setItem('unyfilm-token', token);
       localStorage.setItem('auth:user', JSON.stringify(user));
       localStorage.setItem('unyfilm-logged-in', 'true');
@@ -138,10 +131,8 @@ export const authService = {
    * @returns {Promise<BackendResponse<AuthData>>} Auth payload on success
    */
   async register(input: RegisterInput) {
-    // Mapear campos del formulario (español) al backend (inglés)
     const age = parseInt(input.edad || '0', 10);
     
-    // Validar campos requeridos
     if (!input.email || !input.password || !input.nombres || !input.apellidos || !age || age < 13 || age > 120) {
       return {
         success: false,
@@ -150,7 +141,6 @@ export const authService = {
       } as BackendErrorResponse;
     }
 
-    // PAYLOAD EXACTO QUE ESPERA EL BACKEND (incluyendo confirmPassword)
     const payload = {
       email: input.email.trim().toLowerCase(),
       password: input.password,
@@ -185,7 +175,6 @@ export const authService = {
       method: 'POST',
       headers: authHeaders()
     });
-    // Limpiar siempre el almacenamiento
     localStorage.removeItem('token');
     localStorage.removeItem('unyfilm-token');
     localStorage.removeItem('auth:user');

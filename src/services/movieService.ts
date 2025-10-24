@@ -1,5 +1,3 @@
-// Servicio para manejar películas desde la API
-// =============================================
 
 import { API_CONFIG } from '../config/environment';
 
@@ -61,7 +59,6 @@ class MovieService {
       const response = await fetch(`${this.baseUrl}/api/movies/${movieId}`);
       
       if (!response.ok) {
-        // Solo loggear errores 404 de forma silenciosa para evitar spam en consola
         if (response.status === 404) {
           console.debug(`Película no encontrada: ${movieId}`);
         } else {
@@ -135,7 +132,6 @@ class MovieService {
     try {
       const promises = movieIds.map(id => this.getMovieSafe(id));
       const results = await Promise.all(promises);
-      // Filtrar los resultados nulos (películas no encontradas)
       const movies = results.filter((movie): movie is Movie => movie !== null);
       
       if (movies.length === 0) {
@@ -155,7 +151,6 @@ class MovieService {
     try {
       return await this.getMovie(movieId);
     } catch (error) {
-      // Solo loggear errores que no sean 404 para evitar spam
       if (error instanceof Error && !error.message.includes('404')) {
         console.warn(`Error cargando película ${movieId}:`, error.message);
       }

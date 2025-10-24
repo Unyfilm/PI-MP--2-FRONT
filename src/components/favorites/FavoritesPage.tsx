@@ -38,7 +38,6 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
    * Cargar favoritos al montar el componente (optimizado)
    */
   useEffect(() => {
-    // Solo cargar si no hay favoritos y no está cargando
     if (!isLoaded && favorites.length === 0 && !loading) {
       console.log('📋 FavoritesPage: Cargando favoritos...');
       loadFavorites();
@@ -200,7 +199,6 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
               movieId={favorite.movieId._id}
               onMovieClick={async () => {
                 try {
-                  // Obtener datos completos de la película desde el endpoint de películas
                   console.log('🎬 FavoritesPage - Obteniendo datos completos de la película:', favorite.movieId._id);
                   
                   const fullMovieData = await movieService.getMovie(favorite.movieId._id);
@@ -229,8 +227,6 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
                   });
                 } catch (error) {
                   console.error('❌ Error obteniendo datos completos de la película:', error);
-                  
-                  // Fallback: usar datos del favorito si falla la petición
                   onMovieClick({
                     _id: favorite.movieId._id,
                     title: favorite.movieId.title,
