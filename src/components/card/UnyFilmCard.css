@@ -575,3 +575,46 @@
   outline: 2px solid white;
   outline-offset: 2px;
 }
+/* Estilos para el sistema de rating visual en las cards */
+.unyfilm-card__rating-stars {
+  margin: 4px 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Integración con VisualRatingStars */
+.unyfilm-card__rating-stars .visual-rating-stars {
+  width: 100%;
+  justify-content: center;
+}
+
+.unyfilm-card__rating-stars .visual-rating-stars__container {
+  justify-content: center;
+  gap: 2px;
+}
+
+.unyfilm-card__rating-stars .visual-rating-stars__stars {
+  gap: 4px;
+}
+
+/* Responsive adjustments for different card sizes */
+@media (max-width: 480px) {
+  .unyfilm-card__rating-stars .visual-star--small {
+    font-size: 14px !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .unyfilm-card__rating-stars .visual-star--small {
+    font-size: 16px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .unyfilm-card__rating-stars .visual-star--small {
+    font-size: 18px !important;
+  }
+}

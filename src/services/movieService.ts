@@ -227,7 +227,7 @@ class MovieService {
         throw new Error(result.message || 'Error al buscar películas');
       }
       
-      return result.data;
+      return result.data || [];
     } catch (error) {
       throw error;
     }

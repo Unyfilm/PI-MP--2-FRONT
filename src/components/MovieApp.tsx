@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';
 import UnyFilmHeader from './header/UnyFilmHeader';
@@ -129,17 +129,22 @@ export default function MovieApp() {
 
   // Función de favoritos eliminada
 
-  const handleSearch = (query: string): void => {
+  const handleSearch = useCallback((query: string): void => {
     setSearchQuery(query);
-  };
+  }, []);
 
-  const handleSearchSubmit = (_query: string): void => {
-    // Search functionality can be implemented here
-  };
+  const handleSearchSubmit = useCallback((query: string): void => {
+    // Navegar al catálogo cuando se hace una búsqueda
+    if (query.trim()) {
+      setCurrentView('catalog');
+      navigate('/catalog');
+    }
+  }, [navigate]);
 
   const handleMovieClick = (movie: MovieClickData): void => {
     // Crear datos de película directamente desde los datos recibidos
     const fullMovieData: MovieData = {
+      _id: movie._id,
       title: movie.title,
       videoUrl: movie.videoUrl || '',
       rating: movie.rating || 0,
@@ -180,9 +185,10 @@ export default function MovieApp() {
     const handleOutsideClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (sidebarOpen) {
-        const sidebar = document.querySelector('.unyfilm-sidebar');
-        const toggleBtn = document.querySelector('.sidebar-toggle');
-        if (sidebar && !sidebar.contains(target) && toggleBtn && !toggleBtn.contains(target)) {
+        const backdrop = document.querySelector('.sidebar-backdrop');
+        
+        // Solo cerrar si se hace clic en el backdrop, no en el sidebar
+        if (backdrop && target === backdrop) {
           setSidebarOpen(false);
         }
       }
@@ -223,6 +229,7 @@ export default function MovieApp() {
             favorites={[]} 
             toggleFavorite={() => {}}
             onMovieClick={handleMovieClick}
+            searchQuery={searchQuery || ''}
           />
         )}
         {currentView === 'about' && (

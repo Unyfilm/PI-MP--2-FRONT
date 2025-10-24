@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, User, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { Search, User, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import './UnyFilmHeader.scss';
 
@@ -35,9 +35,23 @@ export default function UnyFilmHeader({
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   // const [showNotifications, setShowNotifications] = useState(false);
 
+  // Debounce para búsqueda automática
+  useEffect(() => {
+    if (!searchQuery || searchQuery.trim() === '') return;
+    
+    const timeoutId = setTimeout(() => {
+      if (onSearchSubmit) {
+        onSearchSubmit(searchQuery);
+      }
+    }, 1000); // Esperar 1 segundo después de que el usuario deje de escribir
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]); // Removido onSearchSubmit de las dependencias
+
   const handleSearchChange = (e: InputChangeEvent): void => {
+    const query = e.target.value;
     if (onSearch) {
-      onSearch(e.target.value);
+      onSearch(query);
     }
   };
 
@@ -61,29 +75,17 @@ export default function UnyFilmHeader({
       <div className="unyfilm-header__container">
         {/* Search Bar */}
         <div className="unyfilm-header__search" id="search">
-          <form onSubmit={handleSearchSubmit} className="unyfilm-header__search-form">
-            <div className="unyfilm-header__search-input-container">
-              <Search className="unyfilm-header__search-icon" size={20} />
-              <input
-                type="text"
-                placeholder="Buscar película..."
-                value={searchQuery || ''}
-                onChange={handleSearchChange}
-                className="unyfilm-header__search-input"
-                id="search-input"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => onSearch && onSearch('')}
-                  className="unyfilm-header__search-clear"
-                  aria-label="Clear search"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          </form>
+          <div className="unyfilm-header__search-input-container">
+            <Search className="unyfilm-header__search-icon" size={20} />
+            <input
+              type="text"
+              placeholder="Buscar película..."
+              value={searchQuery || ''}
+              onChange={handleSearchChange}
+              className="unyfilm-header__search-input"
+              id="search-input"
+            />
+          </div>
         </div>
 
         {/* Right Section */}
@@ -185,21 +187,6 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
           icon={<User size={18} />} 
           text="Mi Perfil" 
           onClick={() => handleMenuClick('profile')}
-        />
-        <MenuItem 
-          icon={<Bell size={18} />} 
-          text="Notificaciones" 
-          onClick={() => handleMenuClick('notifications')}
-        />
-        <MenuItem 
-          icon={<Settings size={18} />} 
-          text="Configuración" 
-          onClick={() => handleMenuClick('settings')}
-        />
-        <MenuItem 
-          icon={<HelpCircle size={18} />} 
-          text="Ayuda" 
-          onClick={() => handleMenuClick('help')}
         />
         <div className="unyfilm-dropdown__divider"></div>
         <MenuItem 

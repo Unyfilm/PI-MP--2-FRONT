@@ -2,35 +2,14 @@ import { useState, useEffect } from 'react';
 import { Filter, Grid, List, Search } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
 import { movieService, type Movie } from '../../services/movieService';
+import { type UnyFilmCatalogProps, type MovieClickData } from '../../types/catalog';
 import './UnyFilmCatalog.css';
-
-// Interfaces para el catálogo
-interface MovieClickData {
-  title: string;
-  index: number;
-  videoUrl: string;
-  rating: number;
-  year: number;
-  genre: string;
-  description: string;
-  synopsis?: string;
-  genres?: string[];
-  cloudinaryPublicId?: string;
-  cloudinaryUrl?: string;
-  duration?: number;
-}
-
-interface UnyFilmCatalogProps {
-  favorites: number[];
-  toggleFavorite: (index: number) => void;
-  onMovieClick: (movie: MovieClickData) => void;
-}
 
 /**
  * Catalog page component with movie grid and filters
  */
-export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick }: UnyFilmCatalogProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick, searchQuery: initialSearchQuery }: UnyFilmCatalogProps) {
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [selectedGenre, setSelectedGenre] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('title');
@@ -38,6 +17,14 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchMode, setSearchMode] = useState<'server' | 'local' | null>(null);
+
+  // Sincronizar searchQuery cuando cambie desde el header
+  useEffect(() => {
+    if (initialSearchQuery !== undefined) {
+      setSearchQuery(initialSearchQuery);
+    }
+  }, [initialSearchQuery]);
 
   // Cargar películas desde la API - CATÁLOGO INDEPENDIENTE
   useEffect(() => {
@@ -60,7 +47,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
     loadMovies();
   }, []);
 
-  // Búsqueda real usando endpoint de búsqueda
+  // Búsqueda híbrida: endpoint + filtrado local
   useEffect(() => {
     const performSearch = async () => {
       if (searchQuery.trim() === '') {
@@ -69,23 +56,54 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
           const allMovies = await movieService.getAllMovies();
           setMovies(allMovies);
         } catch (error) {
+          // Error loading all movies
         }
         return;
       }
 
       try {
         setIsSearching(true);
+        
+        // Primero intentar búsqueda en el servidor
         const searchResults = await movieService.searchMovies(searchQuery);
-        setMovies(searchResults);
+        
+        // Si no hay resultados del servidor, hacer búsqueda local como fallback
+        if (searchResults.length === 0) {
+          setSearchMode('local');
+          const allMovies = await movieService.getAllMovies();
+          const localResults = allMovies.filter(movie => 
+            movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            movie.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            movie.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            movie.director.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            movie.cast.some(actor => actor.toLowerCase().includes(searchQuery.toLowerCase()))
+          );
+          setMovies(localResults);
+        } else {
+          setSearchMode('server');
+          setMovies(searchResults);
+        }
       } catch (error) {
-        // En caso de error en búsqueda, mantener películas actuales
+        // En caso de error, intentar búsqueda local como fallback
+        try {
+          setSearchMode('local');
+          const allMovies = await movieService.getAllMovies();
+          const localResults = allMovies.filter(movie => 
+            movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            movie.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            movie.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase()))
+          );
+          setMovies(localResults);
+        } catch (fallbackError) {
+          // Fallback search also failed
+        }
       } finally {
         setIsSearching(false);
       }
     };
 
     // Debounce para evitar demasiadas búsquedas
-    const timeoutId = setTimeout(performSearch, 300);
+    const timeoutId = setTimeout(performSearch, 500);
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
@@ -94,12 +112,10 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
   const genres = ['all', ...availableGenres];
 
   const filteredMovies = movies.filter((movie: Movie) => {
-    // Si hay búsqueda, no filtrar por título (ya viene filtrado del endpoint)
-    const matchesSearch = searchQuery.trim() === '' || 
-      movie.title.toLowerCase().includes(searchQuery.toLowerCase());
+    // Solo filtrar por género, no por búsqueda (ya viene filtrado del endpoint)
     const matchesGenre = selectedGenre === 'all' || 
       movie.genre.includes(selectedGenre);
-    return matchesSearch && matchesGenre;
+    return matchesGenre;
   });
 
   const sortedMovies = [...filteredMovies].sort((a, b) => {
@@ -114,6 +130,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
         return 0;
     }
   });
+
 
   const handleMovieClick = (movie: MovieClickData) => {
     if (onMovieClick) {
@@ -163,6 +180,22 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
               </div>
             )}
           </div>
+          
+          {/* Search Mode Indicator */}
+          {searchQuery && !isSearching && (
+            <div className="unyfilm-catalog__search-mode">
+              {searchMode === 'server' && (
+                <span className="search-mode-indicator server">
+                  🔍 Búsqueda en servidor
+                </span>
+              )}
+              {searchMode === 'local' && (
+                <span className="search-mode-indicator local">
+                  💻 Búsqueda local
+                </span>
+              )}
+            </div>
+          )}
         </div>
         
         <div className="unyfilm-catalog__controls">
@@ -253,7 +286,9 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
             <UnyFilmCard
                 key={movie._id || index}
               title={movie.title}
+              movieId={movie._id} // NUEVO: Pasar el ID de la película
               onMovieClick={() => handleMovieClick({ 
+                _id: movie._id,
                 title: movie.title, 
                 index: index,
                 videoUrl: movie.videoUrl || '',
@@ -272,6 +307,7 @@ export default function UnyFilmCatalog({ favorites, toggleFavorite, onMovieClick
               fallbackImage={movie.trailer}
               genre={movie.genre[0] || ''}
               year={movie.releaseDate && movie.releaseDate !== 'Invalid Date' ? new Date(movie.releaseDate).getFullYear() : 0}
+              rating={movie.rating?.average || 0}
             />
           );
         })}

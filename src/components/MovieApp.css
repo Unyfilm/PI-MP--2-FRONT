@@ -17,7 +17,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   grid-column: 2 / -1;
-  margin-bottom: 0; /* Remove any bottom margin */
+  margin-bottom: 0; /* Remove extra margin since footer is no longer fixed */
   margin-left: 0; /* eliminar margen izquierdo */
 }
 
@@ -69,4 +69,10 @@
   inset: 0;
   background: rgba(0,0,0,0.4);
   z-index: 900;
+  pointer-events: auto;
+}
+
+/* Asegurar que el sidebar esté por encima del backdrop */
+.unyfilm-sidebar {
+  z-index: 1000 !important;
 }

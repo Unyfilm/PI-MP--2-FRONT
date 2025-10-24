@@ -36,11 +36,16 @@
   gap: 24px 48px;
 }
 
+.unyfilm-sitemap__col {
+  text-align: center;
+}
+
 .unyfilm-sitemap__col-title {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 12px;
   color: #cbd5e1;
+  text-align: center;
 }
 
 .unyfilm-sitemap__list {
@@ -49,12 +54,17 @@
   padding: 0;
   display: grid;
   gap: 8px;
+  text-align: center;
 }
 
 .unyfilm-sitemap__list a {
   color: #8fb5d8;
   text-decoration: none;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .unyfilm-sitemap__list a:hover {

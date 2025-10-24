@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, Play, Star } from 'lucide-react';
+import VisualRatingStars from '../rating/VisualRatingStars';
+import { getMovieRatingStats, type RatingStats } from '../../services/ratingService';
 import './UnyFilmCard.css';
 
 interface MovieClickData {
@@ -22,6 +24,7 @@ interface UnyFilmCardProps {
   rating?: number;
   year?: number;
   description?: string;
+  movieId?: string; 
 }
 
 /**
@@ -35,11 +38,40 @@ export default function UnyFilmCard({
   genre,
   rating,
   year,
-  description
+  description,
+  movieId 
 }: UnyFilmCardProps) {
   const [isHover, setIsHover] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
+  const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
+  const [isLoadingRating, setIsLoadingRating] = useState(false);
+
+  // Load rating statistics when component mounts or movieId changes
+  useEffect(() => {
+    const loadRatingStats = async () => {
+      if (!movieId || movieId.trim() === '') return;
+      
+      try {
+        setIsLoadingRating(true);
+        // Cache will make this much faster on subsequent loads
+        const stats = await getMovieRatingStats(movieId);
+        setRatingStats(stats);
+      } catch (error) {
+        // Set default stats if API fails
+        setRatingStats({
+          movieId,
+          averageRating: rating || 0,
+          totalRatings: 0,
+          distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+        });
+      } finally {
+        setIsLoadingRating(false);
+      }
+    };
+
+    loadRatingStats();
+  }, [movieId, rating]);
 
   const handleImageError = () => {
     if (!imageError && fallbackImage) {
@@ -50,12 +82,12 @@ export default function UnyFilmCard({
     setImageError(true);
   };
 
-
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (onMovieClick) {
       onMovieClick({ 
+        _id: movieId,
         title, 
         image, 
         genre, 
@@ -101,26 +133,26 @@ export default function UnyFilmCard({
             <span className="unyfilm-card__placeholder-text">{title}</span>
           </div>
         )}
-        
-        
       </div>
       
       <div className="unyfilm-card__content">
         <h3 className="unyfilm-card__title">{title}</h3>
+        
+        {/* SISTEMA DE RATING VISUAL */}
+        {movieId && ratingStats && (
+          <div className="unyfilm-card__rating-stars">
+            <VisualRatingStars
+              averageRating={ratingStats.averageRating}
+              totalRatings={ratingStats.totalRatings}
+              size="small"
+              showCount={false}
+            />
+          </div>
+        )}
+        
         <div className="unyfilm-card__meta">
           {year && year > 1900 && <span className="unyfilm-card__year">{String(year)}</span>}
           {genre && <span className="unyfilm-card__genre">{genre}</span>}
-          {rating && rating > 0 && (
-            <span className="unyfilm-card__rating">
-              <Star size={14} />
-              {rating.toFixed(1)}
-            </span>
-          )}
-          {(!rating || rating === 0) && (
-            <span className="unyfilm-card__rating unyfilm-card__rating--no-rating">
-              Sin puntuación
-            </span>
-          )}
         </div>
       </div>
 
@@ -143,17 +175,6 @@ export default function UnyFilmCard({
               <span className="unyfilm-card__overlay-badge unyfilm-card__overlay-badge--new">
                 Nuevo
               </span>
-            )}
-            {rating && rating > 0 && (
-              <div className="unyfilm-card__overlay-rating">
-                <Star size={12} />
-                {rating.toFixed(1)}
-              </div>
-            )}
-            {(!rating || rating === 0) && (
-              <div className="unyfilm-card__overlay-rating unyfilm-card__overlay-rating--no-rating">
-                Sin puntuación
-              </div>
             )}
             {year && year > 1900 && (
               <span className="unyfilm-card__overlay-year">{String(year)}</span>

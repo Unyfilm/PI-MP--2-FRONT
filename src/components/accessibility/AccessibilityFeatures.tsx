@@ -13,6 +13,7 @@ export default function AccessibilityFeatures() {
   const [fontSize, setFontSize] = useState('normal');
   const [focusVisible, setFocusVisible] = useState(true);
   const [skipLinks, setSkipLinks] = useState(true);
+  const [showFontChangeNotification, setShowFontChangeNotification] = useState(false);
 
   // Load saved preferences on mount
   useEffect(() => {
@@ -31,6 +32,17 @@ export default function AccessibilityFeatures() {
   useEffect(() => {
     applyAccessibilityFeatures();
   }, [highContrast, reducedMotion, fontSize, focusVisible, skipLinks]);
+
+  // Show notification when font size changes
+  useEffect(() => {
+    if (fontSize !== 'normal') {
+      setShowFontChangeNotification(true);
+      const timer = setTimeout(() => {
+        setShowFontChangeNotification(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [fontSize]);
 
   /**
    * Apply accessibility features to the document
@@ -53,7 +65,7 @@ export default function AccessibilityFeatures() {
     }
 
     // Font size
-    root.classList.remove('font-small', 'font-normal', 'font-large');
+    root.classList.remove('font-small', 'font-normal', 'font-large', 'font-extra-large');
     root.classList.add(`font-${fontSize}`);
 
     // Focus visible
@@ -322,10 +334,15 @@ export default function AccessibilityFeatures() {
               <select
                 value={fontSize}
                 onChange={(e) => setFontSize(e.target.value)}
+                style={{
+                  fontSize: fontSize === 'small' ? '10px' : fontSize === 'normal' ? '14px' : fontSize === 'large' ? '18px' : '22px',
+                  padding: fontSize === 'small' ? '4px 8px' : fontSize === 'normal' ? '6px 10px' : fontSize === 'large' ? '8px 12px' : '10px 14px'
+                }}
               >
-                <option value="small">Pequeña</option>
-                <option value="normal">Normal</option>
-                <option value="large">Grande</option>
+                <option value="small">🔍 Pequeña (10px)</option>
+                <option value="normal">📝 Normal (14px)</option>
+                <option value="large">📖 Grande (20px)</option>
+                <option value="extra-large">📚 Extra Grande (28px)</option>
               </select>
             </label>
           </div>
@@ -361,6 +378,22 @@ export default function AccessibilityFeatures() {
           </div>
         </div>
       </div>
+
+      {/* Font Size Change Notification */}
+      {showFontChangeNotification && (
+        <div className="font-change-notification">
+          <div className="notification-content">
+            <span className="notification-icon">📏</span>
+            <span className="notification-text">
+              Tamaño de fuente cambiado a: {
+                fontSize === 'small' ? 'Pequeña' :
+                fontSize === 'normal' ? 'Normal' :
+                fontSize === 'large' ? 'Grande' : 'Extra Grande'
+              }
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* ARIA Live Region for announcements */}
       <div 
