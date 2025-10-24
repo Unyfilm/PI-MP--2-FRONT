@@ -27,6 +27,8 @@ interface UseFavoritesReturn {
   addToFavorites: (movieId: string, notes?: string, rating?: number) => Promise<{ success: boolean; message?: string }>;
   /** Function to remove a movie from favorites */
   removeFromFavorites: (favoriteId: string) => Promise<{ success: boolean; message?: string }>;
+  /** Function to clear all favorites (for user switching) */
+  clearFavorites: () => void;
   /** Function to update a favorite */
   updateFavorite: (favoriteId: string, updates: { notes?: string; rating?: number }) => Promise<{ success: boolean; message?: string }>;
   /** Function to check if a movie is in favorites */
@@ -266,18 +268,62 @@ export const useFavorites = (): UseFavoritesReturn => {
   }, [isLoaded, favorites.length]); // Dependencias optimizadas
 
   /**
+   * Detectar cambios en el token del mismo tab
+   */
+  useEffect(() => {
+    const checkTokenChange = () => {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('auth:user');
+      
+      if (token && userData) {
+        try {
+          const user = JSON.parse(userData);
+          const currentUserId = user.id?.toString();
+          
+          // Si hay un usuario autenticado y no hemos cargado favoritos
+          if (currentUserId && !isLoaded && !loadingRef.current) {
+            console.log('🔄 Token detectado, cargando favoritos para usuario:', currentUserId);
+            loadFavorites();
+          }
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
+      }
+    };
+
+    // Verificar inmediatamente
+    checkTokenChange();
+    
+    // Verificar periódicamente (cada 1 segundo) para detectar cambios
+    const interval = setInterval(checkTokenChange, 1000);
+    
+    return () => clearInterval(interval);
+  }, [isLoaded, loadFavorites]);
+
+  /**
    * Limpiar favoritos cuando el usuario cierre sesión
+   * y cargar favoritos cuando el usuario se loguee
    */
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'token' && !e.newValue) {
-        clearFavorites();
+      if (e.key === 'token') {
+        if (!e.newValue) {
+          // Usuario cerró sesión
+          console.log('🚪 Usuario cerró sesión, limpiando favoritos');
+          clearFavorites();
+        } else if (e.newValue && !e.oldValue) {
+          // Usuario se logueó (nuevo token)
+          console.log('🚪 Usuario se logueó, cargando favoritos');
+          setTimeout(() => {
+            loadFavorites();
+          }, 500); // Pequeño delay para asegurar que el contexto se actualice
+        }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [clearFavorites]);
+  }, [clearFavorites, loadFavorites]);
 
   return {
     favorites,
