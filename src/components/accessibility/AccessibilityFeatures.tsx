@@ -3,9 +3,64 @@ import { Eye, EyeOff, Keyboard, Mouse, Sun } from 'lucide-react';
 import './AccessibilityFeatures.css';
 
 /**
- * Accessibility features component implementing WCAG guidelines
- * @component
- * @returns {JSX.Element} Accessibility features with WCAG compliance
+ * AccessibilityFeatures
+ *
+ * A React functional component that provides a set of user-configurable accessibility
+ * features and keyboard shortcuts for the application. The component manages local
+ * state for accessibility preferences, persists them to localStorage, applies global
+ * CSS classes to the document root, and exposes quick-access skip links and an
+ * accessibility panel UI.
+ *
+ * Features
+ * - High contrast mode: toggles a 'high-contrast' class on document.documentElement.
+ * - Reduced motion: toggles a 'reduced-motion' class on document.documentElement.
+ * - Font size: supports 'small' | 'normal' | 'large' | 'extra-large' by toggling
+ *   corresponding 'font-{size}' classes on document.documentElement and showing a
+ *   transient visual notification when changed.
+ * - Focus indicators: toggles a 'focus-visible' class to control focus visibility.
+ * - Skip links: optionally renders visually-hidden but keyboard-accessible links to
+ *   jump to main content, navigation, and search.
+ * - Persisting preferences: saves and restores preferences under the key
+ *   'unyfilm-accessibility' in localStorage.
+ *
+ * Keyboard shortcuts (global keydown handlers)
+ * - Alt + A : Toggle accessibility panel
+ * - Alt + H : Open help panel (by simulating click on '.usability-help-btn')
+ * - Alt + N : Focus navigation ('.unyfilm-sidebar')
+ * - Alt + S : Focus search ( '#search-input' or header search input )
+ * - Alt + P : Play / Pause video ('.unyfilm-video-element')
+ * - Alt + F : Toggle fullscreen for player (clicks a fullscreen button found in
+ *            '.unyfilm-video-container' with an aria-label containing "pantalla completa")
+ * - Alt + R : Reset filters (clicks '.unyfilm-catalog__reset-btn')
+ * - Alt + V : Toggle view mode (clicks '.unyfilm-catalog__view-toggle')
+ * - Alt + O : Open sort options (clicks '.unyfilm-catalog__sort-btn')
+ * - Escape  : Close accessibility panel, help modal, video player, or profile dropdown
+ *             by finding corresponding elements and triggering close behaviors.
+ * - Tab     : If tabbed from the document body, attempts to focus the main content
+ *             element ('.main-content').
+ *
+ * Implementation notes / side effects
+ * - The component directly manipulates document.documentElement classes to apply
+ *   visual changes; ensure corresponding CSS rules exist for:
+ *     .high-contrast, .reduced-motion, .font-small, .font-normal, .font-large,
+ *     .font-extra-large, .focus-visible
+ * - Keyboard handlers are attached to document on mount and removed on unmount.
+ * - Skip links visually navigate and focus target elements and attempt smooth scrolling.
+ * - An aria-live region (id="accessibility-announcements") is rendered for screen
+ *   reader announcements; components may append announcements there as needed.
+ * - The component does not accept props; all configuration is stored internally and
+ *   persisted in localStorage. Consumers may need to coordinate if multiple places
+ *   manipulate the same DOM classes or localStorage key.
+ *
+ * Accessibility considerations
+ * - Uses ARIA live region for announcements and ensures focus management for skip
+ *   links and keyboard shortcuts.
+ * - Keyboard shortcuts may call e.preventDefault() for combinations using Alt or Ctrl
+ *   — be careful to avoid overriding browser or AT-specific shortcuts that users rely on.
+ *
+ * @returns {JSX.Element} A JSX element containing skip links (optional), the
+ * accessibility panel and controls, a transient font-change notification, and
+ * an ARIA live region for announcements.
  */
 export default function AccessibilityFeatures() {
   const [highContrast, setHighContrast] = useState(false);
