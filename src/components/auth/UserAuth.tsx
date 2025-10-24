@@ -16,10 +16,35 @@ interface UserData {
 }
 
 /**
- * User authentication component with mock functionality
+ * UserAuth
+ *
+ * React component that handles user authentication with mock functionality.
+ * Provides login, registration, profile management, password recovery,
+ * logout, and account deletion features. Uses form validation, modal control,
+ * and localStorage for temporary session persistence.
+ *
+ * Overall structure:
+ * - Main buttons (Login / Sign Up)
+ * - Modals for Login, Register, Profile, and Password Recovery
+ * - State management with useState and useClickOutside hooks
+ * - Integration with the authentication context (useAuth)
+ * - Navigation after logout using useNavigate
+ *
+ * Accessibility:
+ * - Descriptive placeholders for form fields
+ * - Buttons with lucide-react icons
+ * - Click-outside modal closing support
+ *
+ * @file UserAuth.tsx
  * @component
- * @returns {JSX.Element} User authentication interface
+ * @function UserAuth
+ * @author Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta, Jerson Otero, Julian Mosquera
+ * @version 2.0.0
+ * @since 2025-10
+ *
+ * @returns {JSX.Element} The complete user authentication interface including login, registration, profile, and password recovery.
  */
+
 export default function UserAuth() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLogin, setShowLogin] = useState(false);

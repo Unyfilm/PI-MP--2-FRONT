@@ -1,8 +1,8 @@
 /**
- * Componente de Lista de Favoritos
+ * Favorite List Component
  * 
- * Muestra una lista de películas favoritas del usuario con opciones
- * para eliminar y actualizar favoritos.
+ * Displays a list of the user's favorite movies with options
+ * to remove and update favorites.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -25,7 +25,7 @@ const FavoritesList: React.FC<FavoritesListProps> = ({
   const { favorites, loading, error, loadFavorites, removeFromFavorites } = useFavoritesContext();
   const { user } = useAuth();
 
-  // Cargar favoritos al montar el componente (solo si no están cargados)
+  // Load favorites on component mount (only if not loaded)
   useEffect(() => {
     if (user && favorites.length === 0 && !loading) {
       console.log('📋 FavoritesList: Cargando favoritos desde contexto...');
