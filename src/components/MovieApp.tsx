@@ -6,6 +6,7 @@ import UnyFilmHome from './home/UnyFilmHome';
 import UnyFilmCatalog from './catalog/UnyFilmCatalog';
 import UnyFilmAbout from './about/UnyFilmAbout';
 import UnyFilmSitemap from './sitemap/UnyFilmSitemap';
+import FavoritesPage from './favorites/FavoritesPage';
 import UnyFilmPlayer from './player/UnyFilmPlayer';
 import UsabilityFeatures from './usability/UsabilityFeatures';
 import AccessibilityFeatures from './accessibility/AccessibilityFeatures';
@@ -57,6 +58,9 @@ export default function MovieApp() {
           break;
         case '/sitemap':
           setCurrentView('sitemap');
+          break;
+        case '/favorites':
+          setCurrentView('favorites');
           break;
         default:
           // Mantener última vista si la ruta no está mapeada
@@ -237,6 +241,11 @@ export default function MovieApp() {
         )}
         {currentView === 'sitemap' && (
           <UnyFilmSitemap />
+        )}
+        {currentView === 'favorites' && (
+          <FavoritesPage 
+            onMovieClick={handleMovieClick}
+          />
         )}
       </div>
 
