@@ -1,28 +1,48 @@
 /**
- * Hook personalizado para manejar favoritos
+ * Custom hook for managing favorites
  * 
- * Proporciona estado global de favoritos con la nueva lógica de endpoints.
- * Implementa todas las operaciones CRUD según la guía proporcionada.
+ * Provides global favorites state with the new endpoint logic.
+ * Implements all CRUD operations according to the provided guide.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { favoriteService, type Favorite } from '../services/favoriteService';
 
+/**
+ * Interface for useFavorites hook return value
+ * @interface UseFavoritesReturn
+ */
 interface UseFavoritesReturn {
+  /** Array of user's favorite movies */
   favorites: Favorite[];
+  /** Loading state */
   loading: boolean;
+  /** Error message if any */
   error: string | null;
+  /** Whether favorites have been loaded */
   isLoaded: boolean;
+  /** Function to load favorites */
   loadFavorites: () => Promise<void>;
+  /** Function to add a movie to favorites */
   addToFavorites: (movieId: string, notes?: string, rating?: number) => Promise<{ success: boolean; message?: string }>;
+  /** Function to remove a movie from favorites */
   removeFromFavorites: (favoriteId: string) => Promise<{ success: boolean; message?: string }>;
+  /** Function to update a favorite */
   updateFavorite: (favoriteId: string, updates: { notes?: string; rating?: number }) => Promise<{ success: boolean; message?: string }>;
+  /** Function to check if a movie is in favorites */
   isMovieInFavorites: (movieId: string) => Promise<boolean>;
+  /** Function to get a favorite by ID */
   getFavoriteById: (favoriteId: string) => Promise<Favorite | null>;
+  /** Function to clear all favorites */
   clearFavorites: () => void;
+  /** Function to get favorites statistics */
   getStats: () => { total: number; byGenre: Record<string, number> };
 }
 
+/**
+ * Custom hook for managing user favorites
+ * @returns {UseFavoritesReturn} Object with favorites state and methods
+ */
 export const useFavorites = (): UseFavoritesReturn => {
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(false);

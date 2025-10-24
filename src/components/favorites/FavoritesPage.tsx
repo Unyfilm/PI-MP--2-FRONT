@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Heart, Trash2, Calendar, Tag, Play, RefreshCw } from 'lucide-react';
+import { Heart, Trash2, Calendar, Tag, Play, RefreshCw, Star } from 'lucide-react';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import { type Favorite } from '../../services/favoriteService';
 import { movieService } from '../../services/movieService';
