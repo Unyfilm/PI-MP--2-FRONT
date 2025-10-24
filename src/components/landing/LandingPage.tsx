@@ -87,7 +87,7 @@ export default function LandingPage() {
         <div className="landing-hero__content">
           <div className="landing-hero__logo">
             <img 
-              src="/src/images/logo3.png" 
+              src="/images/logo3.png" 
               alt="UnyFilm Logo" 
               className="landing-hero__logo-img"
             />
