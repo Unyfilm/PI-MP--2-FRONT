@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Heart, Play, Star } from 'lucide-react';
+import { Play } from 'lucide-react';
 import VisualRatingStars from '../rating/VisualRatingStars';
 import { getMovieRatingStats, type RatingStats } from '../../services/ratingService';
+import FavoriteButton from '../favorite/FavoriteButton';
 import './UnyFilmCard.css';
 
 interface MovieClickData {
@@ -45,7 +46,6 @@ export default function UnyFilmCard({
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
   const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
-  const [isLoadingRating, setIsLoadingRating] = useState(false);
 
   // Load rating statistics when component mounts or movieId changes
   useEffect(() => {
@@ -53,7 +53,6 @@ export default function UnyFilmCard({
       if (!movieId || movieId.trim() === '') return;
       
       try {
-        setIsLoadingRating(true);
         // Cache will make this much faster on subsequent loads
         const stats = await getMovieRatingStats(movieId);
         setRatingStats(stats);
@@ -65,8 +64,6 @@ export default function UnyFilmCard({
           totalRatings: 0,
           distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
         });
-      } finally {
-        setIsLoadingRating(false);
       }
     };
 
@@ -131,6 +128,18 @@ export default function UnyFilmCard({
               <Play size={32} />
             </div>
             <span className="unyfilm-card__placeholder-text">{title}</span>
+          </div>
+        )}
+        
+        {/* Botón de favoritos en la esquina superior derecha */}
+        {movieId && (
+          <div className="unyfilm-card__favorite-button">
+            <FavoriteButton
+              movieId={movieId}
+              movieTitle={title}
+              size="small"
+              showLabel={false}
+            />
           </div>
         )}
       </div>

@@ -8,7 +8,7 @@
  */
 
 // Tipos de vista de la aplicación
-export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap';
+export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap' | 'favorites';
 
 // Tipos de datos de película
 export interface MovieData {

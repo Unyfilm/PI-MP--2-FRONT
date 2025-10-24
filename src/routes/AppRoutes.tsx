@@ -92,6 +92,14 @@ export default function AppRoutes() {
         } 
       />
       <Route 
+        path="/favorites" 
+        element={
+          <ProtectedRoute>
+            <MovieApp />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
         path="/player/*" 
         element={
           <ProtectedRoute>
