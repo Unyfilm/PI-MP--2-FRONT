@@ -5,7 +5,7 @@
  * y sincronizar el estado entre todos los componentes.
  */
 
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { useFavorites } from '../hooks/useFavorites';
 import { type Favorite } from '../services/favoriteService';
 import { useAuth } from './AuthContext';
@@ -36,7 +36,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
   
   
   useEffect(() => {
-    const currentUserId = user?.id?.toString() || null;
+    const currentUserId = user?._id?.toString() || null;
     
     if (currentUserId !== lastUserIdRef.current) {
       console.log('🔄 Usuario cambió, invalidando cache de favoritos:', {
@@ -59,7 +59,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
         }, 100);
       }
     }
-  }, [user?.id, favoritesHook]);
+  }, [user?._id, favoritesHook]);
   
   
   const isMovieInFavorites = (movieId: string): boolean => {

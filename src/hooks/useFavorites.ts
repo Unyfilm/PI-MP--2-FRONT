@@ -36,8 +36,6 @@ interface UseFavoritesReturn {
   
   getFavoriteById: (favoriteId: string) => Promise<Favorite | null>;
   
-  clearFavorites: () => void;
-  
   getStats: () => { total: number; byGenre: Record<string, number> };
 }
 
@@ -278,7 +276,7 @@ export const useFavorites = (): UseFavoritesReturn => {
       if (token && userData) {
         try {
           const user = JSON.parse(userData);
-          const currentUserId = user.id?.toString();
+          const currentUserId = user._id?.toString();
           
           
           if (currentUserId && !isLoaded && !loadingRef.current) {
