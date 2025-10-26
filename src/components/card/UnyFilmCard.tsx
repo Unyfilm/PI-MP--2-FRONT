@@ -5,7 +5,13 @@ import { getMovieRatingStats, type RatingStats } from '../../services/ratingServ
 import FavoriteButton from '../favorite/FavoriteButton';
 import './UnyFilmCard.css';
 
+/**
+ * Represents the data associated with a clicked movie.
+ * Used to pass detailed information about the selected movie
+ * to higher-level components or event handlers.
+ */
 interface MovieClickData {
+  _id?: string;
   title: string;
   index?: number;
   videoUrl?: string;
@@ -16,6 +22,10 @@ interface MovieClickData {
   image?: string;
 }
 
+/**
+ * Props for the {@link UnyFilmCard} component.
+ * Defines all configurable options required to render a movie card.
+ */
 interface UnyFilmCardProps {
   title: string;
   onMovieClick: (movie: MovieClickData) => void;
@@ -29,7 +39,28 @@ interface UnyFilmCardProps {
 }
 
 /**
- * Movie card component with TypeScript types
+ * UnyFilmCard
+ *
+ * A dynamic movie card component that displays key film details such as title, genre, year,
+ * and rating. Includes support for hover animations, keyboard accessibility, and integration
+ * with rating and favorite systems.
+ *
+ * Features:
+ * - Displays movie image with fallback handling.
+ * - Shows title, genre, year, and visual rating stats.
+ * - Integrates `FavoriteButton` for quick favorites management.
+ * - Supports keyboard navigation (`Enter` / `Space`) for accessibility.
+ * - Fetches and displays rating statistics asynchronously.
+ *
+ * @file UnyFilmCard.tsx
+ * @component
+ * @function UnyFilmCard
+ * @version 2.0
+ * @since 2025-10
+ * @author Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta, Jerson Otero, Julian Mosquera
+ *
+ * @param {UnyFilmCardProps} props - Component properties.
+ * @returns {JSX.Element} Interactive and accessible movie card component.
  */
 export default function UnyFilmCard({ 
   title, 

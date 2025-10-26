@@ -6,7 +6,20 @@ import { type UnyFilmCatalogProps, type MovieClickData } from '../../types/catal
 import './UnyFilmCatalog.css';
 
 /**
- * Catalog page component with movie grid and filters
+ * UnyFilmCatalog Component
+ * 
+ * Displays a dynamic catalog of movies with search, sorting, and filtering capabilities.
+ * Supports grid and list view modes, and performs both local and server-side searches.
+ *
+ * @component
+ * @param {UnyFilmCatalogProps} props - Component properties.
+ * @param {MovieClickData} props.onMovieClick - Callback when a movie is clicked.
+ * @param {string} [props.searchQuery] - Initial search query.
+ * @param {Movie[]} [props.favorites] - List of user's favorite movies.
+ * @param {Function} [props.toggleFavorite] - Toggles a movie as favorite.
+ * 
+ * @returns {JSX.Element} The rendered movie catalog.
+ * @author Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta, Jerson Otero, Julian Mosquera
  */
 export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: _toggleFavorite, onMovieClick, searchQuery: initialSearchQuery }: UnyFilmCatalogProps) {
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
@@ -25,6 +38,11 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
     }
   }, [initialSearchQuery]);
 
+  /**
+   * Loads all movies on component mount.
+   * Handles server errors gracefully.
+   * @async
+   */
   useEffect(() => {
     const loadMovies = async () => {
       try {
@@ -44,6 +62,11 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
     loadMovies();
   }, []);
 
+  /**
+   * Performs debounced search based on the query.
+   * Uses server search first, then local fallback if empty or error.
+   * @async
+   */
   useEffect(() => {
     const performSearch = async () => {
       if (searchQuery.trim() === '') {

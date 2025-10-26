@@ -2,9 +2,60 @@ import { Users, Heart, Star, Award, Globe, Shield } from 'lucide-react';
 import './UnyFilmAbout.css';
 
 /**
- * About Us page component
- * @component
- * @returns {JSX.Element} About page with company information
+ * UnyFilmAbout
+ *
+ * React functional component that renders the "About" page for the UnyFilm application.
+ * The component is purely presentational (no props) and organizes content into a hero
+ * region and multiple informational sections describing mission, values, history,
+ * global commitment, privacy & security, and the team.
+ *
+ * Structure (high level):
+ * - root container: .unyfilm-about
+ * - hero: .unyfilm-about__hero
+ *   - title: .unyfilm-about__title
+ *   - subtitle: .unyfilm-about__subtitle
+ * - content: .unyfilm-about__content
+ *   - sections: .unyfilm-about__section
+ *     - section title: .unyfilm-about__section-title
+ *     - section text: .unyfilm-about__text
+ * - values grid: .unyfilm-about__values
+ *   - individual value: .unyfilm-about__value (icon, heading, text)
+ * - commitment / security blocks include icon containers with dedicated classes
+ * - team list: .unyfilm-about__team with team-member cards and avatar/icon containers
+ *
+ * Icons:
+ * - The component uses inline icon components (e.g., Users, Heart, Star, Award, Globe, Shield).
+ * - Treat these icons as decorative by default or ensure they expose accessible names.
+ *   If icons convey information, provide accessible text through aria-label or wrap with
+ *   an element that has an appropriate accessible name. Otherwise, mark them aria-hidden.
+ *
+ * Accessibility notes:
+ * - The component uses semantic headings (h1, h2, h3). Ensure document heading order is preserved
+ *   when the component is used in larger pages.
+ * - Ensure focusable interactive elements (if any are added later) receive appropriate keyboard handling.
+ *
+ * Styling and customization:
+ * - Styling follows a BEM-like convention with the "unyfilm-about" prefix. Customize appearance by
+ *   overriding these classes in your stylesheet or by composing additional wrappers.
+ * - Consider extracting repeated pieces (value cards, team members) into smaller subcomponents
+ *   if you need to render dynamic content or support lists from data sources.
+ *
+ * Internationalization:
+ * - All visible text is currently hard-coded (Spanish). For i18n support, replace static strings
+ *   with translations sourced from a localization system or pass localized strings via props.
+ *
+ * Extensibility:
+ * - The component is stateless and can be extended to accept props for dynamic content (e.g., values list,
+ *   team members array, localized strings) or callback handlers if interactive behavior is required.
+ *
+ * Example:
+ * <UnyFilmAbout />
+ *
+ * @public
+ * @author Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta, Jerson Otero, Julian Mosquera
+ * @version 2.0.0
+ * @since 2025-10
+ * @returns {JSX.Element} A JSX element representing the UnyFilm "About" page.
  */
 export default function UnyFilmAbout() {
   return (
