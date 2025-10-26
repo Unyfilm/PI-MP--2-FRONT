@@ -115,24 +115,8 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
         } catch (error) {
         }
 
-        let carouselMovies: Movie[] = [];
-        
-        if (availableMovies.length > 0) {
-          carouselMovies = availableMovies.slice(0, 5);
-        } else {
-          const carouselIds = [
-            movieConfig.featuredMovieId,
-            "68f84e9aba5b03d95f2d6ce2", // Mortal Kombat 2
-            "68f84e9aba5b03d95f2d6ce3", // Tron: Ares
-            "68f84e9aba5b03d95f2d6ce4", // Avatar: El Origen del Agua
-            "68f84e9aba5b03d95f2d6ce5", // Primate (2026)
-          ];
-          
-          try {
-            carouselMovies = await movieService.getMovies(carouselIds);
-          } catch (error) {
-          }
-        }
+        // Usar las películas disponibles para el carrusel
+        const carouselMovies = availableMovies.slice(0, 5);
         
         if (carouselMovies.length > 0) {
           setFeaturedMovies(carouselMovies);
@@ -140,47 +124,52 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
           setFeaturedIndex(0);
         } else {
         }
+        // Cargar películas para cada sección usando datos dinámicos
         for (const section of homeSections) {
           try {
             let movies: Movie[] = [];
             
             if (section.id === 'trending') {
+              // Intentar obtener películas trending del servidor
               try {
                 movies = await movieService.getTrendingMovies();
               } catch (trendingError) {
-                movies = await movieService.getMovies(section.movieIds);
+                // Si falla, usar películas disponibles filtradas por popularidad
+                movies = availableMovies
+                  .sort((a, b) => (b.rating?.average || 0) - (a.rating?.average || 0))
+                  .slice(0, 3);
               }
             } else {
-              movies = await movieService.getMovies(section.movieIds);
-            }
-            
-            if (movies.length === 0) {
+              // Para otras secciones, filtrar películas disponibles por género
+              const genreMap: Record<string, string[]> = {
+                'popular': ['action', 'drama', 'comedy'],
+                'kids': ['family', 'animation', 'comedy'],
+                'action': ['action', 'adventure', 'thriller'],
+                'sci-fi': ['sci-fi', 'fantasy', 'adventure'],
+                'horror': ['horror', 'thriller', 'mystery']
+              };
               
-              if (availableMovies.length > 0) {
-                const fallbackMovies = availableMovies.slice(0, 3);
-                sectionData[section.id] = fallbackMovies;
-              }
-              else if (featuredMovieData) {
-                sectionData[section.id] = [featuredMovieData];
-              }
-              else {
-                sectionData[section.id] = [];
-              }
-            } else {
-              sectionData[section.id] = movies;
+              const targetGenres = genreMap[section.id] || [];
+              movies = availableMovies
+                .filter(movie => 
+                  movie.genre.some(genre => 
+                    targetGenres.some(target => 
+                      genre.toLowerCase().includes(target.toLowerCase())
+                    )
+                  )
+                )
+                .slice(0, 3);
             }
-          } catch (error) {
             
-            if (availableMovies.length > 0) {
-              const fallbackMovies = availableMovies.slice(0, 3);
-              sectionData[section.id] = fallbackMovies;
+            // Si no hay películas específicas para la sección, usar películas disponibles
+            if (movies.length === 0 && availableMovies.length > 0) {
+              movies = availableMovies.slice(0, 3);
             }
-            else if (featuredMovieData) {
-              sectionData[section.id] = [featuredMovieData];
-            }
-            else {
-              sectionData[section.id] = [];
-            }
+            
+            sectionData[section.id] = movies;
+          } catch (error) {
+            // En caso de error, usar películas disponibles como fallback
+            sectionData[section.id] = availableMovies.slice(0, 3);
           }
         }
 
@@ -264,7 +253,8 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
                   genres: movie.genre,
                   cloudinaryPublicId: movie.cloudinaryVideoId,
                   cloudinaryUrl: movie.videoUrl,
-                  duration: movie.duration || 0
+                  duration: movie.duration || 0,
+                  subtitles: movie.subtitles
                 })}
                 description={movie.description || ''}
               />
@@ -410,7 +400,8 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
                   genres: featuredMovie.genre,
                   cloudinaryPublicId: featuredMovie.cloudinaryVideoId,
                   cloudinaryUrl: featuredMovie.videoUrl,
-                  duration: featuredMovie.duration || 0
+                  duration: featuredMovie.duration || 0,
+                  subtitles: featuredMovie.subtitles
                 })}
               >
                 <Play size={18} />

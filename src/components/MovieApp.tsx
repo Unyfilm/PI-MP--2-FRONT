@@ -133,7 +133,9 @@ export default function MovieApp() {
       genre: movie.genre || '',
       genres: (movie as any).genres || [movie.genre || ''],
       description: movie.description || '',
-      duration: (movie as any).duration || 0
+      duration: (movie as any).duration || 0,
+      cloudinaryVideoId: (movie as any).cloudinaryPublicId || (movie as any).cloudinaryVideoId,
+      subtitles: (movie as any).subtitles
     };
     setCurrentMovie(fullMovieData);
     setShowPlayer(true);

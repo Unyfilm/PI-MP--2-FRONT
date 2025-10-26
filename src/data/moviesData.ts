@@ -1,74 +1,42 @@
-export const movieIds = [
-  "68fb2c610f34b66d0eb4d9c7",
-  "68fb2c610f34b66d0eb4d9be",
-  "68fb2c610f34b66d0eb4d9bf",
-  "68fb2c610f34b66d0eb4d9c0",
-  "68fb2c610f34b66d0eb4d9c1",
-  "68fb2c610f34b66d0eb4d9c4",
-  "68fb2c610f34b66d0eb4d9c2",
-  "68fb2c610f34b66d0eb4d9c5",
-  "68fb2c610f34b66d0eb4d9c6",
-];
-
+// Configuración de películas dinámica - Los datos se cargan desde la API
 export const movieConfig = {
-  featuredMovieId: "68fb2c610f34b66d0eb4d9c7",
+  // El featured movie se obtiene dinámicamente desde la API
+  featuredMovieId: null,
 };
 
+// Secciones de la página de inicio - Los datos se cargan dinámicamente desde la API
 export const homeSections = [
   {
     id: 'trending',
     title: 'En Tendencia',
-    movieIds: [
-      "68fb2c610f34b66d0eb4d9c7", 
-      "68fb2c610f34b66d0eb4d9be", 
-      "68fb2c610f34b66d0eb4d9bf", 
-    ]
+    movieIds: [] // Se llena dinámicamente desde getTrendingMovies()
   },
   {
     id: 'popular',
     title: 'Populares',
-    movieIds: [
-      "68fb2c610f34b66d0eb4d9c0",
-      "68fb2c610f34b66d0eb4d9c2",
-      "68fb2c610f34b66d0eb4d9c6",
-    ]
+    movieIds: [] // Se llena dinámicamente desde getAvailableMovies()
   },
   {
     id: 'kids',
     title: 'Para toda la familia',
-    movieIds: [
-      "68fb2c610f34b66d0eb4d9c7",
-      "68fb2c610f34b66d0eb4d9c0",
-      "68fb2c610f34b66d0eb4d9c6",
-    ]
+    movieIds: [] // Se llena dinámicamente desde getAvailableMovies()
   },
   {
     id: 'action',
     title: 'Acción y Aventura',
-    movieIds: [
-      "68fb2c610f34b66d0eb4d9c7",
-      "68fb2c610f34b66d0eb4d9be",
-      "68fb2c610f34b66d0eb4d9bf",
-      "68fb2c610f34b66d0eb4d9c4",
-    ]
+    movieIds: [] // Se llena dinámicamente desde getAvailableMovies()
   },
   {
     id: 'sci-fi',
     title: 'Ciencia Ficción',
-    movieIds: [
-      "68fb2c610f34b66d0eb4d9bf",
-      "68fb2c610f34b66d0eb4d9c0",
-      "68fb2c610f34b66d0eb4d9c1",
-    ]
+    movieIds: [] // Se llena dinámicamente desde getAvailableMovies()
   },
   {
     id: 'horror',
     title: 'Terror y Suspenso',
-    movieIds: [
-      "68fb2c610f34b66d0eb4d9c4",
-      "68fb2c610f34b66d0eb4d9c5",
-    ]
+    movieIds: [] // Se llena dinámicamente desde getAvailableMovies()
   }
 ];
 
-export default movieIds;
+// Los datos de películas se cargan dinámicamente desde la API
+export default homeSections;

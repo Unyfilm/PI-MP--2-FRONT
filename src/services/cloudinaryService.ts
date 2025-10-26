@@ -66,6 +66,12 @@ class CloudinaryService {
     this.uploadPreset = CLOUDINARY_CONFIG.UPLOAD_PRESET;
     this.baseUrl = CLOUDINARY_CONFIG.BASE_URL;
     
+    console.log('🔧 CloudinaryService configurado:', {
+      cloudName: this.cloudName,
+      hasApiKey: !!this.apiKey,
+      hasUploadPreset: !!this.uploadPreset
+    });
+    
     this.cloudinary = new Cloudinary({
       cloud: {
         cloudName: this.cloudName
@@ -288,6 +294,107 @@ class CloudinaryService {
       apiKey: !!this.apiKey,
       configured: this.isConfigured(),
     };
+  }
+
+  /**
+   * Generate subtitle URL for a video
+   * @param videoPublicId - Public ID of the video
+   * @param language - Language code (e.g., 'es', 'en')
+   * @returns Subtitle URL
+   */
+  generateSubtitleUrl(videoPublicId: string, language: string = 'es'): string {
+    // Extract the base public ID from the video (remove folder structure)
+    const basePublicId = videoPublicId.replace('movies/videos/', '');
+    const subtitlePublicId = `subtitles/${basePublicId}_${language}`;
+    
+    const url = `https://res.cloudinary.com/${this.cloudName}/raw/upload/${subtitlePublicId}.vtt`;
+    
+    console.log('🔗 Generando URL de subtítulo:', {
+      videoPublicId,
+      basePublicId,
+      subtitlePublicId,
+      language,
+      cloudName: this.cloudName,
+      url
+    });
+    
+    return url;
+  }
+
+  /**
+   * Check if subtitles exist for a video
+   * @param videoPublicId - Public ID of the video
+   * @param language - Language code (e.g., 'es', 'en')
+   * @returns Promise<boolean> - True if subtitles exist
+   */
+  async checkSubtitlesExist(videoPublicId: string, language: string = 'es'): Promise<boolean> {
+    try {
+      const subtitleUrl = this.generateSubtitleUrl(videoPublicId, language);
+      const response = await fetch(subtitleUrl, { method: 'HEAD' });
+      return response.ok;
+    } catch (error) {
+      console.warn(`Error checking subtitles for ${videoPublicId}_${language}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Get available subtitle languages for a video
+   * @param videoPublicId - Public ID of the video
+   * @returns Promise<string[]> - Array of available language codes
+   */
+  async getAvailableSubtitles(videoPublicId: string): Promise<string[]> {
+    const languages = ['es', 'en']; // Supported languages
+    const availableLanguages: string[] = [];
+
+    for (const lang of languages) {
+      const exists = await this.checkSubtitlesExist(videoPublicId, lang);
+      if (exists) {
+        availableLanguages.push(lang);
+      }
+    }
+
+    return availableLanguages;
+  }
+
+  /**
+   * Load subtitle content from Cloudinary
+   * @param videoPublicId - Public ID of the video
+   * @param language - Language code
+   * @returns Promise<string> - Subtitle content in VTT format
+   */
+  async loadSubtitleContent(videoPublicId: string, language: string = 'es'): Promise<string> {
+    try {
+      const subtitleUrl = this.generateSubtitleUrl(videoPublicId, language);
+      const response = await fetch(subtitleUrl);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to load subtitles: ${response.statusText}`);
+      }
+
+      return await response.text();
+    } catch (error) {
+      throw new Error(`Failed to load subtitle content: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Load subtitle content from a direct URL
+   * @param subtitleUrl - Direct URL to subtitle file
+   * @returns Promise<string> - Subtitle content in VTT format
+   */
+  async loadSubtitleFromUrl(subtitleUrl: string): Promise<string> {
+    try {
+      const response = await fetch(subtitleUrl);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to load subtitles: ${response.statusText}`);
+      }
+
+      return await response.text();
+    } catch (error) {
+      throw new Error(`Failed to load subtitle content: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 }
 

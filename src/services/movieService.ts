@@ -49,6 +49,15 @@ export interface Movie {
   releaseDate?: string;
   /** Whether the movie is active */
   isActive: boolean;
+  /** Available subtitle languages */
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
+  /** Default subtitle language */
+  defaultSubtitleLanguage?: string;
 }
 
 /**

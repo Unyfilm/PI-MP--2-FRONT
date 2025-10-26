@@ -38,6 +38,15 @@ export interface MovieData {
   image?: string;
   /** Optional movie duration in minutes */
   duration?: number;
+  /** Cloudinary video ID for subtitles */
+  cloudinaryVideoId?: string;
+  /** Available subtitle languages */
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
 }
 
 /**

@@ -4,6 +4,7 @@ import { Cloudinary } from '@cloudinary/url-gen';
 import InteractiveRating from '../rating/InteractiveRating';
 import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
+import { cloudinaryService } from '../../services/cloudinaryService';
 import type { EnhancedPlayerProps } from '../../types';
 import type { RatingStats } from '../../services/ratingService';
 import './UnyFilmPlayer.css';
@@ -27,6 +28,8 @@ export default function UnyFilmPlayer({
   const [currentQuality, setCurrentQuality] = useState<string>(quality);
   const [subtitlesEnabled, setSubtitlesEnabled] = useState<boolean>(showSubtitles);
   const [subtitleTrack, setSubtitleTrack] = useState<TextTrack | null>(null);
+  const [availableSubtitles, setAvailableSubtitles] = useState<string[]>([]);
+  const [selectedSubtitleLanguage, setSelectedSubtitleLanguage] = useState<string>('es');
   const [qualityChangeMessage, setQualityChangeMessage] = useState<string>('');
   const [, setRatingStats] = useState<RatingStats | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -94,6 +97,197 @@ export default function UnyFilmPlayer({
     };
   }, [movie?._id, loadRatingStats]);
 
+  // Cargar subtítulos disponibles cuando se monta el componente
+  useEffect(() => {
+    const loadAvailableSubtitles = async () => {
+      console.log('🎬 Datos de la película recibidos:', {
+        cloudinaryVideoId: movie?.cloudinaryVideoId,
+        subtitles: movie?.subtitles,
+        movieTitle: movie?.title
+      });
+
+      if (!movie?.cloudinaryVideoId) {
+        console.log('⚠️ No hay cloudinaryVideoId disponible');
+        return;
+      }
+
+      try {
+        // Si el backend ya proporciona subtítulos, usarlos
+        if (movie.subtitles && movie.subtitles.length > 0) {
+          console.log('✅ Usando subtítulos del backend:', movie.subtitles);
+          const availableLanguages = movie.subtitles.map(sub => sub.languageCode);
+          setAvailableSubtitles(availableLanguages);
+          
+          // Usar el idioma por defecto o el primero disponible
+          const defaultLang = movie.subtitles.find(sub => sub.isDefault)?.languageCode || availableLanguages[0];
+          setSelectedSubtitleLanguage(defaultLang);
+          console.log('🎯 Idioma de subtítulo seleccionado:', defaultLang);
+        } else {
+          console.log('⚠️ No hay subtítulos en el backend, intentando Cloudinary...');
+          // Fallback: intentar cargar desde Cloudinary
+          const subtitles = await cloudinaryService.getAvailableSubtitles(movie.cloudinaryVideoId);
+          setAvailableSubtitles(subtitles);
+          
+          if (subtitles.length > 0) {
+            console.log('✅ Subtítulos disponibles desde Cloudinary:', subtitles);
+            setSelectedSubtitleLanguage(subtitles[0]);
+          } else {
+            console.log('⚠️ No hay subtítulos disponibles para esta película');
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error cargando subtítulos:', error);
+        setAvailableSubtitles([]);
+      }
+    };
+
+    loadAvailableSubtitles();
+  }, [movie?.cloudinaryVideoId, movie?.subtitles]);
+
+  // Cargar subtítulos inmediatamente cuando estén disponibles
+  useEffect(() => {
+    const loadSubtitlesImmediately = async () => {
+      if (availableSubtitles.length > 0 && subtitlesEnabled && !subtitleTrack && videoRef.current) {
+        console.log('🔄 Cargando subtítulos inmediatamente...');
+        
+        // Limpiar tracks existentes primero
+        const video = videoRef.current;
+        const existingTracks = Array.from(video.textTracks);
+        existingTracks.forEach(track => {
+          if (track.kind === 'subtitles') {
+            console.log('🗑️ Eliminando track existente:', track.label);
+            track.mode = 'disabled';
+          }
+        });
+        
+        try {
+          let subtitleContent: string;
+          
+          // Usar subtítulos del backend si están disponibles
+          if (movie?.subtitles && movie.subtitles.length > 0) {
+            const subtitleInfo = movie.subtitles.find(sub => sub.languageCode === selectedSubtitleLanguage);
+            if (subtitleInfo && subtitleInfo.url) {
+              console.log('📡 Cargando subtítulos desde URL del backend:', subtitleInfo.url);
+              subtitleContent = await cloudinaryService.loadSubtitleFromUrl(subtitleInfo.url);
+            } else {
+              throw new Error(`Subtítulo no encontrado para idioma: ${selectedSubtitleLanguage}`);
+            }
+          } else {
+            // Fallback: cargar desde Cloudinary
+            console.log('🔄 Usando fallback de Cloudinary');
+            subtitleContent = await cloudinaryService.loadSubtitleContent(
+              movie?.cloudinaryVideoId || '', 
+              selectedSubtitleLanguage
+            );
+          }
+          
+          console.log('📝 Contenido de subtítulos cargado:', subtitleContent.substring(0, 200) + '...');
+          
+          // Crear track de subtítulos
+          const track = video.addTextTrack('subtitles', 'Subtítulos', selectedSubtitleLanguage);
+          
+          // Parsear contenido VTT y agregar cues
+          const vttLines = subtitleContent.split('\n');
+          let currentCue = null;
+          let cueCount = 0;
+          
+          console.log('📋 Líneas VTT totales:', vttLines.length);
+          
+          for (let i = 0; i < vttLines.length; i++) {
+            const line = vttLines[i].trim();
+            
+            if (line.includes('-->')) {
+              // Línea de tiempo
+              console.log('🕐 Procesando línea de tiempo:', line);
+              const timeParts = line.split(' --> ');
+              
+              if (timeParts.length === 2) {
+                const [startTime, endTime] = timeParts;
+                console.log('⏰ Tiempos:', { startTime, endTime });
+                
+                currentCue = {
+                  start: parseVTTTime(startTime.trim()),
+                  end: parseVTTTime(endTime.trim()),
+                  text: ''
+                };
+                
+                console.log('📝 Cue creado:', currentCue);
+              } else {
+                console.warn('⚠️ Formato de tiempo incorrecto:', line);
+              }
+            } else if (currentCue && line && !line.startsWith('WEBVTT') && !line.startsWith('NOTE')) {
+              // Línea de texto
+              currentCue.text += (currentCue.text ? '\n' : '') + line;
+              
+              // Si la siguiente línea está vacía o es un nuevo tiempo, agregar el cue
+              if (i === vttLines.length - 1 || !vttLines[i + 1].trim() || vttLines[i + 1].includes('-->')) {
+                console.log('✅ Agregando cue:', currentCue);
+                track.addCue(new VTTCue(currentCue.start, currentCue.end, currentCue.text));
+                cueCount++;
+                currentCue = null;
+              }
+            }
+          }
+          
+          console.log(`📊 Total de cues agregados: ${cueCount}`);
+          // Solo mostrar subtítulos si están habilitados
+          track.mode = subtitlesEnabled ? 'showing' : 'hidden';
+          setSubtitleTrack(track);
+          console.log('✅ Subtítulos cargados exitosamente');
+          console.log('🎯 Track creado:', {
+            kind: track.kind,
+            label: track.label,
+            language: track.language,
+            mode: track.mode,
+            cues: track.cues ? track.cues.length : 0,
+            subtitlesEnabled
+          });
+        } catch (error) {
+          console.error('❌ Error cargando subtítulos:', error);
+        }
+      }
+    };
+
+    loadSubtitlesImmediately();
+  }, [availableSubtitles, subtitlesEnabled, subtitleTrack, selectedSubtitleLanguage, movie?.subtitles, movie?.cloudinaryVideoId]);
+
+  // Asegurar que los subtítulos se muestren cuando el video esté listo
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleCanPlay = () => {
+      console.log('🎬 Video listo para reproducir, verificando subtítulos...');
+      if (subtitleTrack) {
+        const newMode = subtitlesEnabled ? 'showing' : 'hidden';
+        console.log('🎯 Estableciendo modo de subtítulos:', newMode);
+        subtitleTrack.mode = newMode;
+        console.log('🎯 Modo del track después de establecer:', subtitleTrack.mode);
+      }
+    };
+
+    video.addEventListener('canplay', handleCanPlay);
+    return () => {
+      video.removeEventListener('canplay', handleCanPlay);
+    };
+  }, [subtitlesEnabled, subtitleTrack]);
+
+  // Limpiar tracks cuando el componente se desmonte
+  useEffect(() => {
+    return () => {
+      if (videoRef.current) {
+        const video = videoRef.current;
+        const existingTracks = Array.from(video.textTracks);
+        existingTracks.forEach(track => {
+          if (track.kind === 'subtitles') {
+            console.log('🗑️ Limpiando track al desmontar:', track.label);
+            track.mode = 'disabled';
+          }
+        });
+      }
+    };
+  }, []);
+
   const { isMovieInFavorites, addToFavorites, removeFromFavorites, getFavoriteById } = useFavoritesContext();
 
   const handleRatingUpdate = (newStats: RatingStats) => {
@@ -106,13 +300,88 @@ export default function UnyFilmPlayer({
     if (!video) return;
 
     const handleTimeUpdate = () => setCurrentTime(video.currentTime);
-    const handleLoadedMetadata = () => {
+    const handleLoadedMetadata = async () => {
       setDuration(video.duration);
       
-      if (subtitlesEnabled && !subtitleTrack) {
-        const track = video.addTextTrack('subtitles', 'Subtítulos', 'es');
-        track.mode = 'showing';
-        setSubtitleTrack(track);
+      // Cargar subtítulos si están habilitados y hay subtítulos disponibles
+      console.log('🎬 Condiciones para cargar subtítulos:', {
+        subtitlesEnabled,
+        availableSubtitlesLength: availableSubtitles.length,
+        hasSubtitleTrack: !!subtitleTrack,
+        selectedLanguage: selectedSubtitleLanguage
+      });
+
+      if (subtitlesEnabled && availableSubtitles.length > 0 && !subtitleTrack) {
+        try {
+          console.log('🎬 Cargando subtítulos para idioma:', selectedSubtitleLanguage);
+          
+          let subtitleContent: string;
+          
+          // Usar subtítulos del backend si están disponibles
+          if (movie?.subtitles && movie.subtitles.length > 0) {
+            const subtitleInfo = movie.subtitles.find(sub => sub.languageCode === selectedSubtitleLanguage);
+            if (subtitleInfo && subtitleInfo.url) {
+              console.log('📡 Cargando subtítulos desde URL del backend:', subtitleInfo.url);
+              subtitleContent = await cloudinaryService.loadSubtitleFromUrl(subtitleInfo.url);
+            } else {
+              throw new Error(`Subtítulo no encontrado para idioma: ${selectedSubtitleLanguage}`);
+            }
+          } else {
+            // Fallback: cargar desde Cloudinary
+            console.log('🔄 Usando fallback de Cloudinary');
+            subtitleContent = await cloudinaryService.loadSubtitleContent(
+              movie?.cloudinaryVideoId || '', 
+              selectedSubtitleLanguage
+            );
+          }
+          
+          console.log('📝 Contenido de subtítulos cargado:', subtitleContent.substring(0, 200) + '...');
+          
+          // Crear track de subtítulos
+          const track = video.addTextTrack('subtitles', 'Subtítulos', selectedSubtitleLanguage);
+          
+          // Parsear contenido VTT y agregar cues
+          const vttLines = subtitleContent.split('\n');
+          let currentCue = null;
+          let cueCount = 0;
+          
+          for (let i = 0; i < vttLines.length; i++) {
+            const line = vttLines[i].trim();
+            
+            if (line.includes('-->')) {
+              // Línea de tiempo
+              const [startTime, endTime] = line.split(' --> ');
+              currentCue = {
+                start: parseVTTTime(startTime),
+                end: parseVTTTime(endTime),
+                text: ''
+              };
+            } else if (currentCue && line && !line.startsWith('WEBVTT') && !line.startsWith('NOTE')) {
+              // Línea de texto
+              currentCue.text += (currentCue.text ? '\n' : '') + line;
+              
+              // Si la siguiente línea está vacía o es un nuevo tiempo, agregar el cue
+              if (i === vttLines.length - 1 || !vttLines[i + 1].trim() || vttLines[i + 1].includes('-->')) {
+                track.addCue(new VTTCue(currentCue.start, currentCue.end, currentCue.text));
+                cueCount++;
+                currentCue = null;
+              }
+            }
+          }
+          
+          console.log(`📊 Total de cues agregados: ${cueCount}`);
+          track.mode = subtitlesEnabled ? 'showing' : 'hidden';
+          setSubtitleTrack(track);
+          console.log('✅ Subtítulos cargados exitosamente');
+        } catch (error) {
+          console.error('❌ Error cargando subtítulos:', error);
+        }
+      } else {
+        console.log('⚠️ No se cargaron subtítulos. Razones:', {
+          subtitlesEnabled,
+          hasAvailableSubtitles: availableSubtitles.length > 0,
+          hasSubtitleTrack: !!subtitleTrack
+        });
       }
     };
     const handleEnded = () => setIsPlaying(false);
@@ -126,7 +395,49 @@ export default function UnyFilmPlayer({
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
       video.removeEventListener('ended', handleEnded);
     };
-  }, [subtitlesEnabled, subtitleTrack]);
+  }, [subtitlesEnabled, subtitleTrack, availableSubtitles, selectedSubtitleLanguage, movie?.cloudinaryVideoId, movie?.subtitles]);
+
+  // Función para parsear tiempo VTT
+  const parseVTTTime = (timeStr: string): number => {
+    if (!timeStr || typeof timeStr !== 'string') {
+      console.warn('⚠️ Tiempo VTT inválido:', timeStr);
+      return 0;
+    }
+
+    try {
+      // VTT times can be HH:MM:SS.mmm or MM:SS.mmm
+      // We need to handle both cases.
+      const timeParts = timeStr.split(':');
+      let hours = 0;
+      let minutes = 0;
+      let secondsAndMs = '';
+
+      if (timeParts.length === 3) { // HH:MM:SS.mmm
+        hours = parseInt(timeParts[0]) || 0;
+        minutes = parseInt(timeParts[1]) || 0;
+        secondsAndMs = timeParts[2];
+      } else if (timeParts.length === 2) { // MM:SS.mmm
+        minutes = parseInt(timeParts[0]) || 0;
+        secondsAndMs = timeParts[1];
+      } else {
+        console.warn('⚠️ Formato de tiempo VTT inesperado:', timeStr);
+        return 0;
+      }
+
+      const [secondsStr, millisecondsStr] = secondsAndMs.split('.'); // Split by period for milliseconds
+      
+      const secs = parseInt(secondsStr) || 0;
+      const ms = parseInt(millisecondsStr) || 0;
+      
+      const totalSeconds = hours * 3600 + minutes * 60 + secs + ms / 1000;
+      
+      console.log(`🕐 Parseando tiempo: ${timeStr} → ${totalSeconds}s`);
+      return totalSeconds;
+    } catch (error) {
+      console.error('❌ Error parseando tiempo VTT:', timeStr, error);
+      return 0;
+    }
+  };
 
 
   useEffect(() => {
@@ -261,24 +572,128 @@ export default function UnyFilmPlayer({
     setSubtitlesEnabled(newSubtitlesEnabled);
     onSubtitleToggle?.(newSubtitlesEnabled);
     
-   
+    console.log('🎬 Toggle de subtítulos:', {
+      newSubtitlesEnabled,
+      availableSubtitles,
+      subtitleTrack: !!subtitleTrack,
+      movieSubtitles: movie?.subtitles,
+      videoElement: !!videoRef.current,
+      textTracks: videoRef.current ? videoRef.current.textTracks.length : 0,
+      allTextTracks: videoRef.current ? Array.from(videoRef.current.textTracks).map(track => ({
+        kind: track.kind,
+        label: track.label,
+        language: track.language,
+        mode: track.mode,
+        cues: track.cues ? track.cues.length : 0
+      })) : []
+    });
+    
     if (videoRef.current) {
       const video = videoRef.current;
       
       if (newSubtitlesEnabled) {
-        
-        if (!subtitleTrack) {
-          const track = video.addTextTrack('subtitles', 'Subtítulos', 'es');
-          track.mode = 'showing';
-          setSubtitleTrack(track);
-        } else {
+        // Solo activar si hay subtítulos disponibles
+        if (availableSubtitles.length > 0 && subtitleTrack) {
+          console.log('✅ Activando subtítulos existentes');
           subtitleTrack.mode = 'showing';
+        } else if (availableSubtitles.length > 0) {
+          // Recargar subtítulos si no están cargados
+          console.log('🔄 Recargando subtítulos...');
+          // El useEffect se encargará de cargar los subtítulos
+        } else {
+          console.log('⚠️ No hay subtítulos disponibles para esta película');
+          setSubtitlesEnabled(false);
         }
       } else {
+        // Ocultar todos los tracks de subtítulos
+        console.log('❌ Ocultando todos los subtítulos');
+        const allTracks = Array.from(video.textTracks);
+        allTracks.forEach(track => {
+          if (track.kind === 'subtitles') {
+            console.log('🗑️ Ocultando track:', track.label);
+            track.mode = 'hidden';
+          }
+        });
         
         if (subtitleTrack) {
           subtitleTrack.mode = 'hidden';
         }
+      }
+    }
+  };
+
+  const handleSubtitleLanguageChange = async (language: string) => {
+    setSelectedSubtitleLanguage(language);
+    
+    if (videoRef.current && subtitlesEnabled) {
+      try {
+        // Limpiar todos los tracks de subtítulos existentes
+        const video = videoRef.current;
+        const existingTracks = Array.from(video.textTracks);
+        existingTracks.forEach(track => {
+          if (track.kind === 'subtitles') {
+            console.log('🗑️ Eliminando track anterior:', track.label);
+            track.mode = 'disabled';
+          }
+        });
+        
+        // Limpiar track anterior
+        if (subtitleTrack) {
+          subtitleTrack.mode = 'hidden';
+        }
+        
+        // Cargar nuevo contenido de subtítulos
+        let subtitleContent: string;
+        
+        // Usar subtítulos del backend si están disponibles
+        if (movie?.subtitles && movie.subtitles.length > 0) {
+          const subtitleInfo = movie.subtitles.find(sub => sub.languageCode === language);
+          if (subtitleInfo && subtitleInfo.url) {
+            subtitleContent = await cloudinaryService.loadSubtitleFromUrl(subtitleInfo.url);
+          } else {
+            throw new Error(`Subtítulo no encontrado para idioma: ${language}`);
+          }
+        } else {
+          // Fallback: cargar desde Cloudinary
+          subtitleContent = await cloudinaryService.loadSubtitleContent(
+            movie?.cloudinaryVideoId || '', 
+            language
+          );
+        }
+        
+        // Crear nuevo track
+        const videoElement = videoRef.current;
+        const track = videoElement.addTextTrack('subtitles', 'Subtítulos', language);
+        
+        // Parsear y agregar cues
+        const vttLines = subtitleContent.split('\n');
+        let currentCue = null;
+        
+        for (let i = 0; i < vttLines.length; i++) {
+          const line = vttLines[i].trim();
+          
+          if (line.includes('-->')) {
+            const [startTime, endTime] = line.split(' --> ');
+            currentCue = {
+              start: parseVTTTime(startTime),
+              end: parseVTTTime(endTime),
+              text: ''
+            };
+          } else if (currentCue && line && !line.startsWith('WEBVTT') && !line.startsWith('NOTE')) {
+            currentCue.text += (currentCue.text ? '\n' : '') + line;
+            
+            if (i === vttLines.length - 1 || !vttLines[i + 1].trim() || vttLines[i + 1].includes('-->')) {
+              track.addCue(new VTTCue(currentCue.start, currentCue.end, currentCue.text));
+              currentCue = null;
+            }
+          }
+        }
+        
+        track.mode = subtitlesEnabled ? 'showing' : 'hidden';
+        setSubtitleTrack(track);
+        console.log(`✅ Subtítulos cambiados a ${language}, modo: ${track.mode}`);
+      } catch (error) {
+        console.error('❌ Error cambiando idioma de subtítulos:', error);
       }
     }
   };
@@ -449,14 +864,39 @@ export default function UnyFilmPlayer({
                   <option value="low">Baja (480p) {currentQuality === 'low' ? '✓' : ''}</option>
                 </select>
 
+                {availableSubtitles.length > 0 && (
+                  <select
+                    value={selectedSubtitleLanguage}
+                    onChange={(e) => handleSubtitleLanguageChange(e.target.value)}
+                    className="unyfilm-subtitle-selector"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      color: 'white',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      marginRight: '8px'
+                    }}
+                  >
+                    {availableSubtitles.map(lang => (
+                      <option key={lang} value={lang} style={{ backgroundColor: '#333', color: 'white' }}>
+                        {lang === 'es' ? 'Español' : lang === 'en' ? 'English' : lang.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
                 <button
                   onClick={handleSubtitleToggle}
                   className={`unyfilm-control-btn ${subtitlesEnabled ? 'active' : ''}`}
                   aria-label={subtitlesEnabled ? 'Ocultar subtítulos' : 'Mostrar subtítulos'}
+                  disabled={availableSubtitles.length === 0}
                   style={{
                     backgroundColor: subtitlesEnabled ? '#6366f1' : 'transparent',
-                    color: subtitlesEnabled ? 'white' : 'white',
-                    fontWeight: subtitlesEnabled ? 'bold' : 'normal'
+                    color: subtitlesEnabled ? 'white' : availableSubtitles.length === 0 ? '#666' : 'white',
+                    fontWeight: subtitlesEnabled ? 'bold' : 'normal',
+                    opacity: availableSubtitles.length === 0 ? 0.5 : 1
                   }}
                 >
                   CC{subtitlesEnabled ? ' ✓' : ''}
