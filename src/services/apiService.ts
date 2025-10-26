@@ -213,7 +213,7 @@ export const apiService: ApiService = {
       method: 'POST',
       body: JSON.stringify({ 
         token, 
-        password: newPassword,  // El backend espera 'password', no 'newPassword'
+        password: newPassword, 
         confirmPassword 
       })
     }),

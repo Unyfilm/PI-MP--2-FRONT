@@ -1,7 +1,4 @@
-/**
- * Real-time service for communication between users
- * Uses Socket.io to connect with the backend server
- */
+
 
 import { io, Socket } from 'socket.io-client';
 import { API_CONFIG } from '../config/environment';
@@ -28,9 +25,7 @@ class RealTimeService {
     return RealTimeService.instance;
   }
 
-  /**
-   * Connect to WebSocket server
-   */
+  
   connect() {
     if (this.isConnected || this.socket) {
       console.log('🔄 [REALTIME] Ya conectado, ignorando nueva conexión');
@@ -41,7 +36,7 @@ class RealTimeService {
       console.log('🔌 [REALTIME] Conectando al servidor WebSocket...');
       
       const serverUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:3001' // Puerto del servidor backend
+        ? 'http://localhost:3001' 
         : API_CONFIG.BASE_URL;
 
       this.socket = io(serverUrl, {
@@ -83,9 +78,7 @@ class RealTimeService {
     }
   }
 
-  /**
-   * Manejar actualización de rating
-   */
+  
   private handleRatingUpdate(data: RatingUpdateEvent) {
     window.dispatchEvent(new CustomEvent('rating-updated', {
       detail: {
@@ -99,9 +92,7 @@ class RealTimeService {
     }));
   }
 
-  /**
-   * Manejar actualización de estadísticas
-   */
+  
   private handleStatsUpdate(data: any) {
     window.dispatchEvent(new CustomEvent('rating-stats-updated', {
       detail: {
@@ -114,9 +105,6 @@ class RealTimeService {
     }));
   }
 
-  /**
-   * Manejar reconexión automática
-   */
   private handleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.log('❌ [REALTIME] Máximo de intentos de reconexión alcanzado');
@@ -134,9 +122,7 @@ class RealTimeService {
     }, delay);
   }
 
-  /**
-   * Emitir evento de rating actualizado al servidor
-   */
+  
   emitRatingUpdate(movieId: string, rating: number, action: 'create' | 'update' | 'delete') {
     if (!this.socket || !this.isConnected) {
       console.warn('⚠️ [REALTIME] No conectado al servidor, no se puede emitir evento');
@@ -155,9 +141,7 @@ class RealTimeService {
     this.socket.emit('rating-updated', eventData);
   }
 
-  /**
-   * Obtener ID del usuario actual
-   */
+  
   private getCurrentUserId(): string {
     const token = localStorage.getItem('token');
     if (token) {
@@ -171,9 +155,7 @@ class RealTimeService {
     return 'anonymous';
   }
 
-  /**
-   * Desconectar del servidor
-   */
+ 
   disconnect() {
     if (this.socket) {
       console.log('🔌 [REALTIME] Desconectando del servidor WebSocket...');
@@ -183,16 +165,12 @@ class RealTimeService {
     }
   }
 
-  /**
-   * Verificar si está conectado
-   */
+ 
   isConnectedToServer(): boolean {
     return this.isConnected && !!this.socket;
   }
 
-  /**
-   * Obtener estado de la conexión
-   */
+ 
   getConnectionStatus() {
     return {
       connected: this.isConnected,

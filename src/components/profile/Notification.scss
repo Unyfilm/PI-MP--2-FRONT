@@ -1,7 +1,4 @@
-// Estilos individuales para notificaciones de cambio de contraseña
-// ================================================================
 
-// Contenedor principal de notificación
 .password-notification {
   position: fixed;
   top: 20px;
@@ -20,7 +17,6 @@
   color: white;
   font-weight: 500;
 
-  // Variantes de color
   &--success {
     background: #10B981;
   }
@@ -29,7 +25,6 @@
     background: #EF4444;
   }
 
-  // Contenido de la notificación
   &__content {
     flex: 1;
     display: flex;
@@ -46,7 +41,6 @@
     font-weight: 500;
   }
 
-  // Botón de cierre
   &__close {
     background: none;
     border: none;
@@ -71,7 +65,6 @@
   }
 }
 
-// Animaciones
 @keyframes slideInRight {
   from {
     transform: translateX(100%);
@@ -94,7 +87,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .password-notification {
     top: 10px;
@@ -105,14 +97,12 @@
   }
 }
 
-// Estados de accesibilidad
 @media (prefers-reduced-motion: reduce) {
   .password-notification {
     animation: none;
   }
 }
 
-// Modo de alto contraste
 @media (prefers-contrast: high) {
   .password-notification {
     border: 2px solid white;

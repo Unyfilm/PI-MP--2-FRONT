@@ -1,7 +1,4 @@
-/**
- * Service for cross-browser synchronization using localStorage + polling
- * Works between different browsers and tabs
- */
+
 
 interface CrossBrowserEvent {
   type: 'rating-updated' | 'rating-stats-updated';
@@ -15,9 +12,9 @@ class CrossBrowserService {
   private static instance: CrossBrowserService;
   private browserId: string;
   private isPolling = false;
-  private pollInterval: number = 2000; // 2 segundos
+  private pollInterval: number = 2000; 
   private lastProcessedTimestamp: number = 0;
-  private pollTimer: NodeJS.Timeout | null = null;
+  private pollTimer: number | null = null;
 
   static getInstance(): CrossBrowserService {
     if (!CrossBrowserService.instance) {
@@ -31,9 +28,7 @@ class CrossBrowserService {
     console.log('🌐 [CROSS BROWSER] Iniciado con ID:', this.browserId);
   }
 
-  /**
-   * Generate unique browser ID
-   */
+
   private generateBrowserId(): string {
     const existingId = localStorage.getItem('browser-id');
     if (existingId) {
@@ -45,9 +40,6 @@ class CrossBrowserService {
     return newId;
   }
 
-  /**
-   * Start polling for cross-browser events
-   */
   startPolling() {
     if (this.isPolling) {
       console.log('🔄 [CROSS BROWSER] Ya está haciendo polling');
@@ -63,9 +55,7 @@ class CrossBrowserService {
     }, this.pollInterval);
   }
 
-  /**
-   * Detener polling
-   */
+  
   stopPolling() {
     if (this.pollTimer) {
       clearInterval(this.pollTimer);
@@ -75,9 +65,7 @@ class CrossBrowserService {
     console.log('🔄 [CROSS BROWSER] Polling detenido');
   }
 
-  /**
-   * Verificar nuevos eventos desde otros navegadores
-   */
+  
   private checkForNewEvents() {
     try {
       const eventsData = localStorage.getItem('cross-browser-events');
@@ -104,9 +92,7 @@ class CrossBrowserService {
     }
   }
 
-  /**
-   * Procesar evento de otro navegador
-   */
+  
   private processCrossBrowserEvent(event: CrossBrowserEvent) {
     console.log(`🌐 [CROSS BROWSER] Procesando evento de navegador ${event.browserId}:`, event);
     
@@ -121,9 +107,7 @@ class CrossBrowserService {
     }));
   }
 
-  /**
-   * Enviar evento a otros navegadores
-   */
+  
   sendEvent(type: 'rating-updated' | 'rating-stats-updated', movieId: string, data: any) {
     const event: CrossBrowserEvent = {
       type,
@@ -153,9 +137,7 @@ class CrossBrowserService {
     }
   }
 
-  /**
-   * Obtener estado del servicio
-   */
+  
   getStatus() {
     return {
       browserId: this.browserId,

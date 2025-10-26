@@ -7,11 +7,7 @@ import App from "./App";
 import "./styles/main.scss";
 import "./index.scss";
 
-/**
- * Ensures the root element exists before rendering the app.
- * Using non-null assertion since this is guaranteed by the HTML template.
- * Wrapping with AuthProvider for global authentication state management.
- */
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>

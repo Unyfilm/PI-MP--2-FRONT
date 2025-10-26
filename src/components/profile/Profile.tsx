@@ -28,7 +28,6 @@ export default function Profile() {
     setIsDeleting(false);
   };
 
-  // Mostrar loading si no hay usuario cargado
   if (!user) {
     return (
       <div className="profile-page">
@@ -59,13 +58,10 @@ export default function Profile() {
       const result = await deleteAccount(password);
       
       if (result.success) {
-        // Cerrar el modal antes de redirigir
         handleCloseModal();
         
-        // Redirigir al login después de eliminar la cuenta
         navigate('/login');
       } else {
-        // El backend devolvió un error (ej. contraseña incorrecta)
         setError(result.message || 'Error al eliminar la cuenta. Verifica que la contraseña sea correcta.');
       }
     } catch (error: any) {

@@ -1,8 +1,4 @@
-/**
- * Estilos para el componente FavoritesList
- * 
- * Lista de favoritos con diseño moderno y responsive
- */
+
 
 .favorites-list {
   background: rgba(255, 255, 255, 0.05);
@@ -199,7 +195,6 @@
   text-align: center;
 }
 
-/* Estados especiales */
 .favorites-list--empty {
   padding: 40px 20px;
   text-align: center;
@@ -289,7 +284,6 @@
   transform: translateY(-1px);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .favorites-list {
     max-height: 400px;

@@ -182,7 +182,6 @@ export default function ResetPassword() {
               {touched.password && errors.password && (<p className="form-field__error">{errors.password}</p>)}
             </div>
 
-            {/* Checklist bajo el campo de nueva contraseña */}
             <div className={`password-checklist ${password ? 'password-checklist--show' : ''}`}>
               <div className={`password-checklist__item ${passwordChecks.length ? 'password-checklist__item--ok' : ''}`}>
                 <span className="password-checklist__dot" /> Mínimo 8 caracteres

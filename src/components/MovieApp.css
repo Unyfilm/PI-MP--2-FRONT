@@ -1,4 +1,3 @@
-/* UnyFilm Main Container */
 .movie-app-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
@@ -7,35 +6,35 @@
   position: relative;
   display: grid;
   grid-template-columns: 120px 1fr;
-  grid-template-rows: auto 1fr auto; /* Header, Content, Footer */
-  gap: 0; /* eliminar gap entre sidebar y contenido */
-  overflow-x: hidden; /* evita scroll horizontal */
+  grid-template-rows: auto 1fr auto; 
+  gap: 0; 
+  overflow-x: hidden; 
 }
 
-/* Header */
+
 .unyfilm-header {
   grid-column: 2 / -1;
-  grid-row: 1; /* Primera fila del grid */
+  grid-row: 1; 
 }
 
-/* Main Content */
+
 .main-content {
   min-height: calc(100vh - 80px);
   overflow-y: auto;
   overflow-x: hidden;
   grid-column: 2 / -1;
-  grid-row: 2; /* Segunda fila del grid */
+  grid-row: 2; 
   margin-bottom: 0;
   margin-left: 0;
 }
 
-/* Footer */
+
 .footer {
   grid-column: 2 / -1;
-  grid-row: 3; /* Tercera fila del grid */
+  grid-row: 3; 
 }
 
-/* Responsive Design */
+
 @media (max-width: 1024px) {
   .movie-app-container { 
     grid-template-columns: 0 1fr; 
@@ -46,9 +45,8 @@
   .movie-app-container--sidebar-open { grid-template-columns: 80px 1fr; }
   .movie-app-container--sidebar-open .sidebar-toggle { display: none; }
   
-  /* Ajustar footer en tablet */
   .footer {
-    grid-column: 1 / -1; /* Ocupar todo el ancho en móviles */
+    grid-column: 1 / -1; 
   }
 }
 
@@ -58,13 +56,11 @@
     grid-template-rows: auto 1fr auto;
   }
   
-  /* Footer en móviles */
   .footer {
-    grid-column: 1 / -1; /* Ocupar todo el ancho */
+    grid-column: 1 / -1; 
   }
 }
 
-/* Toggle button (mobile) */
 .sidebar-toggle { 
   display: none; 
   position: fixed; 
@@ -93,7 +89,6 @@
   .sidebar-toggle { display: block; } 
 }
 
-/* Backdrop when sidebar is open */
 .sidebar-backdrop {
   position: fixed;
   inset: 0;
@@ -102,7 +97,6 @@
   pointer-events: auto;
 }
 
-/* Asegurar que el sidebar esté por encima del backdrop */
 .unyfilm-sidebar {
   z-index: 1000 !important;
 }

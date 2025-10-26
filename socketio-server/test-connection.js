@@ -1,6 +1,3 @@
-/**
- * Script de prueba para verificar la conexión al servidor Socket.io
- */
 
 const { io } = require('socket.io-client');
 
@@ -13,7 +10,6 @@ const socket = io('http://localhost:3001', {
 socket.on('connect', () => {
   console.log('✅ Conectado al servidor:', socket.id);
   
-  // Enviar evento de prueba
   socket.emit('test-event', {
     message: 'Prueba desde script',
     timestamp: Date.now()
@@ -38,7 +34,6 @@ socket.on('error', (error) => {
   console.error('❌ Error:', error);
 });
 
-// Timeout después de 10 segundos
 setTimeout(() => {
   console.log('⏰ Timeout - No se pudo conectar al servidor');
   process.exit(1);

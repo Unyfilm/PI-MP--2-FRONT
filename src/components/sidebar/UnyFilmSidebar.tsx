@@ -7,11 +7,6 @@ import logoImage from '../../images/logo3.png';
 import './UnyFilmSidebar.css';
 import type { ViewType } from '../../types';
 
-/**
- * UnyFilmSidebarProps
- *
- * Props for the fixed navigation sidebar.
- */
 interface UnyFilmSidebarProps {
   currentView: ViewType;
 }
@@ -85,7 +80,6 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
       </nav>
       
       <div className="unyfilm-sidebar__bottom">
-        {/* Accessibility button - only visible on mobile */}
         <div className="unyfilm-sidebar__accessibility">
           <NavIcon 
             icon={<Eye size={24} strokeWidth={2} />}

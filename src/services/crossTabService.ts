@@ -1,7 +1,4 @@
-/**
- * Service for synchronization between browser tabs
- * Uses localStorage and BroadcastChannel to communicate changes between windows
- */
+
 
 interface CrossTabEvent {
   type: 'rating-updated' | 'rating-stats-updated';
@@ -23,9 +20,7 @@ class CrossTabService {
     return CrossTabService.instance;
   }
 
-  /**
-   * Initialize cross-tab synchronization service
-   */
+  
   init() {
     if (this.isListening) {
       return;
@@ -47,9 +42,7 @@ class CrossTabService {
     }
   }
 
-  /**
-   * Configurar listener de localStorage como fallback
-   */
+ 
   private setupLocalStorageListener() {
     window.addEventListener('storage', (event) => {
       if (event.key === 'unyfilm-realtime-event' && event.newValue) {
@@ -62,9 +55,7 @@ class CrossTabService {
     });
   }
 
-  /**
-   * Manejar eventos de otras pestañas
-   */
+  
   private handleCrossTabEvent(event: CrossTabEvent) {
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
@@ -76,9 +67,7 @@ class CrossTabService {
     }));
   }
 
-  /**
-   * Enviar evento a otras pestañas
-   */
+ 
   broadcastToOtherTabs(event: CrossTabEvent) {
     try {
       if (this.broadcastChannel) {
@@ -93,9 +82,7 @@ class CrossTabService {
     }
   }
 
-  /**
-   * Cerrar conexión
-   */
+  
   close() {
     if (this.broadcastChannel) {
       this.broadcastChannel.close();

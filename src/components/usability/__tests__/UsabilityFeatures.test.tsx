@@ -1,13 +1,15 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/dom';
+import { screen } from '@testing-library/dom';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import UsabilityFeatures from '../UsabilityFeatures';
 
-// Mock del hook useClickOutside
+
 vi.mock('../../hooks/useClickOutside', () => ({
   useClickOutside: () => ({ current: null })
 }));
 
-// Mock de localStorage
+
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -21,7 +23,6 @@ Object.defineProperty(window, 'localStorage', {
 describe('UsabilityFeatures', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock de querySelector para elementos del DOM
     vi.spyOn(document, 'querySelector').mockImplementation((selector) => {
       if (selector === '.unyfilm-sidebar') {
         return {
@@ -82,13 +83,11 @@ describe('UsabilityFeatures', () => {
       render(<UsabilityFeatures />);
       const helpButton = screen.getByRole('button', { name: /mostrar u ocultar ayuda/i });
       
-      // Abrir modal
       fireEvent.click(helpButton);
       await waitFor(() => {
         expect(screen.getByText('Guía de Usabilidad - UnyFilm')).toBeInTheDocument();
       });
 
-      // Cerrar modal
       const closeButton = screen.getByRole('button', { name: /cerrar ayuda/i });
       fireEvent.click(closeButton);
       
@@ -123,7 +122,6 @@ describe('UsabilityFeatures', () => {
       
       document.dispatchEvent(event);
       
-      // Verificar que se ejecutó la acción (el modal debería abrirse)
       expect(screen.getByText('Guía de Usabilidad - UnyFilm')).toBeInTheDocument();
     });
 
@@ -138,7 +136,6 @@ describe('UsabilityFeatures', () => {
       
       document.dispatchEvent(event);
       
-      // Verificar que se llamó querySelector para el input de búsqueda
       expect(document.querySelector).toHaveBeenCalledWith('#search-input');
     });
 
@@ -153,14 +150,12 @@ describe('UsabilityFeatures', () => {
       
       document.dispatchEvent(event);
       
-      // Verificar que se llamó querySelector para el sidebar
       expect(document.querySelector).toHaveBeenCalledWith('.unyfilm-sidebar');
     });
 
     it('debería ejecutar Escape para cerrar modales', () => {
       render(<UsabilityFeatures />);
       
-      // Abrir modal primero
       const helpButton = screen.getByRole('button', { name: /mostrar u ocultar ayuda/i });
       fireEvent.click(helpButton);
       
@@ -171,7 +166,6 @@ describe('UsabilityFeatures', () => {
       
       document.dispatchEvent(event);
       
-      // El modal debería cerrarse
       expect(screen.queryByText('Guía de Usabilidad - UnyFilm')).not.toBeInTheDocument();
     });
 
@@ -185,28 +179,24 @@ describe('UsabilityFeatures', () => {
       
       document.dispatchEvent(event);
       
-      // Verificar que se llamó querySelector para el video
       expect(document.querySelector).toHaveBeenCalledWith('video');
     });
 
     it('debería ejecutar flechas para controlar video', () => {
       render(<UsabilityFeatures />);
       
-      // Flecha izquierda
       const leftEvent = new KeyboardEvent('keydown', {
         key: 'ArrowLeft',
         bubbles: true
       });
       document.dispatchEvent(leftEvent);
       
-      // Flecha derecha
       const rightEvent = new KeyboardEvent('keydown', {
         key: 'ArrowRight',
         bubbles: true
       });
       document.dispatchEvent(rightEvent);
       
-      // Verificar que se llamó querySelector para el video
       expect(document.querySelector).toHaveBeenCalledWith('video');
     });
   });

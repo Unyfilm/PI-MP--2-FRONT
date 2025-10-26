@@ -16,7 +16,6 @@ export default function UnyFilmSitemap() {
       </div>
 
       <div className="unyfilm-sitemap__grid">
-        {/* Navegación Principal */}
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">
             <Home size={20} />
@@ -30,7 +29,6 @@ export default function UnyFilmSitemap() {
           </ul>
         </div>
 
-        {/* Contenido y Películas */}
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">
             <Film size={20} />
@@ -48,7 +46,6 @@ export default function UnyFilmSitemap() {
           </ul>
         </div>
 
-        {/* Cuenta de Usuario */}
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">
             <User size={20} />
@@ -64,7 +61,6 @@ export default function UnyFilmSitemap() {
           </ul>
         </div>
 
-        {/* Recuperación de Cuenta */}
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">
             <User size={20} />
@@ -76,7 +72,6 @@ export default function UnyFilmSitemap() {
           </ul>
         </div>
 
-        {/* Recursos y Ayuda */}
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">
             <Info size={20} />
@@ -91,7 +86,6 @@ export default function UnyFilmSitemap() {
           </ul>
         </div>
 
-        {/* Legal */}
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">
             <Info size={20} />
@@ -106,7 +100,6 @@ export default function UnyFilmSitemap() {
           </ul>
         </div>
 
-        {/* Contacto */}
         <div className="unyfilm-sitemap__col">
           <h3 className="unyfilm-sitemap__col-title">
             <Mail size={20} />
@@ -122,7 +115,6 @@ export default function UnyFilmSitemap() {
         </div>
       </div>
 
-      {/* Información adicional */}
       <div className="unyfilm-sitemap__footer">
         <div className="unyfilm-sitemap__info">
           <h4>Información del Sitio</h4>

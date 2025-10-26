@@ -1,11 +1,4 @@
-/**
- * Shared TypeScript types for the UnyFilm frontend
- *
- * Conventions
- * - PascalCase for exported interfaces and types
- * - camelCase for properties and function names
- * - Descriptive names to reflect purpose and usage
- */
+
 
 /**
  * Application view types
@@ -18,29 +11,17 @@ export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap' | 'favorites';
  * @interface MovieData
  */
 export interface MovieData {
-  /** Optional movie ID */
   _id?: string;
-  /** Movie title */
   title: string;
-  /** Movie video URL */
   videoUrl: string;
-  /** Optional movie rating */
   rating?: number;
-  /** Optional release year */
   year?: number;
-  /** Optional primary genre */
   genre?: string;
-  /** Optional array of genres */
   genres?: string[];
-  /** Optional movie description */
   description?: string;
-  /** Optional movie image URL */
   image?: string;
-  /** Optional movie duration in minutes */
   duration?: number;
-  /** Cloudinary video ID for subtitles */
   cloudinaryVideoId?: string;
-  /** Available subtitle languages */
   subtitles?: Array<{
     language: string;
     languageCode: string;
@@ -54,24 +35,21 @@ export interface MovieData {
  * @interface MovieClickData
  */
 export interface MovieClickData {
-  /** Optional movie ID */
   _id?: string;
-  /** Movie title */
   title: string;
-  /** Optional index position */
   index?: number;
-  /** Optional video URL */
   videoUrl?: string;
-  /** Optional movie rating */
   rating?: number;
-  /** Optional release year */
   year?: number;
-  /** Optional primary genre */
   genre?: string;
-  /** Optional movie description */
   description?: string;
-  /** Optional movie duration in minutes */
   duration?: number;
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
 }
 
 /**
@@ -79,9 +57,7 @@ export interface MovieClickData {
  * @interface LoginFormData
  */
 export interface LoginFormData {
-  /** User email */
   email: string;
-  /** User password */
   password: string;
 }
 
@@ -90,15 +66,10 @@ export interface LoginFormData {
  * @interface RegisterFormData
  */
 export interface RegisterFormData {
-  /** User first name */
   nombres: string;
-  /** User last name */
   apellidos: string;
-  /** User age */
   edad: string;
-  /** User email */
   email: string;
-  /** User password */
   password: string;
 }
 
@@ -107,9 +78,7 @@ export interface RegisterFormData {
  * @interface BaseComponentProps
  */
 export interface BaseComponentProps {
-  /** Optional CSS class name */
   className?: string;
-  /** Optional element ID */
   id?: string;
 }
 
@@ -213,10 +182,10 @@ export interface User {
   username?: string;
   firstName?: string;
   lastName?: string;
-  nombres?: string;     // Compatibility with registration format
-  apellidos?: string;   // Compatibility with registration format
-  edad?: string;        // Compatibility with registration format
-  age?: number;         // Real backend field
+  nombres?: string;     
+  apellidos?: string;   
+  edad?: string;        
+  age?: number;         
   email: string;
   password?: string;
   profilePicture?: string;
@@ -254,8 +223,8 @@ export interface Movie {
   year?: number;
   genre?: string;
   description?: string;
-  image?: string; // Small cards
-  imageG?: string; // Large cards
+  image?: string;
+  imageG?: string; 
   duration?: number;
   bitRate?: number;
   frameRate?: number;

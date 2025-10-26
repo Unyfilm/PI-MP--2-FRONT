@@ -7,9 +7,7 @@ interface CrossBrowserStatus {
   pollInterval: number;
 }
 
-/**
- * Hook para manejar la sincronización entre navegadores
- */
+
 export const useCrossBrowserSync = () => {
   const [status, setStatus] = useState<CrossBrowserStatus>({
     browserId: '',

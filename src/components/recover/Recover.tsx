@@ -45,7 +45,6 @@ export default function Recover() {
     }
   };
 
-  // Si el correo fue enviado exitosamente, mostrar pantalla de confirmación
   if (emailSent) {
     return (
       <div className="login-page login-page--bg-hero">

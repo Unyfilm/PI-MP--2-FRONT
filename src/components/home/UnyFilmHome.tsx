@@ -22,11 +22,7 @@ type MovieClickData = {
   duration?: number;
 };
 
-/**
- * HomeProps
- *
- * Props for the UnyFilm home component containing hero and movie sections.
- */
+
 interface HomeProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
@@ -97,7 +93,7 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
       changeToNextMovie();
     }, 5000);
     
-    carouselIntervalRef.current = interval;
+    carouselIntervalRef.current = interval as any;
   }, [changeToNextMovie]);
 
   useEffect(() => {
@@ -115,7 +111,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
         } catch (error) {
         }
 
-        // Usar las películas disponibles para el carrusel
         const carouselMovies = availableMovies.slice(0, 5);
         
         if (carouselMovies.length > 0) {
@@ -124,23 +119,19 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
           setFeaturedIndex(0);
         } else {
         }
-        // Cargar películas para cada sección usando datos dinámicos
         for (const section of homeSections) {
           try {
             let movies: Movie[] = [];
             
             if (section.id === 'trending') {
-              // Intentar obtener películas trending del servidor
               try {
                 movies = await movieService.getTrendingMovies();
               } catch (trendingError) {
-                // Si falla, usar películas disponibles filtradas por popularidad
                 movies = availableMovies
                   .sort((a, b) => (b.rating?.average || 0) - (a.rating?.average || 0))
                   .slice(0, 3);
               }
             } else {
-              // Para otras secciones, filtrar películas disponibles por género
               const genreMap: Record<string, string[]> = {
                 'popular': ['action', 'drama', 'comedy'],
                 'kids': ['family', 'animation', 'comedy'],
@@ -161,14 +152,12 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
                 .slice(0, 3);
             }
             
-            // Si no hay películas específicas para la sección, usar películas disponibles
             if (movies.length === 0 && availableMovies.length > 0) {
               movies = availableMovies.slice(0, 3);
             }
             
             sectionData[section.id] = movies;
           } catch (error) {
-            // En caso de error, usar películas disponibles como fallback
             sectionData[section.id] = availableMovies.slice(0, 3);
           }
         }

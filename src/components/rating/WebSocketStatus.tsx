@@ -1,13 +1,11 @@
 import React from 'react';
 import { useWebSocketConnection } from '../../hooks/useWebSocketConnection';
 
-/**
- * Componente para mostrar el estado de la conexión WebSocket
- */
+
 const WebSocketStatus: React.FC = () => {
   const { isConnected, isReconnecting, hasFailed, reconnectAttempts, maxAttempts } = useWebSocketConnection();
 
-  // Solo mostrar en desarrollo
+  
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }

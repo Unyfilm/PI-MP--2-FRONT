@@ -1,11 +1,8 @@
-// Archivo principal SASS para UnyFilm
-// ====================================
 
-// Importar variables y mixins
 @use 'variables' as *;
 @use 'mixins' as *;
 
-// Utilidades globales consolidadas
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -16,30 +13,24 @@
   }
 }
 
-// Typography utilities
 .text-center { text-align: center; }
 .text-left { text-align: left; }
 .text-right { text-align: right; }
 .text-primary { color: $primary-color; }
 .text-accent { color: $accent-color; }
 
-// Flexbox utilities
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
 .justify-center { justify-content: center; }
 .justify-between { justify-content: space-between; }
 
-// Gap utilities
 .gap-1 { gap: $spacing-xs; }
 .gap-2 { gap: $spacing-sm; }
 .gap-4 { gap: $spacing-md; }
 .gap-8 { gap: $spacing-xl; }
 
-// Botones
-// Nota: los botones deben definirse en los SCSS específicos de cada vista
 
-// Inputs
 .input {
   @include input-base;
   
@@ -62,7 +53,6 @@
   }
 }
 
-// Cards
 .card {
   @include card-base;
   
@@ -74,7 +64,6 @@
   }
 }
 
-// Grid system
 .grid {
   display: grid;
   gap: $spacing-md;
@@ -100,7 +89,6 @@
   }
 }
 
-// Responsive utilities
 @include mobile {
   .mobile-hidden {
     display: none;
@@ -119,7 +107,6 @@
   }
 }
 
-// Animaciones
 .fade-in {
   @include fade-in;
 }
@@ -139,7 +126,6 @@
   }
 }
 
-// Estados de carga
 .loading {
   position: relative;
   

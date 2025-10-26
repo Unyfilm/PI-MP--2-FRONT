@@ -1,7 +1,4 @@
-/**
- * Mock server to simulate real-time events
- * In production, this would be replaced by a real server with WebSockets or SSE
- */
+
 
 import { updateMockRatingStats } from './mockRatingService';
 import { broadcastToOtherTabs } from './crossTabService';
@@ -26,9 +23,6 @@ class MockRealtimeServer {
     return MockRealtimeServer.instance;
   }
 
-  /**
-   * Simulate rating update event
-   */
   simulateRatingUpdate(movieId: string, rating: number, action: string, movieTitle: string) {
     const event: MockEvent = {
       type: 'rating-updated',
@@ -51,9 +45,7 @@ class MockRealtimeServer {
     this.broadcastEvent(event);
   }
 
-  /**
-   * Simular evento de estadísticas actualizadas
-   */
+  
   simulateStatsUpdate(movieId: string, averageRating: number, totalRatings: number) {
     const event: MockEvent = {
       type: 'rating-stats-updated',
@@ -69,9 +61,7 @@ class MockRealtimeServer {
     this.broadcastEvent(event);
   }
 
-  /**
-   * Transmitir evento a todos los listeners
-   */
+  
   private broadcastEvent(event: MockEvent) {
     this.events.push(event);
     this.listeners.forEach(listener => {
@@ -93,9 +83,7 @@ class MockRealtimeServer {
     }));
   }
 
-  /**
-   * Simular eventos aleatorios para testing
-   */
+  
   startRandomEvents() {
     if (this.isRunning) return;
     
@@ -126,20 +114,16 @@ class MockRealtimeServer {
         this.simulateStatsUpdate(randomMovieId, randomRating, Math.floor(Math.random() * 10) + 1);
       }, 1000);
 
-    }, 10000); // Cada 10 segundos
+    }, 10000); 
   }
 
-  /**
-   * Detener eventos aleatorios
-   */
+ 
   stopRandomEvents() {
     this.isRunning = false;
     console.log('🎭 [MOCK SERVER] Deteniendo eventos aleatorios...');
   }
 
-  /**
-   * Obtener historial de eventos
-   */
+  
   getEventHistory(): MockEvent[] {
     return [...this.events];
   }

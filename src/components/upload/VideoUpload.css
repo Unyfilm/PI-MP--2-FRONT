@@ -1,7 +1,4 @@
-/**
- * Video Upload Component Styles
- * @fileoverview Styles for the VideoUpload component
- */
+
 
 .video-upload {
   max-width: 600px;
@@ -232,7 +229,6 @@
   font-weight: 500;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .video-upload {
     padding: 1rem;
@@ -253,7 +249,6 @@
   }
 }
 
-/* Dark Theme Support */
 @media (prefers-color-scheme: dark) {
   .video-upload {
     --background-color: #1f2937;
@@ -272,7 +267,6 @@
   }
 }
 
-/* Animation for upload progress */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -286,7 +280,6 @@
   animation: pulse 2s infinite;
 }
 
-/* Focus states for accessibility */
 .video-upload__button:focus {
   outline: 2px solid var(--primary-color, #3b82f6);
   outline-offset: 2px;

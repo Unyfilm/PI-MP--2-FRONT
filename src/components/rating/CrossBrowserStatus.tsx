@@ -1,13 +1,11 @@
 import React from 'react';
 import { useCrossBrowserSync } from '../../hooks/useCrossBrowserSync';
 
-/**
- * Componente para mostrar el estado de la sincronización entre navegadores
- */
+
 const CrossBrowserStatus: React.FC = () => {
   const { browserId, isActive, pollInterval } = useCrossBrowserSync();
 
-  // Solo mostrar en desarrollo
+  
   if (import.meta.env.MODE !== 'development') {
     return null;
   }

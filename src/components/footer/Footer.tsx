@@ -11,9 +11,7 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer__container">
-        {/* Main Footer Content */}
         <div className="footer__content">
-          {/* Navigation Section */}
           <div className="footer__section">
             <h3 className="footer__title">
               <Home size={20} />
@@ -39,7 +37,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Content Section */}
           <div className="footer__section">
             <h3 className="footer__title">
               <Film size={20} />
@@ -58,7 +55,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* User Section */}
           <div className="footer__section">
             <h3 className="footer__title">
               <User size={20} />
@@ -80,7 +76,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Contact Section */}
+       
           <div className="footer__section">
             <h3 className="footer__title">
               <Mail size={20} />
@@ -103,7 +99,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Horizontal Bar */}
+       
         <div className="footer__bottom">
           <div className="footer__bottom-content">
             <p className="footer__copyright">

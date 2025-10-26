@@ -8,10 +8,7 @@ interface DebugEvent {
   timestamp: number;
 }
 
-/**
- * Componente de debug para verificar eventos de rating
- * Solo se muestra en desarrollo
- */
+
 const RatingDebugger: React.FC = () => {
   const [events, setEvents] = useState<DebugEvent[]>([]);
 
@@ -47,7 +44,6 @@ const RatingDebugger: React.FC = () => {
     };
   }, []);
 
-  // Solo mostrar en desarrollo
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }

@@ -1,19 +1,14 @@
-/**
- * Rating Cache Service
- * 
- * Manages caching of rating statistics to avoid duplicate API calls
- * and improve performance across components.
- */
+
 
 interface CachedRatingStats {
   data: any;
   timestamp: number;
-  ttl: number; // Time to live in milliseconds
+  ttl: number; 
 }
 
 class RatingCache {
   private cache = new Map<string, CachedRatingStats>();
-  private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
+  private readonly DEFAULT_TTL = 5 * 60 * 1000; 
 
   /**
    * Get cached rating stats for a movie
@@ -57,16 +52,12 @@ class RatingCache {
     this.cache.delete(movieId);
   }
 
-  /**
-   * Clear all cached data
-   */
+ 
   clear(): void {
     this.cache.clear();
   }
 
-  /**
-   * Get cache size
-   */
+  
   size(): number {
     return this.cache.size;
   }

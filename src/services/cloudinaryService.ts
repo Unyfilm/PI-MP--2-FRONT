@@ -50,9 +50,7 @@ export interface CloudinaryVideoInfo {
   created_at: string;
 }
 
-/**
- * Cloudinary service class for video operations
- */
+
 class CloudinaryService {
   cloudName: string;
   apiKey: string;
@@ -264,7 +262,7 @@ class CloudinaryService {
     for (let i = 0; i < message.length; i++) {
       const char = message.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
+      hash = hash & hash; 
     }
     
     return Math.abs(hash).toString(16);
@@ -303,7 +301,6 @@ class CloudinaryService {
    * @returns Subtitle URL
    */
   generateSubtitleUrl(videoPublicId: string, language: string = 'es'): string {
-    // Extract the base public ID from the video (remove folder structure)
     const basePublicId = videoPublicId.replace('movies/videos/', '');
     const subtitlePublicId = `subtitles/${basePublicId}_${language}`;
     
@@ -344,7 +341,7 @@ class CloudinaryService {
    * @returns Promise<string[]> - Array of available language codes
    */
   async getAvailableSubtitles(videoPublicId: string): Promise<string[]> {
-    const languages = ['es', 'en']; // Supported languages
+    const languages = ['es', 'en']; 
     const availableLanguages: string[] = [];
 
     for (const lang of languages) {

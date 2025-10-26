@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { mockRealtimeServer, simulateRatingEvent, simulateStatsEvent } from '../../services/mockRealtimeServer';
 
-/**
- * Simulador de eventos en tiempo real para testing
- * Solo se muestra en desarrollo
- */
+
 const RealtimeSimulator: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [testMovieId, setTestMovieId] = useState('68f84e9aba5b03d95f2d6ce4');
@@ -24,13 +21,11 @@ const RealtimeSimulator: React.FC = () => {
     console.log('🎭 [SIMULATOR] Simulando evento manual...');
     simulateRatingEvent(testMovieId, testRating, 'create');
     
-    // Simular estadísticas después de un delay
     setTimeout(() => {
       simulateStatsEvent(testMovieId, testRating, Math.floor(Math.random() * 10) + 1);
     }, 500);
   };
 
-  // Solo mostrar en desarrollo
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }

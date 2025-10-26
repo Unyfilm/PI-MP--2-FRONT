@@ -97,7 +97,6 @@ export default function UnyFilmPlayer({
     };
   }, [movie?._id, loadRatingStats]);
 
-  // Cargar subtítulos disponibles cuando se monta el componente
   useEffect(() => {
     const loadAvailableSubtitles = async () => {
       console.log('🎬 Datos de la película recibidos:', {
@@ -112,19 +111,16 @@ export default function UnyFilmPlayer({
       }
 
       try {
-        // Si el backend ya proporciona subtítulos, usarlos
         if (movie.subtitles && movie.subtitles.length > 0) {
           console.log('✅ Usando subtítulos del backend:', movie.subtitles);
           const availableLanguages = movie.subtitles.map(sub => sub.languageCode);
           setAvailableSubtitles(availableLanguages);
           
-          // Usar el idioma por defecto o el primero disponible
           const defaultLang = movie.subtitles.find(sub => sub.isDefault)?.languageCode || availableLanguages[0];
           setSelectedSubtitleLanguage(defaultLang);
           console.log('🎯 Idioma de subtítulo seleccionado:', defaultLang);
         } else {
           console.log('⚠️ No hay subtítulos en el backend, intentando Cloudinary...');
-          // Fallback: intentar cargar desde Cloudinary
           const subtitles = await cloudinaryService.getAvailableSubtitles(movie.cloudinaryVideoId);
           setAvailableSubtitles(subtitles);
           
@@ -144,13 +140,11 @@ export default function UnyFilmPlayer({
     loadAvailableSubtitles();
   }, [movie?.cloudinaryVideoId, movie?.subtitles]);
 
-  // Cargar subtítulos inmediatamente cuando estén disponibles
   useEffect(() => {
     const loadSubtitlesImmediately = async () => {
       if (availableSubtitles.length > 0 && subtitlesEnabled && !subtitleTrack && videoRef.current) {
         console.log('🔄 Cargando subtítulos inmediatamente...');
         
-        // Limpiar tracks existentes primero
         const video = videoRef.current;
         const existingTracks = Array.from(video.textTracks);
         existingTracks.forEach(track => {
@@ -163,7 +157,6 @@ export default function UnyFilmPlayer({
         try {
           let subtitleContent: string;
           
-          // Usar subtítulos del backend si están disponibles
           if (movie?.subtitles && movie.subtitles.length > 0) {
             const subtitleInfo = movie.subtitles.find(sub => sub.languageCode === selectedSubtitleLanguage);
             if (subtitleInfo && subtitleInfo.url) {
@@ -173,7 +166,6 @@ export default function UnyFilmPlayer({
               throw new Error(`Subtítulo no encontrado para idioma: ${selectedSubtitleLanguage}`);
             }
           } else {
-            // Fallback: cargar desde Cloudinary
             console.log('🔄 Usando fallback de Cloudinary');
             subtitleContent = await cloudinaryService.loadSubtitleContent(
               movie?.cloudinaryVideoId || '', 
@@ -183,10 +175,8 @@ export default function UnyFilmPlayer({
           
           console.log('📝 Contenido de subtítulos cargado:', subtitleContent.substring(0, 200) + '...');
           
-          // Crear track de subtítulos
           const track = video.addTextTrack('subtitles', 'Subtítulos', selectedSubtitleLanguage);
           
-          // Parsear contenido VTT y agregar cues
           const vttLines = subtitleContent.split('\n');
           let currentCue = null;
           let cueCount = 0;
@@ -197,7 +187,6 @@ export default function UnyFilmPlayer({
             const line = vttLines[i].trim();
             
             if (line.includes('-->')) {
-              // Línea de tiempo
               console.log('🕐 Procesando línea de tiempo:', line);
               const timeParts = line.split(' --> ');
               
@@ -216,10 +205,9 @@ export default function UnyFilmPlayer({
                 console.warn('⚠️ Formato de tiempo incorrecto:', line);
               }
             } else if (currentCue && line && !line.startsWith('WEBVTT') && !line.startsWith('NOTE')) {
-              // Línea de texto
               currentCue.text += (currentCue.text ? '\n' : '') + line;
               
-              // Si la siguiente línea está vacía o es un nuevo tiempo, agregar el cue
+              
               if (i === vttLines.length - 1 || !vttLines[i + 1].trim() || vttLines[i + 1].includes('-->')) {
                 console.log('✅ Agregando cue:', currentCue);
                 track.addCue(new VTTCue(currentCue.start, currentCue.end, currentCue.text));
@@ -230,7 +218,7 @@ export default function UnyFilmPlayer({
           }
           
           console.log(`📊 Total de cues agregados: ${cueCount}`);
-          // Solo mostrar subtítulos si están habilitados
+          
           track.mode = subtitlesEnabled ? 'showing' : 'hidden';
           setSubtitleTrack(track);
           console.log('✅ Subtítulos cargados exitosamente');
@@ -318,7 +306,7 @@ export default function UnyFilmPlayer({
           
           let subtitleContent: string;
           
-          // Usar subtítulos del backend si están disponibles
+          
           if (movie?.subtitles && movie.subtitles.length > 0) {
             const subtitleInfo = movie.subtitles.find(sub => sub.languageCode === selectedSubtitleLanguage);
             if (subtitleInfo && subtitleInfo.url) {
@@ -328,7 +316,7 @@ export default function UnyFilmPlayer({
               throw new Error(`Subtítulo no encontrado para idioma: ${selectedSubtitleLanguage}`);
             }
           } else {
-            // Fallback: cargar desde Cloudinary
+            
             console.log('🔄 Usando fallback de Cloudinary');
             subtitleContent = await cloudinaryService.loadSubtitleContent(
               movie?.cloudinaryVideoId || '', 
@@ -350,7 +338,7 @@ export default function UnyFilmPlayer({
             const line = vttLines[i].trim();
             
             if (line.includes('-->')) {
-              // Línea de tiempo
+           
               const [startTime, endTime] = line.split(' --> ');
               currentCue = {
                 start: parseVTTTime(startTime),
@@ -358,10 +346,10 @@ export default function UnyFilmPlayer({
                 text: ''
               };
             } else if (currentCue && line && !line.startsWith('WEBVTT') && !line.startsWith('NOTE')) {
-              // Línea de texto
+              
               currentCue.text += (currentCue.text ? '\n' : '') + line;
               
-              // Si la siguiente línea está vacía o es un nuevo tiempo, agregar el cue
+              
               if (i === vttLines.length - 1 || !vttLines[i + 1].trim() || vttLines[i + 1].includes('-->')) {
                 track.addCue(new VTTCue(currentCue.start, currentCue.end, currentCue.text));
                 cueCount++;
@@ -398,7 +386,7 @@ export default function UnyFilmPlayer({
     };
   }, [subtitlesEnabled, subtitleTrack, availableSubtitles, selectedSubtitleLanguage, movie?.cloudinaryVideoId, movie?.subtitles]);
 
-  // Función para parsear tiempo VTT
+  
   const parseVTTTime = (timeStr: string): number => {
     if (!timeStr || typeof timeStr !== 'string') {
       console.warn('⚠️ Tiempo VTT inválido:', timeStr);
@@ -406,18 +394,17 @@ export default function UnyFilmPlayer({
     }
 
     try {
-      // VTT times can be HH:MM:SS.mmm or MM:SS.mmm
-      // We need to handle both cases.
+      
       const timeParts = timeStr.split(':');
       let hours = 0;
       let minutes = 0;
       let secondsAndMs = '';
 
-      if (timeParts.length === 3) { // HH:MM:SS.mmm
+      if (timeParts.length === 3) { 
         hours = parseInt(timeParts[0]) || 0;
         minutes = parseInt(timeParts[1]) || 0;
         secondsAndMs = timeParts[2];
-      } else if (timeParts.length === 2) { // MM:SS.mmm
+      } else if (timeParts.length === 2) { 
         minutes = parseInt(timeParts[0]) || 0;
         secondsAndMs = timeParts[1];
       } else {
@@ -425,7 +412,7 @@ export default function UnyFilmPlayer({
         return 0;
       }
 
-      const [secondsStr, millisecondsStr] = secondsAndMs.split('.'); // Split by period for milliseconds
+      const [secondsStr, millisecondsStr] = secondsAndMs.split('.'); 
       
       const secs = parseInt(secondsStr) || 0;
       const ms = parseInt(millisecondsStr) || 0;
@@ -593,20 +580,20 @@ export default function UnyFilmPlayer({
       const video = videoRef.current;
       
       if (newSubtitlesEnabled) {
-        // Solo activar si hay subtítulos disponibles
+        
         if (availableSubtitles.length > 0 && subtitleTrack) {
           console.log('✅ Activando subtítulos existentes');
           subtitleTrack.mode = 'showing';
         } else if (availableSubtitles.length > 0) {
-          // Recargar subtítulos si no están cargados
+          
           console.log('🔄 Recargando subtítulos...');
-          // El useEffect se encargará de cargar los subtítulos
+         
         } else {
           console.log('⚠️ No hay subtítulos disponibles para esta película');
           setSubtitlesEnabled(false);
         }
       } else {
-        // Ocultar todos los tracks de subtítulos
+        
         console.log('❌ Ocultando todos los subtítulos');
         const allTracks = Array.from(video.textTracks);
         allTracks.forEach(track => {
@@ -628,7 +615,7 @@ export default function UnyFilmPlayer({
     
     if (videoRef.current && subtitlesEnabled) {
       try {
-        // Limpiar todos los tracks de subtítulos existentes
+        
         const video = videoRef.current;
         const existingTracks = Array.from(video.textTracks);
         existingTracks.forEach(track => {
@@ -638,15 +625,12 @@ export default function UnyFilmPlayer({
           }
         });
         
-        // Limpiar track anterior
         if (subtitleTrack) {
           subtitleTrack.mode = 'hidden';
         }
         
-        // Cargar nuevo contenido de subtítulos
         let subtitleContent: string;
         
-        // Usar subtítulos del backend si están disponibles
         if (movie?.subtitles && movie.subtitles.length > 0) {
           const subtitleInfo = movie.subtitles.find(sub => sub.languageCode === language);
           if (subtitleInfo && subtitleInfo.url) {
@@ -655,18 +639,15 @@ export default function UnyFilmPlayer({
             throw new Error(`Subtítulo no encontrado para idioma: ${language}`);
           }
         } else {
-          // Fallback: cargar desde Cloudinary
           subtitleContent = await cloudinaryService.loadSubtitleContent(
             movie?.cloudinaryVideoId || '', 
             language
           );
         }
         
-        // Crear nuevo track
         const videoElement = videoRef.current;
         const track = videoElement.addTextTrack('subtitles', 'Subtítulos', language);
         
-        // Parsear y agregar cues
         const vttLines = subtitleContent.split('\n');
         let currentCue = null;
         

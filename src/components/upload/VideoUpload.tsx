@@ -8,15 +8,13 @@ import { cloudinaryService } from '../../services/cloudinaryService';
 import type { VideoUploadProps, CloudinaryUploadResponse } from '../../types';
 import './VideoUpload.css';
 
-/**
- * VideoUpload component for handling video file uploads to Cloudinary
- */
+
 const VideoUpload: React.FC<VideoUploadProps> = ({
   onUploadSuccess,
   onUploadError,
   onUploadProgress,
   acceptedFormats = ['mp4', 'mov', 'avi', 'mkv', 'webm'],
-  maxFileSize = 100 * 1024 * 1024, // 100MB default
+  maxFileSize = 100 * 1024 * 1024, 
   folder = 'unyfilm-videos',
   tags = ['movie', 'upload']
 }) => {
@@ -27,9 +25,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  /**
-   * Handle file selection
-   */
+  
   const handleFileSelect = useCallback((file: File) => {
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!fileExtension || !acceptedFormats.includes(fileExtension)) {
@@ -49,9 +45,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
     setPreviewUrl(url);
   }, [acceptedFormats, maxFileSize, onUploadError]);
 
-  /**
-   * Handle file input change
-   */
+  
   const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -59,9 +53,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
     }
   };
 
-  /**
-   * Handle drag and drop
-   */
+  
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -72,9 +64,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
     }
   }, []);
 
-  /**
-   * Handle drop
-   */
+  
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -86,9 +76,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
     }
   }, [handleFileSelect]);
 
-  /**
-   * Handle upload
-   */
+ 
   const handleUpload = async () => {
     if (!selectedFile) return;
 
@@ -142,9 +130,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
     }
   };
 
-  /**
-   * Handle cancel upload
-   */
+  
   const handleCancel = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
@@ -152,9 +138,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
     setIsUploading(false);
   };
 
-  /**
-   * Handle click to select file
-   */
+  
   const handleClick = () => {
     fileInputRef.current?.click();
   };

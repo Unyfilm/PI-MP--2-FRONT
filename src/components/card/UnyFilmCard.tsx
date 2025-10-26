@@ -5,11 +5,7 @@ import { getMovieRatingStats, type RatingStats } from '../../services/ratingServ
 import FavoriteButton from '../favorite/FavoriteButton';
 import './UnyFilmCard.css';
 
-/**
- * Represents the data associated with a clicked movie.
- * Used to pass detailed information about the selected movie
- * to higher-level components or event handlers.
- */
+
 interface MovieClickData {
   _id?: string;
   title: string;
@@ -159,7 +155,7 @@ export default function UnyFilmCard({
           </div>
         )}
         
-        {/* Botón de favoritos en la esquina superior derecha */}
+        
         {movieId && (
           <div className="unyfilm-card__favorite-button">
             <FavoriteButton
@@ -175,7 +171,7 @@ export default function UnyFilmCard({
       <div className="unyfilm-card__content">
         <h3 className="unyfilm-card__title">{title}</h3>
         
-        {/* SISTEMA DE RATING VISUAL */}
+       
         {movieId && ratingStats && (
           <div className="unyfilm-card__rating-stars">
             <VisualRatingStars

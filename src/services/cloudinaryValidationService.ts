@@ -15,7 +15,6 @@ class CloudinaryValidationService {
       return false;
     }
     
-    // Verificar que sea una URL de Cloudinary válida
     const cloudinaryPattern = /^https:\/\/res\.cloudinary\.com\/[a-zA-Z0-9_]+\/(image|video)\/upload\//;
     return cloudinaryPattern.test(url);
   }
@@ -33,7 +32,7 @@ class CloudinaryValidationService {
     try {
       const response = await fetch(url, { 
         method: 'HEAD',
-        mode: 'no-cors' // Para evitar problemas de CORS
+        mode: 'no-cors' 
       });
       return response.ok;
     } catch (error) {
@@ -81,8 +80,7 @@ class CloudinaryValidationService {
       return this.getFallbackImageUrl(type);
     }
 
-    // Para desarrollo, asumimos que la URL es válida
-    // En producción, podrías validar la existencia
+    
     return url;
   }
 
@@ -117,7 +115,6 @@ class CloudinaryValidationService {
     try {
       const processedMovie = { ...movie };
 
-      // Procesar URLs de imágenes
       if (movie.poster) {
         processedMovie.poster = await this.processImageUrl(movie.poster, 'poster');
       }
@@ -126,7 +123,6 @@ class CloudinaryValidationService {
         processedMovie.port = await this.processImageUrl(movie.port, 'port');
       }
 
-      // Procesar URLs de video
       if (movie.videoUrl) {
         processedMovie.videoUrl = await this.processVideoUrl(movie.videoUrl);
       }
@@ -165,12 +161,8 @@ class CloudinaryValidationService {
   }
 }
 
-/**
- * Instancia singleton del CloudinaryValidationService
- */
+
 export const cloudinaryValidationService = new CloudinaryValidationService();
 
-/**
- * Exportación por defecto
- */
+
 export default cloudinaryValidationService;

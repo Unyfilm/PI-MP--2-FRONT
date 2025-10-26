@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { simulateRatingEvent, simulateStatsEvent } from '../../services/mockRealtimeServer';
-import { getRealTimeStatus as getRealtimeStatus } from '../../services/realtimeService';
+import { getRealTimeStatus } from '../../services/realtimeService';
 import { crossTabService } from '../../services/crossTabService';
-import { getRealTimeStatus as getSocketStatus } from '../../services/realTimeService';
 import './RealtimeTestPanel.css';
 
-/**
- * Panel de prueba para verificar la funcionalidad de tiempo real
- * Solo se muestra en desarrollo
- */
+
 const RealtimeTestPanel: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<any>(null);
@@ -16,7 +12,6 @@ const RealtimeTestPanel: React.FC = () => {
   const [socketStatus, setSocketStatus] = useState<any>(null);
 
   useEffect(() => {
-    // Solo mostrar en desarrollo
     if (process.env.NODE_ENV === 'development') {
       setIsVisible(true);
       updateConnectionStatus();
@@ -26,7 +21,7 @@ const RealtimeTestPanel: React.FC = () => {
   }, []);
 
   const updateConnectionStatus = () => {
-    const status = getRealtimeStatus();
+    const status = getRealTimeStatus();
     setConnectionStatus(status);
   };
 
@@ -39,17 +34,16 @@ const RealtimeTestPanel: React.FC = () => {
   };
 
   const updateSocketStatus = () => {
-    const status = getSocketStatus();
+    const status = getRealTimeStatus();
     setSocketStatus(status);
   };
 
   const handleSimulateRating = () => {
-    // Usar IDs reales de películas
     const movieIds = [
-      '68f84e9aba5b03d95f2d6ce1', // Superman (2025)
-      '68f84e9aba5b03d95f2d6ce2', // Mortal Kombat 2
-      '68f84e9aba5b03d95f2d6ce3', // Tron: Ares
-      '68f84e9aba5b03d95f2d6ce4', // Avatar: El Origen del Agua
+      '68f84e9aba5b03d95f2d6ce1', 
+      '68f84e9aba5b03d95f2d6ce2',
+      '68f84e9aba5b03d95f2d6ce3', 
+      '68f84e9aba5b03d95f2d6ce4', 
     ];
     
     const movieId = movieIds[Math.floor(Math.random() * movieIds.length)];
@@ -133,9 +127,9 @@ const RealtimeTestPanel: React.FC = () => {
             }} className="test-btn">
               🦸 Simular Superman
             </button>
-            <button onClick={() => {
+            <button onClick={async () => {
               console.log('🧪 [TEST] Probando cross-tab directamente');
-              const { broadcastToOtherTabs } = require('../../services/crossTabService');
+              const { broadcastToOtherTabs } = await import('../../services/crossTabService');
               broadcastToOtherTabs('68f84e9aba5b03d95f2d6ce1', 5, 'create');
             }} className="test-btn">
               🔄 Test Cross-Tab

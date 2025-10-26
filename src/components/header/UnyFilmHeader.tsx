@@ -6,11 +6,7 @@ import './UnyFilmHeader.scss';
 
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
-/**
- * UnyFilmHeaderProps
- *
- * Props for the UnyFilm header component which includes search and profile actions.
- */
+
 interface UnyFilmHeaderProps {
   searchQuery: string;
   onSearch: (query: string) => void;

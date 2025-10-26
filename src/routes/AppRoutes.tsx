@@ -22,10 +22,8 @@ import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Ruta raíz: landing page pública */}
       <Route path="/" element={<LandingPage />} />
       
-      {/* Rutas públicas (solo accesibles sin autenticación) */}
       <Route 
         path="/login" 
         element={
@@ -59,7 +57,6 @@ export default function AppRoutes() {
         } 
       />
       
-      {/* Rutas protegidas (requieren autenticación) */}
       <Route 
         path="/home" 
         element={
@@ -125,7 +122,6 @@ export default function AppRoutes() {
         } 
       />
       
-      {/* Ruta 404: redirige a home */}
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );

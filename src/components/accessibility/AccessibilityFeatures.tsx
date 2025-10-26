@@ -96,9 +96,7 @@ export default function AccessibilityFeatures() {
     }
   }, [fontSize]);
 
-  /**
-   * Apply accessibility features to the document
-   */
+ 
   const applyAccessibilityFeatures = () => {
     const root = document.documentElement;
     
@@ -133,9 +131,7 @@ export default function AccessibilityFeatures() {
     localStorage.setItem('unyfilm-accessibility', JSON.stringify(prefs));
   };
 
-  /**
-   * Handle keyboard navigation
-   */
+ 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey) {
@@ -149,25 +145,25 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      if (e.altKey && e.key === 'n') { // Alt + N
+      if (e.altKey && e.key === 'n') { 
         const sidebar = document.querySelector('.unyfilm-sidebar') as HTMLElement;
         if (sidebar) {
           sidebar.focus();
         }
       }
 
-      if (e.altKey && e.key === 's') { // Alt + S
+      if (e.altKey && e.key === 's') { 
         const searchInput = document.querySelector('#search-input') as HTMLElement;
         if (searchInput) {
           searchInput.focus();
         }
       }
 
-      if (e.altKey && e.key === 'a') { // Alt + A
+      if (e.altKey && e.key === 'a') { 
         toggleAccessibilityPanel();
       }
 
-      if (e.altKey && e.key === 'h') { // Alt + H
+      if (e.altKey && e.key === 'h') { 
         const helpBtn = document.querySelector('.usability-help-btn') as HTMLElement;
         if (helpBtn) {
           helpBtn.click();
@@ -205,7 +201,7 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      if (e.altKey && e.key === 'p') { // Alt + P - Play/Pause
+      if (e.altKey && e.key === 'p') { 
         const video = document.querySelector('.unyfilm-video-element') as HTMLVideoElement;
         if (video) {
           if (video.paused) {
@@ -216,7 +212,7 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      if (e.altKey && e.key === 'f') { // Alt + F - Fullscreen
+      if (e.altKey && e.key === 'f') { 
         const videoContainer = document.querySelector('.unyfilm-video-container');
         if (videoContainer) {
           const fullscreenBtn = videoContainer.querySelector('button[aria-label*="pantalla completa"]') as HTMLElement;
@@ -226,21 +222,21 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      if (e.altKey && e.key === 'r') { // Alt + R - Reset filters
+      if (e.altKey && e.key === 'r') { 
         const resetBtn = document.querySelector('.unyfilm-catalog__reset-btn') as HTMLElement;
         if (resetBtn) {
           resetBtn.click();
         }
       }
 
-      if (e.altKey && e.key === 'v') { // Alt + V - Toggle view mode
+      if (e.altKey && e.key === 'v') { 
         const viewToggle = document.querySelector('.unyfilm-catalog__view-toggle') as HTMLElement;
         if (viewToggle) {
           viewToggle.click();
         }
       }
 
-      if (e.altKey && e.key === 'o') { // Alt + O - Sort options
+      if (e.altKey && e.key === 'o') { 
         const sortBtn = document.querySelector('.unyfilm-catalog__sort-btn') as HTMLElement;
         if (sortBtn) {
           sortBtn.click();
@@ -252,9 +248,7 @@ export default function AccessibilityFeatures() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  /**
-   * Toggle accessibility panel
-   */
+  
   const toggleAccessibilityPanel = () => {
     const panel = document.querySelector('.accessibility-panel');
     if (panel) {
@@ -264,7 +258,7 @@ export default function AccessibilityFeatures() {
 
   return (
     <>
-      {/* Skip Links */}
+      
       {skipLinks && (
         <div className="skip-links">
           <a 

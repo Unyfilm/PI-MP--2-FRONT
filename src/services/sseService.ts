@@ -1,7 +1,4 @@
-/**
- * Server-Sent Events (SSE) service for real-time
- * Simpler alternative to WebSockets, only requires HTTP
- */
+
 
 import { API_CONFIG } from '../config/environment';
 
@@ -27,9 +24,7 @@ class SSEService {
     return SSEService.instance;
   }
 
-  /**
-   * Connect to SSE server
-   */
+  
   connect() {
     if (this.isConnected || this.eventSource) {
       console.log('🔄 [SSE] Ya conectado, ignorando nueva conexión');
@@ -39,7 +34,6 @@ class SSEService {
     try {
       console.log('🔌 [SSE] Conectando al servidor SSE...');
       
-      // URL del endpoint SSE en el backend
       const sseUrl = `${API_CONFIG.BASE_URL}/api/realtime/events`;
       
       this.eventSource = new EventSource(sseUrl, {
@@ -68,7 +62,6 @@ class SSEService {
         this.handleReconnection();
       };
 
-      // Escuchar eventos específicos
       this.eventSource.addEventListener('rating-updated', (event) => {
         try {
           const data = JSON.parse((event as MessageEvent).data);
@@ -95,11 +88,8 @@ class SSEService {
     }
   }
 
-  /**
-   * Manejar evento SSE genérico
-   */
+ 
   private handleSSEEvent(event: SSEEvent) {
-    // Emitir evento del DOM para que los componentes lo escuchen
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
         movieId: event.movieId,
@@ -110,9 +100,7 @@ class SSEService {
     }));
   }
 
-  /**
-   * Manejar actualización de rating
-   */
+
   private handleRatingUpdate(data: any) {
     window.dispatchEvent(new CustomEvent('rating-updated', {
       detail: {
@@ -126,9 +114,7 @@ class SSEService {
     }));
   }
 
-  /**
-   * Manejar actualización de estadísticas
-   */
+  
   private handleStatsUpdate(data: any) {
     window.dispatchEvent(new CustomEvent('rating-stats-updated', {
       detail: {
@@ -141,9 +127,7 @@ class SSEService {
     }));
   }
 
-  /**
-   * Manejar reconexión automática
-   */
+  
   private handleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.log('❌ [SSE] Máximo de intentos de reconexión alcanzado');
@@ -161,9 +145,7 @@ class SSEService {
     }, delay);
   }
 
-  /**
-   * Desconectar del servidor
-   */
+ 
   disconnect() {
     if (this.eventSource) {
       console.log('🔌 [SSE] Desconectando del servidor SSE...');
@@ -173,16 +155,12 @@ class SSEService {
     }
   }
 
-  /**
-   * Verificar si está conectado
-   */
+  
   isConnectedToServer(): boolean {
     return this.isConnected && !!this.eventSource;
   }
 
-  /**
-   * Obtener estado de la conexión
-   */
+  
   getConnectionStatus() {
     return {
       connected: this.isConnected,
@@ -193,14 +171,10 @@ class SSEService {
   }
 }
 
-// Exportar instancia singleton
 export const sseService = SSEService.getInstance();
 
-// Función de conveniencia para conectar
 export const connectSSE = () => sseService.connect();
 
-// Función de conveniencia para desconectar
 export const disconnectSSE = () => sseService.disconnect();
 
-// Función de conveniencia para verificar estado
 export const getSSEStatus = () => sseService.getConnectionStatus();

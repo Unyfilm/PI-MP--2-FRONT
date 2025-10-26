@@ -1,6 +1,4 @@
-/**
- * Estilos para el botón de favoritos
- */
+
 
 .favorite-button {
   position: relative;
@@ -41,7 +39,6 @@
   transform: none;
 }
 
-/* Estados del botón */
 .favorite-button--active {
   background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
   color: #ffffff;
@@ -65,7 +62,6 @@
   100% { transform: scale(1); }
 }
 
-/* Tamaños */
 .favorite-button--small {
   width: 32px;
   height: 32px;
@@ -84,7 +80,6 @@
   padding: 10px;
 }
 
-/* Icono */
 .favorite-button__icon {
   transition: all 0.3s ease;
   flex-shrink: 0;
@@ -105,14 +100,12 @@
   100% { transform: scale(1); }
 }
 
-/* Label */
 .favorite-button__label {
   font-size: 0.875rem;
   white-space: nowrap;
   opacity: 0.9;
 }
 
-/* Loading spinner */
 .favorite-button__loading {
   position: absolute;
   top: 50%;
@@ -136,7 +129,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Variantes de estilo */
 .favorite-button--outline {
   background: transparent;
   border: 2px solid #ff6b6b;
@@ -158,7 +150,6 @@
   background: rgba(255, 107, 107, 0.1);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .favorite-button--small {
     width: 28px;
@@ -179,7 +170,6 @@
   }
 }
 
-/* Estados de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   .favorite-button,
   .favorite-button__icon,
@@ -189,7 +179,6 @@
   }
 }
 
-/* Modo de alto contraste */
 @media (prefers-contrast: high) {
   .favorite-button {
     border: 2px solid currentColor;

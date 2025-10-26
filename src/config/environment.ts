@@ -1,10 +1,3 @@
-/**
- * Environment configuration for UnyFilm (TypeScript)
- *
- * Exposes typed configuration objects loaded from Vite env variables.
- * Follows naming conventions: PascalCase for interfaces, UPPER_CASE-like
- * keys within config objects to mirror environment names.
- */
 
 export interface ApiConfig {
   BASE_URL: string;

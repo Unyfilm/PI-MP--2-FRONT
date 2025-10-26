@@ -28,7 +28,7 @@ export const FallbackImage: React.FC<{
     <div 
       className={`${sizeClasses[size]} ${className} bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg flex flex-col items-center justify-center text-white relative overflow-hidden`}
     >
-      {/* Patrón de fondo */}
+      
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-4 left-4 w-8 h-8 border-2 border-white rounded"></div>
         <div className="absolute top-8 right-8 w-4 h-4 border border-white rounded"></div>
@@ -36,7 +36,7 @@ export const FallbackImage: React.FC<{
         <div className="absolute bottom-4 right-4 w-3 h-3 border border-white rounded"></div>
       </div>
       
-      {/* Contenido principal */}
+    
       <div className="relative z-10 text-center px-4">
         <div className="mb-3">
           {type === 'poster' ? (
@@ -55,7 +55,7 @@ export const FallbackImage: React.FC<{
         </p>
       </div>
       
-      {/* Efecto de brillo */}
+      
       <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white opacity-5"></div>
     </div>
   );
@@ -99,7 +99,6 @@ export const ImageWithFallback: React.FC<{
     onLoad?.();
   };
 
-  // Si hay error o no hay src, mostrar fallback
   if (hasError || !src) {
     return (
       <FallbackImage 

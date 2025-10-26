@@ -1,9 +1,4 @@
-/**
- * Contexto Global de Favoritos
- * 
- * Proporciona estado global de favoritos para evitar múltiples peticiones
- * y sincronizar el estado entre todos los componentes.
- */
+
 
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { useFavorites } from '../hooks/useFavorites';

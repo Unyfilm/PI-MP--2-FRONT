@@ -62,7 +62,6 @@ describe('UsabilityFeatures - Simple Tests', () => {
     
     expect(shortcuts).toHaveLength(25);
     
-    // Verificar categorías de atajos
     const navigationShortcuts = shortcuts.filter(s => s.description.includes('Saltar') || s.description.includes('Ir a'));
     const videoShortcuts = shortcuts.filter(s => s.description.includes('video') || s.description.includes('volumen') || s.description.includes('segundos'));
     const catalogShortcuts = shortcuts.filter(s => s.description.includes('filtros') || s.description.includes('vista') || s.description.includes('Ordenar'));

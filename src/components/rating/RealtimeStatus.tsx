@@ -1,13 +1,10 @@
 import React from 'react';
 import { useRealtimeConnection } from '../../hooks/useRealtimeConnection';
 
-/**
- * Componente para mostrar el estado de la conexión en tiempo real
- */
+
 const RealtimeStatus: React.FC = () => {
   const { isConnected, isReconnecting, hasFailed, reconnectAttempts, maxAttempts } = useRealtimeConnection();
 
-  // Solo mostrar en desarrollo
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }

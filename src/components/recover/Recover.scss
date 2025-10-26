@@ -1,7 +1,6 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
-/* Estilos para la página de recuperación de contraseña */
 .recover-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
@@ -63,13 +62,11 @@
   }
 }
 
-/* Variante: imagen de héroe como fondo a pantalla completa (Recuperación) */
 .login-page--bg-hero {
   .login-page__container { grid-template-columns: 1fr; }
   .login-hero { position: fixed; inset: 0; height: 100vh; width: 100vw; z-index: 0; }
   .login-hero__overlay { background: transparent; }
 
-  /* Panel ocupando la pantalla pero con contenido centrado */
   .login-form {
     position: relative;
     z-index: 1;
@@ -85,7 +82,6 @@
     justify-content: center;
   }
 
-  /* Mantener el formulario angosto y centrado */
   .login-form__form { max-width: 420px; width: 100%; margin: 0 auto; }
 }
 

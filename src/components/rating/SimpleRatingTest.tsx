@@ -6,9 +6,7 @@ interface SimpleRatingTestProps {
   title: string;
 }
 
-/**
- * Componente simple para probar las actualizaciones en tiempo real
- */
+
 const SimpleRatingTest: React.FC<SimpleRatingTestProps> = ({ movieId, title }) => {
   const { ratingStats, isLoading } = useRealtimeRatings({
     movieId,

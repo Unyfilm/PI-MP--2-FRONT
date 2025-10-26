@@ -1,9 +1,4 @@
-/**
- * Custom hook for real-time rating updates
- * 
- * Provides a way to listen for rating changes across the application
- * and update all rating displays in real-time.
- */
+
 
 import { useEffect, useCallback } from 'react';
 import { getMovieRatingStats } from '../services/ratingService';

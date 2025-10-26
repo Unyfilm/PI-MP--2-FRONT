@@ -1,4 +1,3 @@
-/* User Authentication Component */
 .user-auth {
   position: relative;
 }
@@ -271,13 +270,12 @@
   transform: translateY(-2px);
 }
 
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .user-auth__buttons {
     flex-direction: column;
