@@ -244,22 +244,16 @@ export default function UnyFilmPlayer({
           if (movie?.subtitles && movie.subtitles.length > 0) {
             const subtitleInfo = movie.subtitles.find(sub => sub.languageCode === selectedSubtitleLanguage);
             if (subtitleInfo && subtitleInfo.url) {
-              console.log('📡 Cargando subtítulos desde URL del backend:', subtitleInfo.url);
               subtitleContent = await cloudinaryService.loadSubtitleFromUrl(subtitleInfo.url);
             } else {
               throw new Error(`Subtítulo no encontrado para idioma: ${selectedSubtitleLanguage}`);
             }
           } else {
-            
-            console.log('🔄 Usando fallback de Cloudinary');
             subtitleContent = await cloudinaryService.loadSubtitleContent(
               movie?.cloudinaryVideoId || '', 
               selectedSubtitleLanguage
             );
           }
-          
-          console.log('📝 Contenido de subtítulos cargado:', subtitleContent.substring(0, 200) + '...');
-          
           
           const track = video.addTextTrack('subtitles', 'Subtítulos', selectedSubtitleLanguage);
           
@@ -292,19 +286,11 @@ export default function UnyFilmPlayer({
             }
           }
           
-          console.log(`📊 Total de cues agregados: ${cueCount}`);
           track.mode = subtitlesEnabled ? 'showing' : 'hidden';
           setSubtitleTrack(track);
-          console.log('✅ Subtítulos cargados exitosamente');
         } catch (error) {
           console.error('❌ Error cargando subtítulos:', error);
         }
-      } else {
-        console.log('⚠️ No se cargaron subtítulos. Razones:', {
-          subtitlesEnabled,
-          hasAvailableSubtitles: availableSubtitles.length > 0,
-          hasSubtitleTrack: !!subtitleTrack
-        });
       }
     };
     const handleEnded = () => setIsPlaying(false);
@@ -529,7 +515,6 @@ export default function UnyFilmPlayer({
         const existingTracks = Array.from(video.textTracks);
         existingTracks.forEach(track => {
           if (track.kind === 'subtitles') {
-            console.log('🗑️ Eliminando track anterior:', track.label);
             track.mode = 'disabled';
           }
         });
@@ -582,7 +567,6 @@ export default function UnyFilmPlayer({
         
         track.mode = subtitlesEnabled ? 'showing' : 'hidden';
         setSubtitleTrack(track);
-        console.log(`✅ Subtítulos cambiados a ${language}, modo: ${track.mode}`);
       } catch (error) {
         console.error('❌ Error cambiando idioma de subtítulos:', error);
       }
