@@ -272,7 +272,7 @@ export default function UnyFilmPlayer({
     };
   }, [subtitlesEnabled, subtitleTrack]);
 
-  // Limpiar tracks cuando el componente se desmonte
+  
   useEffect(() => {
     return () => {
       if (videoRef.current) {
