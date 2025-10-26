@@ -26,9 +26,7 @@ export function useRealtimeRatings({
     try {
       setIsLoading(true);
       setError(null);
-      console.log('🔄 [HOOK] Cargando estadísticas para:', movieId);
       const stats = await getMovieRatingStats(movieId);
-      console.log('📊 [HOOK] Estadísticas cargadas:', stats);
       setRatingStats(stats);
     } catch (err) {
       console.error('Error loading rating stats:', err);
