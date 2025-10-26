@@ -45,3 +45,10 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+
+# FFmpeg binaries (too large for git)
+ffmpeg/
+ffmpeg.zip
+ffmpeg.exe
+ffplay.exe
+ffprobe.exe
