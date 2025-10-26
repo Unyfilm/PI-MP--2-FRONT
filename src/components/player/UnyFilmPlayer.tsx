@@ -212,7 +212,6 @@ export default function UnyFilmPlayer({
         const existingTracks = Array.from(video.textTracks);
         existingTracks.forEach(track => {
           if (track.kind === 'subtitles') {
-            console.log('🗑️ Limpiando track al desmontar:', track.label);
             track.mode = 'disabled';
           }
         });
@@ -237,17 +236,8 @@ export default function UnyFilmPlayer({
       
       
       
-      console.log('🎬 Condiciones para cargar subtítulos:', {
-        subtitlesEnabled,
-        availableSubtitlesLength: availableSubtitles.length,
-        hasSubtitleTrack: !!subtitleTrack,
-        selectedLanguage: selectedSubtitleLanguage
-      });
-
       if (subtitlesEnabled && availableSubtitles.length > 0 && !subtitleTrack) {
         try {
-          console.log('🎬 Cargando subtítulos para idioma:', selectedSubtitleLanguage);
-          
           let subtitleContent: string;
           
           
