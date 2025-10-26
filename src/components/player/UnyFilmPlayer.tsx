@@ -130,13 +130,11 @@ export default function UnyFilmPlayer({
           if (movie?.subtitles && movie.subtitles.length > 0) {
             const subtitleInfo = movie.subtitles.find(sub => sub.languageCode === selectedSubtitleLanguage);
             if (subtitleInfo && subtitleInfo.url) {
-              console.log('📡 Cargando subtítulos desde URL del backend:', subtitleInfo.url);
               subtitleContent = await cloudinaryService.loadSubtitleFromUrl(subtitleInfo.url);
             } else {
               throw new Error(`Subtítulo no encontrado para idioma: ${selectedSubtitleLanguage}`);
             }
           } else {
-            console.log('🔄 Usando fallback de Cloudinary');
             subtitleContent = await cloudinaryService.loadSubtitleContent(
               movie?.cloudinaryVideoId || '', 
               selectedSubtitleLanguage
@@ -194,12 +192,9 @@ export default function UnyFilmPlayer({
     if (!video) return;
 
     const handleCanPlay = () => {
-      console.log('🎬 Video listo para reproducir, verificando subtítulos...');
       if (subtitleTrack) {
         const newMode = subtitlesEnabled ? 'showing' : 'hidden';
-        console.log('🎯 Estableciendo modo de subtítulos:', newMode);
         subtitleTrack.mode = newMode;
-        console.log('🎯 Modo del track después de establecer:', subtitleTrack.mode);
       }
     };
 
