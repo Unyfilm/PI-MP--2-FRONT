@@ -48,12 +48,6 @@ export default function UnyFilmPlayer({
   const averageRating = ratingStats?.averageRating || 0;
 
   useEffect(() => {
-    console.log('📊 Player: Rating stats actualizadas:', {
-      movieId: movie?._id,
-      ratingStats,
-      hasRealRatings,
-      averageRating
-    });
   }, [ratingStats, hasRealRatings, averageRating, movie?._id]);
 
   const [_forceUpdate, setForceUpdate] = useState(0);
@@ -73,14 +67,7 @@ export default function UnyFilmPlayer({
     if (!movie?._id) return;
 
     const handleRatingUpdate = (event: CustomEvent) => {
-      console.log('🎯 [PLAYER] Evento recibido directamente:', {
-        eventType: event.type,
-        movieId: movie._id,
-        eventDetail: event.detail
-      });
-      
       if (event.detail?.movieId === movie._id) {
-        console.log('🎯 [PLAYER] Evento para esta película, forzando recarga');
         loadRatingStats();
       }
     };
