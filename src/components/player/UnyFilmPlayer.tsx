@@ -65,7 +65,6 @@ export default function UnyFilmPlayer({
 
   useEffect(() => {
     if (movie?._id) {
-      console.log('🔄 Player: Recargando estadísticas para película:', movie._id);
       loadRatingStats();
     }
   }, [movie?._id, loadRatingStats]);
@@ -99,36 +98,23 @@ export default function UnyFilmPlayer({
 
   useEffect(() => {
     const loadAvailableSubtitles = async () => {
-      console.log('🎬 Datos de la película recibidos:', {
-        cloudinaryVideoId: movie?.cloudinaryVideoId,
-        subtitles: movie?.subtitles,
-        movieTitle: movie?.title
-      });
-
       if (!movie?.cloudinaryVideoId) {
-        console.log('⚠️ No hay cloudinaryVideoId disponible');
         return;
       }
 
       try {
         if (movie.subtitles && movie.subtitles.length > 0) {
-          console.log('✅ Usando subtítulos del backend:', movie.subtitles);
           const availableLanguages = movie.subtitles.map(sub => sub.languageCode);
           setAvailableSubtitles(availableLanguages);
           
           const defaultLang = movie.subtitles.find(sub => sub.isDefault)?.languageCode || availableLanguages[0];
           setSelectedSubtitleLanguage(defaultLang);
-          console.log('🎯 Idioma de subtítulo seleccionado:', defaultLang);
         } else {
-          console.log('⚠️ No hay subtítulos en el backend, intentando Cloudinary...');
           const subtitles = await cloudinaryService.getAvailableSubtitles(movie.cloudinaryVideoId);
           setAvailableSubtitles(subtitles);
           
           if (subtitles.length > 0) {
-            console.log('✅ Subtítulos disponibles desde Cloudinary:', subtitles);
             setSelectedSubtitleLanguage(subtitles[0]);
-          } else {
-            console.log('⚠️ No hay subtítulos disponibles para esta película');
           }
         }
       } catch (error) {
@@ -143,13 +129,10 @@ export default function UnyFilmPlayer({
   useEffect(() => {
     const loadSubtitlesImmediately = async () => {
       if (availableSubtitles.length > 0 && subtitlesEnabled && !subtitleTrack && videoRef.current) {
-        console.log('🔄 Cargando subtítulos inmediatamente...');
-        
         const video = videoRef.current;
         const existingTracks = Array.from(video.textTracks);
         existingTracks.forEach(track => {
           if (track.kind === 'subtitles') {
-            console.log('🗑️ Eliminando track existente:', track.label);
             track.mode = 'disabled';
           }
         });
@@ -173,43 +156,33 @@ export default function UnyFilmPlayer({
             );
           }
           
-          console.log('📝 Contenido de subtítulos cargado:', subtitleContent.substring(0, 200) + '...');
-          
           const track = video.addTextTrack('subtitles', 'Subtítulos', selectedSubtitleLanguage);
           
           const vttLines = subtitleContent.split('\n');
           let currentCue = null;
           let cueCount = 0;
           
-          console.log('📋 Líneas VTT totales:', vttLines.length);
-          
           for (let i = 0; i < vttLines.length; i++) {
             const line = vttLines[i].trim();
             
             if (line.includes('-->')) {
-              console.log('🕐 Procesando línea de tiempo:', line);
               const timeParts = line.split(' --> ');
               
               if (timeParts.length === 2) {
                 const [startTime, endTime] = timeParts;
-                console.log('⏰ Tiempos:', { startTime, endTime });
                 
                 currentCue = {
                   start: parseVTTTime(startTime.trim()),
                   end: parseVTTTime(endTime.trim()),
                   text: ''
                 };
-                
-                console.log('📝 Cue creado:', currentCue);
               } else {
                 console.warn('⚠️ Formato de tiempo incorrecto:', line);
               }
             } else if (currentCue && line && !line.startsWith('WEBVTT') && !line.startsWith('NOTE')) {
               currentCue.text += (currentCue.text ? '\n' : '') + line;
               
-              
               if (i === vttLines.length - 1 || !vttLines[i + 1].trim() || vttLines[i + 1].includes('-->')) {
-                console.log('✅ Agregando cue:', currentCue);
                 track.addCue(new VTTCue(currentCue.start, currentCue.end, currentCue.text));
                 cueCount++;
                 currentCue = null;
@@ -217,19 +190,8 @@ export default function UnyFilmPlayer({
             }
           }
           
-          console.log(`📊 Total de cues agregados: ${cueCount}`);
-          
           track.mode = subtitlesEnabled ? 'showing' : 'hidden';
           setSubtitleTrack(track);
-          console.log('✅ Subtítulos cargados exitosamente');
-          console.log('🎯 Track creado:', {
-            kind: track.kind,
-            label: track.label,
-            language: track.language,
-            mode: track.mode,
-            cues: track.cues ? track.cues.length : 0,
-            subtitlesEnabled
-          });
         } catch (error) {
           console.error('❌ Error cargando subtítulos:', error);
         }
@@ -419,7 +381,6 @@ export default function UnyFilmPlayer({
       
       const totalSeconds = hours * 3600 + minutes * 60 + secs + ms / 1000;
       
-      console.log(`🕐 Parseando tiempo: ${timeStr} → ${totalSeconds}s`);
       return totalSeconds;
     } catch (error) {
       console.error('❌ Error parseando tiempo VTT:', timeStr, error);
