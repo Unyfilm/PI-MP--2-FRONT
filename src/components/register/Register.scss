@@ -176,7 +176,8 @@
 }
 
 input.input-register[type='number'] {
-  -moz-appearance: textfield; 
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 input.input-register[type='number']::-webkit-outer-spin-button,

@@ -363,18 +363,6 @@
   font-size: 18px !important;
 }
 
-.font-small .unyfilm-card {
-}
-
-.font-large .unyfilm-card {
-}
-
-.font-small .unyfilm-sidebar {
-}
-
-.font-large .unyfilm-sidebar {
-}
-
 .font-small .unyfilm-sidebar__nav-item {
   padding: 4px 8px !important;
   line-height: 1.2 !important;
@@ -457,28 +445,10 @@
   font-size: 24px !important;
 }
 
-.font-extra-large .unyfilm-card {
-}
-
-.font-extra-large .unyfilm-sidebar {
-}
-
 .font-extra-large .unyfilm-sidebar__nav-item {
   padding: 10px 12px !important;
   line-height: 1.2 !important;
   margin: 2px 0 !important;
-}
-
-.font-extra-large .unyfilm-header {
-}
-
-.font-extra-large .unyfilm-header__search {
-}
-
-.font-extra-large .unyfilm-catalog__filters {
-}
-
-.font-extra-large .unyfilm-catalog__grid {
 }
 
 .font-change-notification {
