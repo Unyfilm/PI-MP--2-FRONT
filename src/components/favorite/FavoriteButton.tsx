@@ -36,11 +36,6 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
         
         setIsMovieFavorite(isFavorite);
         setFavoriteId(favorite?._id || null);
-        
-        console.log(`🔍 FavoriteButton - Película ${movieId} ${isFavorite ? 'está' : 'no está'} en favoritos (contexto global)`, {
-          favoritesCount: favorites.length,
-          isLoaded: !loading
-        });
       } catch (error) {
         console.error('Error checking favorite status:', error);
       }

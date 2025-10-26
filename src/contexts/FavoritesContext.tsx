@@ -34,12 +34,6 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     const currentUserId = user?._id?.toString() || null;
     
     if (currentUserId !== lastUserIdRef.current) {
-      console.log('🔄 Usuario cambió, invalidando cache de favoritos:', {
-        previousUserId: lastUserIdRef.current,
-        currentUserId: currentUserId
-      });
-      
-      
       favoritesHook.clearFavorites();
       
       
@@ -47,8 +41,6 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
       
      
       if (currentUserId && user) {
-        console.log('🔄 Nuevo usuario detectado, cargando favoritos...');
-        
         setTimeout(() => {
           favoritesHook.loadFavorites();
         }, 100);

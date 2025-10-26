@@ -64,12 +64,6 @@ class CloudinaryService {
     this.uploadPreset = CLOUDINARY_CONFIG.UPLOAD_PRESET;
     this.baseUrl = CLOUDINARY_CONFIG.BASE_URL;
     
-    console.log('🔧 CloudinaryService configurado:', {
-      cloudName: this.cloudName,
-      hasApiKey: !!this.apiKey,
-      hasUploadPreset: !!this.uploadPreset
-    });
-    
     this.cloudinary = new Cloudinary({
       cloud: {
         cloudName: this.cloudName
@@ -305,15 +299,6 @@ class CloudinaryService {
     const subtitlePublicId = `subtitles/${basePublicId}_${language}`;
     
     const url = `https://res.cloudinary.com/${this.cloudName}/raw/upload/${subtitlePublicId}.vtt`;
-    
-    console.log('🔗 Generando URL de subtítulo:', {
-      videoPublicId,
-      basePublicId,
-      subtitlePublicId,
-      language,
-      cloudName: this.cloudName,
-      url
-    });
     
     return url;
   }
