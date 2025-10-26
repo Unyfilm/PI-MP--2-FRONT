@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Heart, Star } from 'lucide-react';
+import { Heart, Star, Tag } from 'lucide-react';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import { type Favorite } from '../../services/favoriteService';
 import { movieService } from '../../services/movieService';
