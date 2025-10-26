@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Play, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
-import { movieConfig, homeSections } from '../../data/moviesData';
+import { homeSections } from '../../data/moviesData';
 import { movieService, type Movie } from '../../services/movieService';
 import { useRealRating } from '../../hooks/useRealRating';
 import './UnyFilmHome.css';
@@ -108,7 +108,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
         setIsLoading(true);
         setError(null);
 
-        let featuredMovieData: Movie | null = null;
         let availableMovies: Movie[] = [];
         const sectionData: Record<string, Movie[]> = {};
 

@@ -603,36 +603,6 @@ class FavoriteService {
       return false;
     }
   }
-
-  
-  private handleFavoriteError(error: any, operation: string): void {
-    if (error.response?.status) {
-      switch (error.response.status) {
-        case 401:
-          console.error('No autenticado - redirigir al login');
-          window.location.href = '/login';
-          break;
-        case 403:
-          console.error('Sin permisos - no puedes gestionar este favorito');
-          alert('No tienes permisos para realizar esta acción');
-          break;
-        case 404:
-          console.error('Favorito no encontrado');
-          alert('El favorito no existe');
-          break;
-        case 409:
-          console.error('La película ya está en favoritos');
-          alert('Esta película ya está en tus favoritos');
-          break;
-        default:
-          console.error(`Error en ${operation}:`, error.response.data?.message);
-          alert(`Error: ${error.response.data?.message}`);
-      }
-    } else {
-      console.error(`Error de conexión en ${operation}:`, error.message);
-      alert('Error de conexión. Verifica tu internet.');
-    }
-  }
 }
 
 /**

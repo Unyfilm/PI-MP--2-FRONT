@@ -12,7 +12,6 @@ import './VideoUpload.css';
 const VideoUpload: React.FC<VideoUploadProps> = ({
   onUploadSuccess,
   onUploadError,
-  onUploadProgress,
   acceptedFormats = ['mp4', 'mov', 'avi', 'mkv', 'webm'],
   maxFileSize = 100 * 1024 * 1024, 
   folder = 'unyfilm-videos',

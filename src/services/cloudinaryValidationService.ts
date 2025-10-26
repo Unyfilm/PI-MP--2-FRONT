@@ -3,7 +3,6 @@
  * @class CloudinaryValidationService
  */
 class CloudinaryValidationService {
-  private baseUrl = 'https://res.cloudinary.com/dlyqtvvxv';
   
   /**
    * Valida si una URL de Cloudinary es válida

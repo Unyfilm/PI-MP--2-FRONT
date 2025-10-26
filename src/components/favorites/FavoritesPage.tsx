@@ -17,11 +17,8 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     error, 
     isLoaded, 
     loadFavorites, 
-    removeFromFavorites, 
     getStats 
   } = useFavoritesContext();
-  
-  const [isRemoving, setIsRemoving] = useState<string | null>(null);
   const [stats, setStats] = useState({
     totalFavorites: 0,
     mostFavoritedGenre: 'N/A'
@@ -55,32 +52,6 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     );
     
     return mostFavorited;
-  };
-
-  const handleRemoveFavorite = async (favoriteId: string, movieTitle: string) => {
-    if (isRemoving) return;
-    
-    setIsRemoving(favoriteId);
-    
-    try {
-      console.log('🗑️ Removing favorite:', favoriteId, movieTitle);
-      const result = await removeFromFavorites(favoriteId);
-      
-      if (result.success) {
-        console.log('✅ Favorite removed successfully');
-      } else {
-        console.error('❌ Failed to remove favorite:', result.message);
-      }
-    } catch (error) {
-      console.error('❌ Error removing favorite:', error);
-    } finally {
-      setIsRemoving(null);
-    }
-  };
-
-  const handleRefresh = async () => {
-    console.log('🔄 Refreshing favorites...');
-    await loadFavorites();
   };
 
   if (loading && favorites.length === 0) {
