@@ -15,13 +15,9 @@ export default function UsabilityFeatures() {
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   
-  // Hook para cerrar el modal de ayuda al hacer clic fuera
   const helpModalRef = useClickOutside(() => setShowHelp(false));
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   
-  // Debounce para evitar múltiples ejecuciones (variable removida, no utilizada)
-
-  // Funciones auxiliares para los atajos
   const focusSidebar = () => {
     const sidebar = document.querySelector('.unyfilm-sidebar') as HTMLElement;
     if (sidebar) {
@@ -95,7 +91,7 @@ export default function UsabilityFeatures() {
   };
 
   const resetFilters = () => {
-    // Buscar botón de reset en el catálogo
+    
     const resetBtn = document.querySelector('.unyfilm-catalog__reset-btn') as HTMLButtonElement;
     if (resetBtn) {
       resetBtn.click();
@@ -103,7 +99,7 @@ export default function UsabilityFeatures() {
   };
 
   const toggleViewMode = () => {
-    // Buscar botones de vista en el catálogo
+   
     const gridBtn = document.querySelector('.unyfilm-catalog__view-button[aria-label="Vista de cuadrícula"]') as HTMLButtonElement;
     const listBtn = document.querySelector('.unyfilm-catalog__view-button[aria-label="Vista de lista"]') as HTMLButtonElement;
     
@@ -131,7 +127,7 @@ export default function UsabilityFeatures() {
 
   const closeAllModals = () => {
     setShowHelp(false);
-    // Cerrar otros modales si existen
+   
     const modals = document.querySelectorAll('[role="dialog"]');
     modals.forEach(modal => {
       const closeBtn = modal.querySelector('[aria-label*="cerrar"], [aria-label*="close"]') as HTMLElement;
@@ -142,11 +138,11 @@ export default function UsabilityFeatures() {
   };
 
   useEffect(() => {
-    // Initialize usability features
+   
     const cleanupKeyboard = initializeKeyboardShortcuts();
     initializeHelpSystem();
     
-    // Cleanup function
+    
     return () => {
       if (cleanupKeyboard) {
         cleanupKeyboard();
@@ -154,19 +150,17 @@ export default function UsabilityFeatures() {
     };
   }, []);
 
-  /**
-   * Initialize keyboard shortcuts for better usability
-   */
+  
   const initializeKeyboardShortcuts = () => {
     const shortcuts = [
-      // Navegación principal
+      
       { key: 'Alt + N', description: 'Saltar a navegación (sidebar)', action: () => focusSidebar() },
       { key: 'Alt + S', description: 'Saltar a búsqueda', action: () => focusSearch() },
       { key: 'Alt + M', description: 'Ir al contenido principal', action: () => focusMainContent() },
       { key: 'Tab', description: 'Navegar entre elementos', action: () => {} },
       { key: 'Shift + Tab', description: 'Navegar hacia atrás', action: () => {} },
       
-      // Navegación entre páginas
+      
       { key: 'Alt + 1', description: 'Ir a Inicio', action: () => navigateToPage('/home') },
       { key: 'Alt + 2', description: 'Ir a Catálogo', action: () => navigateToPage('/catalog') },
       { key: 'Alt + 3', description: 'Ir a Sobre Nosotros', action: () => navigateToPage('/about') },
@@ -174,7 +168,7 @@ export default function UsabilityFeatures() {
       { key: 'Alt + 5', description: 'Ir a Mi Perfil', action: () => navigateToPage('/profile') },
       { key: 'Alt + 0', description: 'Ir a Iniciar Sesión', action: () => navigateToPage('/login') },
       
-      // Reproductor de video
+      
       { key: 'Space', description: 'Reproducir/Pausar video', action: () => toggleVideoPlayback() },
       { key: 'Alt + P', description: 'Reproducir/Pausar video', action: () => toggleVideoPlayback() },
       { key: 'Alt + F', description: 'Pantalla completa', action: () => toggleFullscreen() },
@@ -188,7 +182,7 @@ export default function UsabilityFeatures() {
       { key: 'Alt + ↑', description: 'Subir volumen rápido', action: () => changeVolume(0.2) },
       { key: 'Alt + ↓', description: 'Bajar volumen rápido', action: () => changeVolume(-0.2) },
       
-      // Catálogo y filtros
+     
       { key: 'Alt + R', description: 'Resetear filtros', action: () => resetFilters() },
       { key: 'Alt + G', description: 'Cambiar vista (grid/lista)', action: () => toggleViewMode() },
       { key: 'Alt + O', description: 'Ordenar por título', action: () => sortBy('title') },
@@ -198,20 +192,20 @@ export default function UsabilityFeatures() {
       { key: 'Alt + L', description: 'Filtrar por género', action: () => {} },
       { key: 'Alt + C', description: 'Limpiar búsqueda', action: () => {} },
       
-      // Favoritos y acciones
+      
       { key: 'Alt + F', description: 'Agregar a favoritos', action: () => {} },
       { key: 'Alt + U', description: 'Quitar de favoritos', action: () => {} },
       { key: 'Alt + I', description: 'Información de película', action: () => {} },
       { key: 'Alt + C', description: 'Compartir película', action: () => {} },
       
-      // Accesibilidad y ayuda
+     
       { key: 'Alt + A', description: 'Panel de accesibilidad', action: () => toggleAccessibilityPanel() },
       { key: 'Alt + H', description: 'Panel de ayuda', action: () => setShowHelp(true) },
       { key: 'Alt + K', description: 'Atajos de teclado', action: () => setShowHelp(true) },
       { key: 'Alt + Z', description: 'Zoom in', action: () => {} },
       { key: 'Alt + X', description: 'Zoom out', action: () => {} },
       
-      // Navegación general
+     
       { key: 'Escape', description: 'Cerrar modales/paneles', action: () => closeAllModals() },
       { key: 'Alt + /', description: 'Mostrar todos los atajos', action: () => setShowHelp(true) },
       { key: 'Ctrl + /', description: 'Ayuda contextual', action: () => setShowHelp(true) },
@@ -219,14 +213,14 @@ export default function UsabilityFeatures() {
     ];
     setShortcuts(shortcuts);
 
-    // Agregar event listeners para los atajos
+    
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Prevenir atajos del navegador solo para nuestros atajos
+      
       if (event.altKey || (event.key === ' ' && event.target && 'matches' in event.target && !(event.target as Element).matches('input, textarea'))) {
         event.preventDefault();
       }
 
-      // Navegación
+      
       if (event.altKey && event.key === 'n') {
         focusSidebar();
         return;
@@ -242,7 +236,7 @@ export default function UsabilityFeatures() {
         return;
       }
 
-      // Navegación entre páginas
+      
       if (event.altKey && event.key === '1') {
         navigateToPage('/home');
         return;
@@ -268,7 +262,7 @@ export default function UsabilityFeatures() {
         return;
       }
 
-      // Reproductor de video
+   
       if (event.key === ' ' && event.target && 'matches' in event.target && !(event.target as Element).matches('input, textarea')) {
         toggleVideoPlayback();
         return;
@@ -309,7 +303,7 @@ export default function UsabilityFeatures() {
         return;
       }
 
-      // Catálogo y filtros
+      
       if (event.altKey && event.key === 'r') {
         resetFilters();
         return;
@@ -335,7 +329,7 @@ export default function UsabilityFeatures() {
         return;
       }
 
-      // Accesibilidad y ayuda
+    
       if (event.altKey && event.key === 'a') {
         toggleAccessibilityPanel();
         return;
@@ -351,27 +345,25 @@ export default function UsabilityFeatures() {
         return;
       }
 
-      // Navegación general
+      
       if (event.key === 'Escape') {
         closeAllModals();
         return;
       }
     };
 
-    // Agregar el event listener con capture para asegurar que se ejecute
+    
     document.addEventListener('keydown', handleKeyDown, true);
 
-    // Cleanup function
+    
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
     };
   };
 
-  /**
-   * Initialize error prevention mechanisms - REMOVED beforeunload alert
-   */
+  
   const initializeErrorPrevention = () => {
-    // Auto-save user preferences
+   
     const savePreferences = () => {
       const preferences = {
         theme: 'dark',
@@ -384,17 +376,15 @@ export default function UsabilityFeatures() {
 
     const intervalId = window.setInterval(savePreferences, 30000);
 
-    // Provide cleanup function for caller
+  
     return () => {
       clearInterval(intervalId);
     };
   };
 
-  /**
-   * Initialize help system
-   */
+  
   const initializeHelpSystem = () => {
-    // Show welcome message for new users
+    
     const isNewUser = !localStorage.getItem('unyfilm-visited');
     if (isNewUser) {
       setNotifications([{
@@ -407,24 +397,7 @@ export default function UsabilityFeatures() {
     }
   };
 
-  /**
-   * Show contextual help
-   */
-  // const showContextualHelp = (context: 'home' | 'catalog' | 'player' | 'search') => {
-  //   const helpMessages = {
-  //     home: 'En la página de inicio puedes ver las películas en tendencia y populares.',
-  //     catalog: 'En el catálogo puedes filtrar y buscar películas por género.',
-  //     player: 'En el reproductor puedes usar las teclas de espacio para pausar/reproducir.',
-  //     search: 'Escribe el nombre de la película que buscas y presiona Enter.'
-  //   };
-
-  //   setNotifications([{
-  //     id: Date.now(),
-  //     type: 'info',
-  //     message: helpMessages[context] || 'Ayuda contextual no disponible.',
-  //     duration: 3000
-  //   }]);
-  // };
+  
 
   /**
    * Handle keyboard shortcuts
@@ -442,13 +415,13 @@ export default function UsabilityFeatures() {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [shortcuts]);
 
-  // Ensure initializeErrorPrevention cleanup runs
+  
   useEffect(() => {
     const cleanup = initializeErrorPrevention();
     return () => {
       if (typeof cleanup === 'function') cleanup();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   return (

@@ -8,8 +8,8 @@ interface UseRealtimeRatingsOptions {
 }
 
 /**
- * Hook para manejar ratings en tiempo real
- * Escucha eventos de actualización y mantiene el estado sincronizado
+ * Hook to handle real-time ratings
+ * Listens to update events and keeps the state synchronized
  */
 export function useRealtimeRatings({ 
   movieId, 
@@ -54,7 +54,6 @@ export function useRealtimeRatings({
       
       if (updatedMovieId === movieId) {
         console.log('🔄 [HOOK] Rating actualizado, recargando estadísticas para:', movieId);
-        // Recargar estadísticas cuando se actualiza un rating
         loadRatingStats();
       }
     };
@@ -85,7 +84,6 @@ export function useRealtimeRatings({
       }
     };
 
-    // Escuchar eventos
     window.addEventListener('rating-updated', handleRatingUpdate as EventListener);
     window.addEventListener('rating-stats-updated', handleStatsUpdate as EventListener);
     window.addEventListener('cache-invalidated', handleCacheInvalidation as EventListener);

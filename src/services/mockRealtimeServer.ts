@@ -1,6 +1,6 @@
 /**
- * Servidor mock para simular eventos en tiempo real
- * En producción, esto sería reemplazado por un servidor real con WebSockets o SSE
+ * Mock server to simulate real-time events
+ * In production, this would be replaced by a real server with WebSockets or SSE
  */
 
 import { updateMockRatingStats } from './mockRatingService';
@@ -27,7 +27,7 @@ class MockRealtimeServer {
   }
 
   /**
-   * Simular evento de rating actualizado
+   * Simulate rating update event
    */
   simulateRatingUpdate(movieId: string, rating: number, action: string, movieTitle: string) {
     const event: MockEvent = {
@@ -44,10 +44,8 @@ class MockRealtimeServer {
 
     console.log('🎭 [MOCK SERVER] Simulando evento de rating:', event);
     
-    // Actualizar datos mock
     updateMockRatingStats(movieId, rating, action as 'create' | 'update' | 'delete');
     
-    // Enviar evento a otras pestañas
     broadcastToOtherTabs(movieId, rating, action);
     
     this.broadcastEvent(event);
@@ -84,7 +82,6 @@ class MockRealtimeServer {
       }
     });
 
-    // También emitir evento del DOM para compatibilidad
     console.log('🎭 [MOCK SERVER] Emitiendo evento del DOM:', event);
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
@@ -125,7 +122,6 @@ class MockRealtimeServer {
 
       this.simulateRatingUpdate(randomMovieId, randomRating, randomAction, 'Película Mock');
       
-      // Simular estadísticas después de un delay
       setTimeout(() => {
         this.simulateStatsUpdate(randomMovieId, randomRating, Math.floor(Math.random() * 10) + 1);
       }, 1000);
@@ -151,12 +147,10 @@ class MockRealtimeServer {
 
 export const mockRealtimeServer = MockRealtimeServer.getInstance();
 
-// Función para simular evento manual
 export const simulateRatingEvent = (movieId: string, rating: number, action: string = 'create') => {
   mockRealtimeServer.simulateRatingUpdate(movieId, rating, action, 'Película de Prueba');
 };
 
-// Función para simular estadísticas
 export const simulateStatsEvent = (movieId: string, averageRating: number, totalRatings: number) => {
   mockRealtimeServer.simulateStatsUpdate(movieId, averageRating, totalRatings);
 };

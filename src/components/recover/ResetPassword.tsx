@@ -17,7 +17,6 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [resetSuccess, setResetSuccess] = useState<boolean>(false);
 
-  // Extraer token de la URL al cargar el componente
   useEffect(() => {
     const urlToken = searchParams.get('token');
     if (urlToken) {
@@ -25,7 +24,6 @@ export default function ResetPassword() {
     }
   }, [searchParams]);
 
-  // Checklist visual para contraseña
   const passwordChecks = {
     length: password.length >= 8,
     upper: /[A-Z]/.test(password),
@@ -44,7 +42,6 @@ export default function ResetPassword() {
     if (!password) {
       next.password = 'La contraseña es requerida';
     } else {
-      // Validación según documentación del backend
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
       if (!passwordRegex.test(password)) {
         next.password = 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo';
@@ -70,12 +67,12 @@ export default function ResetPassword() {
       setIsLoading(true);
       
       try {
-        // Según la documentación, el endpoint espera: token, password, confirmPassword
+        
         const response = await apiService.resetPassword(token, password, confirmPassword);
         
         if (response.success) {
           setResetSuccess(true);
-          // Redirigir al login después de 3 segundos
+          
           setTimeout(() => {
             navigate('/login');
           }, 3000);
@@ -90,7 +87,7 @@ export default function ResetPassword() {
     }
   };
 
-  // Si el reset fue exitoso, mostrar pantalla de confirmación
+  
   if (resetSuccess) {
     return (
       <div className="login-page login-page--bg-hero">
@@ -121,7 +118,7 @@ export default function ResetPassword() {
     );
   }
 
-  // Si no hay token, mostrar error
+  
   if (!token && searchParams.get('token') === null) {
     return (
       <div className="login-page login-page--bg-hero">

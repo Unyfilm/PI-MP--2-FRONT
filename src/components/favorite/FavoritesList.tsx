@@ -5,7 +5,7 @@
  * to remove and update favorites.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Heart, Trash2, Star, Calendar, Clock } from 'lucide-react';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import { useAuth } from '../../contexts/AuthContext';

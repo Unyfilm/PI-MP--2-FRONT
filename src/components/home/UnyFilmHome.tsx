@@ -100,7 +100,6 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     carouselIntervalRef.current = interval;
   }, [changeToNextMovie]);
 
-  // Cargar datos de la API
   useEffect(() => {
     const loadMovies = async () => {
       try {

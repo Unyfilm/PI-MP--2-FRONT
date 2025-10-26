@@ -35,7 +35,6 @@ export default function MovieApp() {
         navigate(lastPath, { replace: true });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -139,7 +138,6 @@ export default function MovieApp() {
     setCurrentMovie(fullMovieData);
     setShowPlayer(true);
     
-    // Agregar al historial del navegador
     const playerState = {
       movie: fullMovieData,
       fromView: currentView
@@ -175,25 +173,19 @@ export default function MovieApp() {
 
   return (
     <div className={`movie-app-container ${sidebarOpen ? 'movie-app-container--sidebar-open' : ''}`}>
-      {/* Fixed Sidebar */}
       <UnyFilmSidebar currentView={currentView} />
 
-      {/* Fixed Header */}
       <UnyFilmHeader 
         searchQuery={searchQuery}
         onSearch={handleSearch}
         onSearchSubmit={handleSearchSubmit}
       />
-      {/* Toggle Sidebar Button (mobile) */}
       {!sidebarOpen && (
         <button className="sidebar-toggle" aria-label="Abrir menú" onClick={() => setSidebarOpen(true)}></button>
       )}
       {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden="true"></div>}
 
-      {/* User Authentication - Disabled */}
-      {/* <UserAuth /> */}
 
-      {/* Main Content */}
       <div className="main-content" id="main-content" tabIndex={-1}>
         {currentView === 'home' && (
           <UnyFilmHome 
@@ -221,7 +213,6 @@ export default function MovieApp() {
         )}
       </div>
 
-      {/* Video Player Modal */}
       {showPlayer && currentMovie && (
         <UnyFilmPlayer 
           movie={currentMovie}
@@ -229,13 +220,10 @@ export default function MovieApp() {
         />
       )}
 
-      {/* Usability Features */}
       <UsabilityFeatures />
 
-      {/* Accessibility Features */}
       <AccessibilityFeatures />
 
-      {/* Global Footer */}
       <Footer />
 
     </div>

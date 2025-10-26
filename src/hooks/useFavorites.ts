@@ -13,31 +13,31 @@ import { favoriteService, type Favorite } from '../services/favoriteService';
  * @interface UseFavoritesReturn
  */
 interface UseFavoritesReturn {
-  /** Array of user's favorite movies */
+  
   favorites: Favorite[];
-  /** Loading state */
+  
   loading: boolean;
-  /** Error message if any */
+  
   error: string | null;
-  /** Whether favorites have been loaded */
+  
   isLoaded: boolean;
-  /** Function to load favorites */
+  
   loadFavorites: () => Promise<void>;
-  /** Function to add a movie to favorites */
+  
   addToFavorites: (movieId: string, notes?: string, rating?: number) => Promise<{ success: boolean; message?: string }>;
-  /** Function to remove a movie from favorites */
+  
   removeFromFavorites: (favoriteId: string) => Promise<{ success: boolean; message?: string }>;
-  /** Function to clear all favorites (for user switching) */
+  
   clearFavorites: () => void;
-  /** Function to update a favorite */
+  
   updateFavorite: (favoriteId: string, updates: { notes?: string; rating?: number }) => Promise<{ success: boolean; message?: string }>;
-  /** Function to check if a movie is in favorites */
+  
   isMovieInFavorites: (movieId: string) => Promise<boolean>;
-  /** Function to get a favorite by ID */
+  
   getFavoriteById: (favoriteId: string) => Promise<Favorite | null>;
-  /** Function to clear all favorites */
+  
   clearFavorites: () => void;
-  /** Function to get favorites statistics */
+  
   getStats: () => { total: number; byGenre: Record<string, number> };
 }
 
@@ -50,7 +50,7 @@ export const useFavorites = (): UseFavoritesReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const loadingRef = useRef(false); // Ref para evitar cargar múltiples veces
+  const loadingRef = useRef(false); 
 
   /**
    * Cargar favoritos del usuario
@@ -265,7 +265,7 @@ export const useFavorites = (): UseFavoritesReturn => {
       console.log('🚀 Initializing favorites load...');
       loadFavorites();
     }
-  }, [isLoaded, favorites.length]); // Dependencias optimizadas
+  }, [isLoaded, favorites.length]); 
 
   /**
    * Detectar cambios en el token del mismo tab
@@ -280,7 +280,7 @@ export const useFavorites = (): UseFavoritesReturn => {
           const user = JSON.parse(userData);
           const currentUserId = user.id?.toString();
           
-          // Si hay un usuario autenticado y no hemos cargado favoritos
+          
           if (currentUserId && !isLoaded && !loadingRef.current) {
             console.log('🔄 Token detectado, cargando favoritos para usuario:', currentUserId);
             loadFavorites();
@@ -291,10 +291,10 @@ export const useFavorites = (): UseFavoritesReturn => {
       }
     };
 
-    // Verificar inmediatamente
+  
     checkTokenChange();
     
-    // Verificar periódicamente (cada 1 segundo) para detectar cambios
+
     const interval = setInterval(checkTokenChange, 1000);
     
     return () => clearInterval(interval);
@@ -308,15 +308,15 @@ export const useFavorites = (): UseFavoritesReturn => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'token') {
         if (!e.newValue) {
-          // Usuario cerró sesión
+         
           console.log('🚪 Usuario cerró sesión, limpiando favoritos');
           clearFavorites();
         } else if (e.newValue && !e.oldValue) {
-          // Usuario se logueó (nuevo token)
+       
           console.log('🚪 Usuario se logueó, cargando favoritos');
           setTimeout(() => {
             loadFavorites();
-          }, 500); // Pequeño delay para asegurar que el contexto se actualice
+          }, 500); 
         }
       }
     };

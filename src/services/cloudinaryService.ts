@@ -66,7 +66,6 @@ class CloudinaryService {
     this.uploadPreset = CLOUDINARY_CONFIG.UPLOAD_PRESET;
     this.baseUrl = CLOUDINARY_CONFIG.BASE_URL;
     
-    // Initialize Cloudinary instance
     this.cloudinary = new Cloudinary({
       cloud: {
         cloudName: this.cloudName
@@ -93,7 +92,6 @@ class CloudinaryService {
     formData.append('upload_preset', this.uploadPreset);
     formData.append('cloud_name', this.cloudName);
     
-    // Add optional parameters
     if (options.folder) {
       formData.append('folder', options.folder);
     }
@@ -254,11 +252,8 @@ class CloudinaryService {
    * @returns Generated signature
    */
   private async generateSignature(publicId: string, timestamp: number): Promise<string> {
-    // Note: In a real application, this should be done on the backend
-    // for security reasons. This is a simplified version for demo purposes.
     const message = `public_id=${publicId}&timestamp=${timestamp}${CLOUDINARY_CONFIG.API_SECRET}`;
     
-    // Simple hash function (in production, use proper crypto library)
     let hash = 0;
     for (let i = 0; i < message.length; i++) {
       const char = message.charCodeAt(i);
@@ -296,6 +291,5 @@ class CloudinaryService {
   }
 }
 
-// Export singleton instance
 export const cloudinaryService = new CloudinaryService();
 export default cloudinaryService;

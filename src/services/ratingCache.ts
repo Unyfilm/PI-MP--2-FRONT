@@ -27,7 +27,6 @@ class RatingCache {
       return null;
     }
 
-    // Check if cache is expired
     if (Date.now() - cached.timestamp > cached.ttl) {
       this.cache.delete(movieId);
       return null;
@@ -73,5 +72,4 @@ class RatingCache {
   }
 }
 
-// Export singleton instance
 export const ratingCache = new RatingCache();

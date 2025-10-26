@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X, Heart } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
-// @ts-ignore
 import InteractiveRating from '../rating/InteractiveRating';
 import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
@@ -228,7 +227,7 @@ export default function UnyFilmPlayer({
             newVideoUrl = video.addTransformation('w_854,h_480,c_fill').format('auto').toURL();
             break;
           default:
-            newVideoUrl = baseUrl; // Usar URL original
+            newVideoUrl = baseUrl; 
         }
         
         const currentTime = videoRef.current.currentTime;
@@ -262,12 +261,12 @@ export default function UnyFilmPlayer({
     setSubtitlesEnabled(newSubtitlesEnabled);
     onSubtitleToggle?.(newSubtitlesEnabled);
     
-    // Activar/desactivar subtítulos en el video
+   
     if (videoRef.current) {
       const video = videoRef.current;
       
       if (newSubtitlesEnabled) {
-        // Crear pista de subtítulos si no existe
+        
         if (!subtitleTrack) {
           const track = video.addTextTrack('subtitles', 'Subtítulos', 'es');
           track.mode = 'showing';
@@ -276,7 +275,7 @@ export default function UnyFilmPlayer({
           subtitleTrack.mode = 'showing';
         }
       } else {
-        // Ocultar subtítulos
+        
         if (subtitleTrack) {
           subtitleTrack.mode = 'hidden';
         }
@@ -304,7 +303,7 @@ export default function UnyFilmPlayer({
   return (
     <div className="unyfilm-player-wrapper">
       <div className="unyfilm-player-page">
-        {/* Mosaico animado de fondo */}
+        
         <div className="unyfilm-player-mosaic" aria-hidden="true">
           {Array.from({ length: 200 }).map((_, i) => (
             <span key={i} className="unyfilm-player-mosaic__tile" />
@@ -318,14 +317,14 @@ export default function UnyFilmPlayer({
         >
           <X size={24} />
         </button>
-        {/* Título encima del reproductor */}
+        
         <div className="unyfilm-movie-info-section" style={{paddingBottom: 10}}>
           <div className="unyfilm-movie-header">
             <h1 className="unyfilm-movie-title-main">{movie?.title || 'Película'}</h1>
             <div className="unyfilm-movie-controls">
               <div className="unyfilm-movie-rating">
                 <span className="star">★</span> {hasRealRatings ? averageRating.toFixed(1) : '0'}/5
-                {/* Debug info */}
+                
                 <small style={{fontSize: '10px', opacity: 0.7, marginLeft: '8px'}}>
                   ({ratingStats?.totalRatings || 0} ratings)
                 </small>
@@ -386,9 +385,9 @@ export default function UnyFilmPlayer({
             </button>
           )}
 
-          {/* 🔹 Contenedor completo de controles */}
+          
           <div className={`unyfilm-video-controls ${showControls ? 'show' : ''}`}>
-            {/* 🔹 Barra de progreso */}
+            
             <div onClick={handleSeek} className="unyfilm-progress-container">
               <div className="unyfilm-progress-bar">
                 <div
@@ -398,7 +397,7 @@ export default function UnyFilmPlayer({
               </div>
             </div>
 
-            {/* 🔹 Sección inferior de controles */}
+            
             <div className="unyfilm-controls-bottom">
               <div className="unyfilm-controls-left">
                 <button onClick={togglePlay} className="unyfilm-control-btn">
@@ -473,23 +472,23 @@ export default function UnyFilmPlayer({
                 </button>
               </div>
             </div>
-          </div> {/* ← cierre correcto del div .unyfilm-video-controls */}
+          </div> 
           
-          {/* Mensaje de cambio de calidad */}
+          
           {qualityChangeMessage && (
             <div className="unyfilm-quality-message">
               {qualityChangeMessage}
             </div>
           )}
           
-          {/* Indicador de carga cuando cambia calidad */}
+          
           {qualityChangeMessage && (
             <div className="unyfilm-loading-overlay">
               <div className="unyfilm-loading-spinner"></div>
             </div>
           )}
           
-        </div> {/* ← cierre correcto del div .unyfilm-video-container */}
+        </div> 
 
         <div className="unyfilm-movie-info-section">
 
@@ -532,7 +531,7 @@ export default function UnyFilmPlayer({
             </div>
           )}
 
-          {/* Sistema de Calificación Interactiva */}
+        
           {movie && movie._id && (
             <InteractiveRating
               movieId={movie._id}
@@ -541,7 +540,7 @@ export default function UnyFilmPlayer({
             />
           )}
 
-          {/* Secciones de calificación y comentarios eliminadas */}
+       
         </div>
       </div>
     </div>

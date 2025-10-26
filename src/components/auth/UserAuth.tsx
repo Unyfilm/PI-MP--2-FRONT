@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import './UserAuth.css';
 
-// User interface
 interface UserData {
   id: number;
   firstName: string;
@@ -54,7 +53,6 @@ export default function UserAuth() {
   const [showPassword, setShowPassword] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
 
-  // Form states
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({
     firstName: '',
@@ -73,12 +71,8 @@ export default function UserAuth() {
   });
   const [recoveryForm, setRecoveryForm] = useState({ email: '' });
 
-  /**
-   * Handle user login
-   */
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - in real app, this would call API
     const mockUser = {
       id: 1,
       firstName: 'Juan',
@@ -93,14 +87,10 @@ export default function UserAuth() {
     setShowLogin(false);
     setLoginForm({ email: '', password: '' });
     
-    // Save to localStorage
     localStorage.setItem('unyfilm-user', JSON.stringify(mockUser));
     localStorage.setItem('unyfilm-logged-in', 'true');
   };
 
-  /**
-   * Handle user registration
-   */
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     if (registerForm.password !== registerForm.confirmPassword) {
@@ -108,7 +98,6 @@ export default function UserAuth() {
       return;
     }
     
-    // Mock registration
     const newUser = {
       id: Date.now(),
       firstName: registerForm.firstName,
@@ -130,14 +119,11 @@ export default function UserAuth() {
       confirmPassword: ''
     });
     
-    // Save to localStorage
     localStorage.setItem('unyfilm-user', JSON.stringify(newUser));
     localStorage.setItem('unyfilm-logged-in', 'true');
   };
 
-  /**
-   * Handle profile update
-   */
+ 
   const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     const updatedUser: UserData = { 
@@ -148,16 +134,11 @@ export default function UserAuth() {
     setUser(updatedUser);
     setShowProfile(false);
     
-    // Save to localStorage
     localStorage.setItem('unyfilm-user', JSON.stringify(updatedUser));
   };
 
-  /**
-   * Handle password recovery
-   */
   const handlePasswordRecovery = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock password recovery
     alert(`Se ha enviado un enlace de recuperación a ${recoveryForm.email}`);
     setShowPasswordRecovery(false);
     setRecoveryForm({ email: '' });
@@ -166,23 +147,16 @@ export default function UserAuth() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   
-  // Hooks para cerrar modales al hacer clic fuera
   const loginModalRef = useClickOutside(() => setShowLogin(false));
   const registerModalRef = useClickOutside(() => setShowRegister(false));
   const profileModalRef = useClickOutside(() => setShowProfile(false));
   const recoveryModalRef = useClickOutside(() => setShowPasswordRecovery(false));
 
-  /**
-   * Handle user logout
-   */
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  /**
-   * Handle account deletion
-   */
   const handleDeleteAccount = () => {
     if (confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) {
       handleLogout();
@@ -225,7 +199,7 @@ export default function UserAuth() {
         </div>
       )}
 
-      {/* Login Modal */}
+      
       {showLogin && (
         <div className="user-auth__modal" ref={loginModalRef}>
           <div className="user-auth__modal-content">
@@ -288,7 +262,7 @@ export default function UserAuth() {
         </div>
       )}
 
-      {/* Register Modal */}
+      
       {showRegister && (
         <div className="user-auth__modal" ref={registerModalRef}>
           <div className="user-auth__modal-content">
@@ -380,7 +354,7 @@ export default function UserAuth() {
         </div>
       )}
 
-      {/* Profile Modal */}
+     
       {showProfile && (
         <div className="user-auth__modal" ref={profileModalRef}>
           <div className="user-auth__modal-content">
@@ -480,7 +454,7 @@ export default function UserAuth() {
         </div>
       )}
 
-      {/* Password Recovery Modal */}
+      
       {showPasswordRecovery && (
         <div className="user-auth__modal" ref={recoveryModalRef}>
           <div className="user-auth__modal-content">

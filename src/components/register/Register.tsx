@@ -1,5 +1,4 @@
 import { useState } from 'react';
-// Reuse the same styles and layout from Login
 import '../login/Login.scss';
 import '../recover/ResetPassword.scss';
 import { Mail, Lock, User, Eye, EyeOff, Calendar, UserPlus, CheckCircle } from 'lucide-react';
@@ -9,7 +8,6 @@ import collage from '../../images/collage.jpg';
 import type { RegisterFormData, AuthProps, InputChangeEvent } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 
-// Interface específica para las props del componente Register
 interface RegisterProps extends AuthProps {
     className?: string;
     id?: string;
@@ -30,7 +28,6 @@ export default function Register({ onRegister }: RegisterProps = {}) {
     const navigate = useNavigate();
     const { register } = useAuth();
 
-    // Checklist visual para contraseña
     const passwordChecks = {
         length: password.length >= 8,
         upper: /[A-Z]/.test(password),
@@ -47,7 +44,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
             email,
             password
         };
-        // Validations
+        
         const newErrors: Record<string, string> = {};
         if (!nombres) newErrors.nombres = 'Los nombres son requeridos';
         if (!apellidos) newErrors.apellidos = 'Los apellidos son requeridos';
@@ -79,7 +76,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
                 password
             });
             if (result.success) {
-                // Registro exitoso: redirigir a home
+                
                 navigate('/home');
                 if (onRegister) onRegister(formData);
             } else {
@@ -92,7 +89,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
         }
     };
 
-    // Handler genérico para cambios en inputs
+    
     const handleInputChange = (e: InputChangeEvent): void => {
         const { name, value } = e.target;
         
@@ -127,7 +124,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
             <div className="login-page__bg-gradient login-page__bg-gradient--2" />
 
             <div className="login-page__container">
-                {/* Left: Register Form with same layout as Login */}
+                
                 <div className="login-form">
                     <div className="login-form__logo">
                         <img src={logo2} alt="UnyFilm" className="login-form__logo-img" />
@@ -182,7 +179,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
                             </div>
                             {touched.password && errors.password && <p className="form-field__error">{errors.password}</p>}
                         </div>
-                        {/* Checklist visual de requisitos - bajo el campo de contraseña */}
+                        
                         <div className={`password-checklist ${password ? 'password-checklist--show' : ''}`}>
                             <div className={`password-checklist__item ${passwordChecks.length ? 'password-checklist__item--ok' : ''}`}>
                                 <span className="password-checklist__dot" /> Mínimo 8 caracteres
@@ -234,7 +231,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
                     </div>
                 </div>
 
-                {/* Right: Image hero with same adjustment */}
+                
                 <div className="login-hero">
                     <img src={collage} alt="Collage" className="login-hero__image" />
                     <div className="login-hero__overlay" />

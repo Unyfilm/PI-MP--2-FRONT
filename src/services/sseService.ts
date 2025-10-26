@@ -1,6 +1,6 @@
 /**
- * Servicio de Server-Sent Events (SSE) para tiempo real
- * Alternativa más simple a WebSockets, solo requiere HTTP
+ * Server-Sent Events (SSE) service for real-time
+ * Simpler alternative to WebSockets, only requires HTTP
  */
 
 import { API_CONFIG } from '../config/environment';
@@ -28,7 +28,7 @@ class SSEService {
   }
 
   /**
-   * Conectar al servidor SSE
+   * Connect to SSE server
    */
   connect() {
     if (this.isConnected || this.eventSource) {

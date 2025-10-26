@@ -20,7 +20,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  // Mostrar loading mientras se verifica la autenticación
+  
   if (isLoading) {
     return (
       <div style={{ 
@@ -36,12 +36,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  // Si no está autenticado, redirigir a login con la ruta actual como "from"
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Si está autenticado, mostrar el contenido protegido
   return <>{children}</>;
 };
 
@@ -62,7 +60,7 @@ interface PublicRouteProps {
 export const PublicRoute: React.FC<PublicRouteProps> = ({ children, redirectTo = '/home' }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Mostrar loading mientras se verifica la autenticación
+  
   if (isLoading) {
     return (
       <div style={{ 
@@ -78,11 +76,11 @@ export const PublicRoute: React.FC<PublicRouteProps> = ({ children, redirectTo =
     );
   }
 
-  // Si ya está autenticado, redirigir a la página principal
+  
   if (isAuthenticated) {
     return <Navigate to={redirectTo} replace />;
   }
 
-  // Si no está autenticado, mostrar la página pública (login, register, etc.)
+  
   return <>{children}</>;
 };

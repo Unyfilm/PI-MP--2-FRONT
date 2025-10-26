@@ -55,7 +55,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     };
     
     checkFavoriteStatus();
-  }, [movieId, favorites, isMovieInFavorites, getFavoriteById, loading]); // Dependencias del contexto
+  }, [movieId, favorites, isMovieInFavorites, getFavoriteById, loading]); 
 
   /**
    * Handle favorites toggle
@@ -74,7 +74,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     
     try {
       if (isMovieFavorite && favoriteId) {
-        // Eliminar de favoritos
+        
         console.log('🗑️ Removing from favorites:', movieId);
         const result = await removeFromFavorites(favoriteId);
         
@@ -95,8 +95,8 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
           console.log('✅ Successfully added to favorites');
           setIsMovieFavorite(true);
           // Update favoriteId if available in the response
-          if (result.data && result.data._id) {
-            setFavoriteId(result.data._id);
+          if (result && typeof result === 'object' && '_id' in result) {
+            setFavoriteId((result as any)._id);
           }
           onToggle?.(true, movieId);
         } else {

@@ -34,7 +34,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
   const { user } = useAuth();
   const lastUserIdRef = useRef<string | null>(null);
   
-  // Invalidar cache de favoritos cuando cambia el usuario
+  
   useEffect(() => {
     const currentUserId = user?.id?.toString() || null;
     
@@ -44,16 +44,16 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
         currentUserId: currentUserId
       });
       
-      // Limpiar favoritos del hook
+      
       favoritesHook.clearFavorites();
       
-      // Actualizar referencia del usuario
+      
       lastUserIdRef.current = currentUserId;
       
-      // Si hay un nuevo usuario autenticado, cargar sus favoritos
+     
       if (currentUserId && user) {
         console.log('🔄 Nuevo usuario detectado, cargando favoritos...');
-        // Usar setTimeout para asegurar que el clearFavorites se complete primero
+        
         setTimeout(() => {
           favoritesHook.loadFavorites();
         }, 100);
@@ -61,9 +61,9 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     }
   }, [user?.id, favoritesHook]);
   
-  // Función optimizada para verificar si una película está en favoritos (sin peticiones)
+  
   const isMovieInFavorites = (movieId: string): boolean => {
-    // Validar que el usuario esté autenticado
+    
     if (!user) {
       console.warn('⚠️ Usuario no autenticado, no se puede verificar favoritos');
       return false;
@@ -71,9 +71,9 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     return favoritesHook.favorites.some(fav => fav.movieId._id === movieId);
   };
 
-  // Función optimizada para obtener favorito por movieId (sin peticiones)
+  
   const getFavoriteById = (movieId: string): Favorite | null => {
-    // Validar que el usuario esté autenticado
+    
     if (!user) {
       console.warn('⚠️ Usuario no autenticado, no se puede obtener favorito');
       return null;
@@ -81,7 +81,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     return favoritesHook.favorites.find(fav => fav.movieId._id === movieId) || null;
   };
 
-  // Función wrapper para addToFavorites con validación de usuario
+  
   const addToFavorites = async (movieId: string, notes?: string, rating?: number) => {
     if (!user) {
       console.warn('⚠️ Usuario no autenticado, no se puede agregar a favoritos');
@@ -90,7 +90,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     return favoritesHook.addToFavorites(movieId, notes, rating);
   };
 
-  // Función wrapper para removeFromFavorites con validación de usuario
+  
   const removeFromFavorites = async (favoriteId: string) => {
     if (!user) {
       console.warn('⚠️ Usuario no autenticado, no se puede eliminar de favoritos');
@@ -99,7 +99,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     return favoritesHook.removeFromFavorites(favoriteId);
   };
 
-  // Función wrapper para loadFavorites con validación de usuario
+  
   const loadFavorites = async () => {
     if (!user) {
       console.warn('⚠️ Usuario no autenticado, no se pueden cargar favoritos');
@@ -109,7 +109,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
   };
 
   const contextValue: FavoritesContextType = {
-    favorites: user ? favoritesHook.favorites : [], // Solo mostrar favoritos si hay usuario autenticado
+    favorites: user ? favoritesHook.favorites : [], 
     loading: favoritesHook.loading,
     error: favoritesHook.error,
     isLoaded: favoritesHook.isLoaded,

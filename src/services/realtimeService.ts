@@ -1,6 +1,6 @@
 /**
- * Servicio de tiempo real para comunicación entre usuarios
- * Usa Socket.io para conectar con el servidor backend
+ * Real-time service for communication between users
+ * Uses Socket.io to connect with the backend server
  */
 
 import { io, Socket } from 'socket.io-client';
@@ -29,7 +29,7 @@ class RealTimeService {
   }
 
   /**
-   * Conectar al servidor de WebSockets
+   * Connect to WebSocket server
    */
   connect() {
     if (this.isConnected || this.socket) {
@@ -40,7 +40,6 @@ class RealTimeService {
     try {
       console.log('🔌 [REALTIME] Conectando al servidor WebSocket...');
       
-      // En desarrollo, usar el servidor local
       const serverUrl = process.env.NODE_ENV === 'development' 
         ? 'http://localhost:3001' // Puerto del servidor backend
         : API_CONFIG.BASE_URL;
@@ -68,7 +67,6 @@ class RealTimeService {
         this.handleReconnection();
       });
 
-      // Escuchar eventos de rating actualizado
       this.socket.on('rating-updated', (data: RatingUpdateEvent) => {
         console.log('📡 [REALTIME] Rating actualizado recibido:', data);
         this.handleRatingUpdate(data);
@@ -89,7 +87,6 @@ class RealTimeService {
    * Manejar actualización de rating
    */
   private handleRatingUpdate(data: RatingUpdateEvent) {
-    // Emitir evento del DOM para que los componentes lo escuchen
     window.dispatchEvent(new CustomEvent('rating-updated', {
       detail: {
         movieId: data.movieId,
@@ -162,7 +159,6 @@ class RealTimeService {
    * Obtener ID del usuario actual
    */
   private getCurrentUserId(): string {
-    // Obtener del localStorage o del contexto de autenticación
     const token = localStorage.getItem('token');
     if (token) {
       try {
@@ -207,19 +203,14 @@ class RealTimeService {
   }
 }
 
-// Exportar instancia singleton
 export const realTimeService = RealTimeService.getInstance();
 
-// Función de conveniencia para conectar
 export const connectRealTime = () => realTimeService.connect();
 
-// Función de conveniencia para desconectar
 export const disconnectRealTime = () => realTimeService.disconnect();
 
-// Función de conveniencia para emitir eventos
 export const emitRatingUpdate = (movieId: string, rating: number, action: 'create' | 'update' | 'delete') => {
   realTimeService.emitRatingUpdate(movieId, rating, action);
 };
 
-// Función de conveniencia para verificar estado
 export const getRealTimeStatus = () => realTimeService.getConnectionStatus();

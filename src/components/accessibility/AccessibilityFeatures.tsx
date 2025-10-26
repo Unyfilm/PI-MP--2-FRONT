@@ -70,7 +70,6 @@ export default function AccessibilityFeatures() {
   const [skipLinks, setSkipLinks] = useState(true);
   const [showFontChangeNotification, setShowFontChangeNotification] = useState(false);
 
-  // Load saved preferences on mount
   useEffect(() => {
     const savedPrefs = localStorage.getItem('unyfilm-accessibility');
     if (savedPrefs) {
@@ -83,12 +82,10 @@ export default function AccessibilityFeatures() {
     }
   }, []);
 
-  // Apply accessibility features when settings change
   useEffect(() => {
     applyAccessibilityFeatures();
   }, [highContrast, reducedMotion, fontSize, focusVisible, skipLinks]);
 
-  // Show notification when font size changes
   useEffect(() => {
     if (fontSize !== 'normal') {
       setShowFontChangeNotification(true);
@@ -105,32 +102,27 @@ export default function AccessibilityFeatures() {
   const applyAccessibilityFeatures = () => {
     const root = document.documentElement;
     
-    // High contrast mode
     if (highContrast) {
       root.classList.add('high-contrast');
     } else {
       root.classList.remove('high-contrast');
     }
 
-    // Reduced motion
     if (reducedMotion) {
       root.classList.add('reduced-motion');
     } else {
       root.classList.remove('reduced-motion');
     }
 
-    // Font size
     root.classList.remove('font-small', 'font-normal', 'font-large', 'font-extra-large');
     root.classList.add(`font-${fontSize}`);
 
-    // Focus visible
     if (focusVisible) {
       root.classList.add('focus-visible');
     } else {
       root.classList.remove('focus-visible');
     }
 
-    // Save preferences
     const prefs = {
       highContrast,
       reducedMotion,
@@ -146,12 +138,10 @@ export default function AccessibilityFeatures() {
    */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent default for our custom shortcuts
       if (e.altKey || e.ctrlKey) {
         e.preventDefault();
       }
 
-      // Skip to main content
       if (e.key === 'Tab' && e.target === document.body) {
         const mainContent = document.querySelector('.main-content') as HTMLElement;
         if (mainContent) {
@@ -159,7 +149,6 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      // Skip to navigation
       if (e.altKey && e.key === 'n') { // Alt + N
         const sidebar = document.querySelector('.unyfilm-sidebar') as HTMLElement;
         if (sidebar) {
@@ -167,7 +156,6 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      // Skip to search
       if (e.altKey && e.key === 's') { // Alt + S
         const searchInput = document.querySelector('#search-input') as HTMLElement;
         if (searchInput) {
@@ -175,12 +163,10 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      // Toggle accessibility panel
       if (e.altKey && e.key === 'a') { // Alt + A
         toggleAccessibilityPanel();
       }
 
-      // Toggle help panel
       if (e.altKey && e.key === 'h') { // Alt + H
         const helpBtn = document.querySelector('.usability-help-btn') as HTMLElement;
         if (helpBtn) {
@@ -188,15 +174,12 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      // Close modals/panels with Escape
       if (e.key === 'Escape') {
-        // Close accessibility panel
         const panel = document.querySelector('.accessibility-panel');
         if (panel && panel.classList.contains('accessibility-panel--visible')) {
           panel.classList.remove('accessibility-panel--visible');
         }
 
-        // Close help modal
         const helpModal = document.querySelector('.usability-help-modal');
         if (helpModal) {
           const closeBtn = helpModal.querySelector('.usability-help-close') as HTMLElement;
@@ -205,7 +188,6 @@ export default function AccessibilityFeatures() {
           }
         }
 
-        // Close video player
         const player = document.querySelector('.unyfilm-player-page');
         if (player) {
           const closeBtn = player.querySelector('.unyfilm-player-close-btn') as HTMLElement;
@@ -214,7 +196,6 @@ export default function AccessibilityFeatures() {
           }
         }
 
-        // Close profile dropdown
         const profileDropdown = document.querySelector('.unyfilm-dropdown--visible');
         if (profileDropdown) {
           const profileBtn = document.querySelector('.unyfilm-header__profile-btn') as HTMLElement;
@@ -224,7 +205,6 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      // Video player controls
       if (e.altKey && e.key === 'p') { // Alt + P - Play/Pause
         const video = document.querySelector('.unyfilm-video-element') as HTMLVideoElement;
         if (video) {
@@ -246,7 +226,6 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      // Filter controls
       if (e.altKey && e.key === 'r') { // Alt + R - Reset filters
         const resetBtn = document.querySelector('.unyfilm-catalog__reset-btn') as HTMLElement;
         if (resetBtn) {
@@ -254,7 +233,6 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      // View mode toggle
       if (e.altKey && e.key === 'v') { // Alt + V - Toggle view mode
         const viewToggle = document.querySelector('.unyfilm-catalog__view-toggle') as HTMLElement;
         if (viewToggle) {
@@ -262,7 +240,6 @@ export default function AccessibilityFeatures() {
         }
       }
 
-      // Sort controls
       if (e.altKey && e.key === 'o') { // Alt + O - Sort options
         const sortBtn = document.querySelector('.unyfilm-catalog__sort-btn') as HTMLElement;
         if (sortBtn) {
@@ -335,7 +312,6 @@ export default function AccessibilityFeatures() {
         </div>
       )}
 
-      {/* Accessibility Panel */}
       <div className="accessibility-panel">
         <button 
           className="accessibility-toggle"
@@ -349,7 +325,6 @@ export default function AccessibilityFeatures() {
         <div className="accessibility-controls">
           <h3>Opciones de Accesibilidad</h3>
           
-          {/* High Contrast */}
           <div className="accessibility-control">
             <label>
               <input
@@ -364,7 +339,6 @@ export default function AccessibilityFeatures() {
             </label>
           </div>
 
-          {/* Reduced Motion */}
           <div className="accessibility-control">
             <label>
               <input
@@ -379,7 +353,6 @@ export default function AccessibilityFeatures() {
             </label>
           </div>
 
-          {/* Font Size */}
           <div className="accessibility-control">
             <label>
               <span className="control-label">
@@ -402,7 +375,6 @@ export default function AccessibilityFeatures() {
             </label>
           </div>
 
-          {/* Focus Visible */}
           <div className="accessibility-control">
             <label>
               <input
@@ -417,7 +389,6 @@ export default function AccessibilityFeatures() {
             </label>
           </div>
 
-          {/* Skip Links */}
           <div className="accessibility-control">
             <label>
               <input
@@ -434,7 +405,6 @@ export default function AccessibilityFeatures() {
         </div>
       </div>
 
-      {/* Font Size Change Notification */}
       {showFontChangeNotification && (
         <div className="font-change-notification">
           <div className="notification-content">
@@ -450,14 +420,12 @@ export default function AccessibilityFeatures() {
         </div>
       )}
 
-      {/* ARIA Live Region for announcements */}
       <div 
         className="sr-only" 
         aria-live="polite" 
         aria-atomic="true"
         id="accessibility-announcements"
       >
-        {/* Screen reader announcements will be inserted here */}
       </div>
     </>
   );
