@@ -82,11 +82,19 @@ export interface BaseComponentProps {
   id?: string;
 }
 
+/**
+ * Interface for authentication component props
+ * @interface AuthProps
+ */
 export interface AuthProps {
   onLogin?: (data: LoginFormData) => void;
   onRegister?: (data: RegisterFormData) => void;
 }
 
+/**
+ * Interface for movie card component props
+ * @interface MovieCardProps
+ */
 export interface MovieCardProps extends BaseComponentProps {
   title: string;
   isFavorite: boolean;
@@ -99,17 +107,29 @@ export interface MovieCardProps extends BaseComponentProps {
   description?: string;
 }
 
+/**
+ * Interface for navigation component props
+ * @interface NavigationProps
+ */
 export interface NavigationProps extends BaseComponentProps {
   currentView: ViewType;
   setCurrentView: (view: ViewType) => void;
 }
 
+/**
+ * Interface for search component props
+ * @interface SearchProps
+ */
 export interface SearchProps {
   searchQuery: string;
   onSearch: (query: string) => void;
   onSearchSubmit: (query: string) => void;
 }
 
+/**
+ * Interface for movie list component props
+ * @interface MovieListProps
+ */
 export interface MovieListProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
@@ -118,31 +138,63 @@ export interface MovieListProps {
   onMovieClick: (movie: MovieClickData) => void;
 }
 
+/**
+ * Interface for video player component props
+ * @interface PlayerProps
+ */
 export interface PlayerProps {
   movie: MovieData;
   onClose: () => void;
 }
 
+/**
+ * Interface for usability features component props
+ * @interface UsabilityFeaturesProps
+ */
 export interface UsabilityFeaturesProps extends BaseComponentProps {
   onToggleTheme?: () => void;
   onToggleLanguage?: () => void;
 }
 
+/**
+ * Interface for accessibility features component props
+ * @interface AccessibilityFeaturesProps
+ */
 export interface AccessibilityFeaturesProps extends BaseComponentProps {
   onToggleHighContrast?: () => void;
   onToggleScreenReader?: () => void;
 }
 
 
+/**
+ * Type for input change events
+ * @type {InputChangeEvent}
+ */
 export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
+/**
+ * Type for button click events
+ * @type {ButtonClickEvent}
+ */
 export type ButtonClickEvent = React.MouseEvent<HTMLButtonElement>;
+/**
+ * Type for form submit events
+ * @type {FormSubmitEvent}
+ */
 export type FormSubmitEvent = React.FormEvent<HTMLFormElement>;
 
+/**
+ * Interface for loading state
+ * @interface LoadingState
+ */
 export interface LoadingState {
   isLoading: boolean;
   error?: string;
 }
 
+/**
+ * Interface for application configuration
+ * @interface AppConfig
+ */
 export interface AppConfig {
   apiUrl: string;
   version: string;
@@ -150,12 +202,20 @@ export interface AppConfig {
 }
 
 
+/**
+ * Interface for pagination component props
+ * @interface PaginationProps
+ */
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
 }
 
+/**
+ * Interface for filter component props
+ * @interface FilterProps
+ */
 export interface FilterProps {
   genre?: string;
   year?: number;
@@ -163,12 +223,21 @@ export interface FilterProps {
   onFilterChange: (filters: Partial<FilterProps>) => void;
 }
 
+/**
+ * Interface for API configuration
+ * @interface ApiConfig
+ */
 export interface ApiConfig {
   BASE_URL: string;
   TIMEOUT: number;
   RETRY_ATTEMPTS: number;
 }
 
+/**
+ * Generic interface for API responses
+ * @interface ApiResponse
+ * @template T - The type of data returned
+ */
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
@@ -177,6 +246,10 @@ export interface ApiResponse<T = any> {
   total?: number;
 }
 
+/**
+ * Interface for user data
+ * @interface User
+ */
 export interface User {
   id: number;
   username?: string;
@@ -193,16 +266,28 @@ export interface User {
   updatedAt?: string;
 }
 
+/**
+ * Interface for authentication response
+ * @interface AuthResponse
+ */
 export interface AuthResponse {
   user: Omit<User, 'password'>;
   token: string;
 }
 
+/**
+ * Interface for login credentials
+ * @interface LoginCredentials
+ */
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
+/**
+ * Interface for user registration data
+ * @interface RegisterData
+ */
 export interface RegisterData {
   nombres: string;
   apellidos: string;
@@ -211,6 +296,10 @@ export interface RegisterData {
   password: string;
 }
 
+/**
+ * Interface for movie data (legacy)
+ * @interface Movie
+ */
 export interface Movie {
   id: number;
   title: string;
@@ -231,6 +320,10 @@ export interface Movie {
   createdAt: string;
 }
 
+/**
+ * Interface for API service methods
+ * @interface ApiService
+ */
 export interface ApiService {
   getMovies: () => Promise<ApiResponse<Movie[]>>;
   getMovie: (id: number) => Promise<ApiResponse<Movie>>;
@@ -256,12 +349,20 @@ export interface ApiService {
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<ApiResponse<void>>;
 }
 
+/**
+ * Interface for HTTP request options
+ * @interface RequestOptions
+ */
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: string;
   headers?: Record<string, string>;
 }
 
+/**
+ * Type for storage keys
+ * @type {StorageKeys}
+ */
 export type StorageKeys = 
   | 'unyfilm-token'
   | 'unyfilm-user'
@@ -269,6 +370,10 @@ export type StorageKeys =
   | 'unyfilm-movies'
   | 'unyfilm-users';
 
+/**
+ * Interface for Cloudinary upload response
+ * @interface CloudinaryUploadResponse
+ */
 export interface CloudinaryUploadResponse {
   public_id: string;
   version: number;
@@ -291,6 +396,10 @@ export interface CloudinaryUploadResponse {
   frame_rate?: number;
 }
 
+/**
+ * Interface for Cloudinary upload options
+ * @interface CloudinaryUploadOptions
+ */
 export interface CloudinaryUploadOptions {
   folder?: string;
   tags?: string[];
@@ -300,6 +409,10 @@ export interface CloudinaryUploadOptions {
   resource_type?: 'video' | 'image' | 'raw' | 'auto';
 }
 
+/**
+ * Interface for Cloudinary video information
+ * @interface CloudinaryVideoInfo
+ */
 export interface CloudinaryVideoInfo {
   public_id: string;
   url: string;
@@ -313,6 +426,10 @@ export interface CloudinaryVideoInfo {
   created_at: string;
 }
 
+/**
+ * Interface for video upload component props
+ * @interface VideoUploadProps
+ */
 export interface VideoUploadProps {
   onUploadSuccess: (response: CloudinaryUploadResponse) => void;
   onUploadError: (error: string) => void;
@@ -323,6 +440,10 @@ export interface VideoUploadProps {
   tags?: string[];
 }
 
+/**
+ * Interface for enhanced video player props
+ * @interface EnhancedPlayerProps
+ */
 export interface EnhancedPlayerProps extends PlayerProps {
   cloudinaryPublicId?: string;
   quality?: 'auto' | 'high' | 'medium' | 'low';
