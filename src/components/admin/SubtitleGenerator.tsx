@@ -266,3 +266,4 @@ print("✅ Script ejecutado correctamente")`;
 };
 
 export default SubtitleGenerator;
+

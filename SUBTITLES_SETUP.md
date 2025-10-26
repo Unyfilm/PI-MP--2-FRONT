@@ -265,3 +265,4 @@ Si tienes problemas:
 4. **Revisa la consola** del navegador para errores
 
 ¡Disfruta de tus subtítulos automáticos! 🎬✨
+

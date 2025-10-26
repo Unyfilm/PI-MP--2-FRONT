@@ -303,7 +303,8 @@ export default function UnyFilmPlayer({
     const handleLoadedMetadata = async () => {
       setDuration(video.duration);
       
-      // Cargar subtítulos si están habilitados y hay subtítulos disponibles
+      
+      
       console.log('🎬 Condiciones para cargar subtítulos:', {
         subtitlesEnabled,
         availableSubtitlesLength: availableSubtitles.length,
@@ -337,10 +338,10 @@ export default function UnyFilmPlayer({
           
           console.log('📝 Contenido de subtítulos cargado:', subtitleContent.substring(0, 200) + '...');
           
-          // Crear track de subtítulos
+          
           const track = video.addTextTrack('subtitles', 'Subtítulos', selectedSubtitleLanguage);
           
-          // Parsear contenido VTT y agregar cues
+         
           const vttLines = subtitleContent.split('\n');
           let currentCue = null;
           let cueCount = 0;
