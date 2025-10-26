@@ -123,9 +123,9 @@ describe('UsabilityFeatures - Simple Tests', () => {
       ]
     };
     
-    Object.keys(heuristicExamples).forEach(heuristic => {
-      expect(heuristicExamples[heuristic]).toHaveLength(4);
-      expect(heuristicExamples[heuristic].every(example => example.length > 0)).toBe(true);
+    Object.keys(heuristicExamples).forEach((heuristic: string) => {
+      expect(heuristicExamples[heuristic as keyof typeof heuristicExamples]).toHaveLength(4);
+      expect(heuristicExamples[heuristic as keyof typeof heuristicExamples].every((example: string) => example.length > 0)).toBe(true);
     });
   });
 

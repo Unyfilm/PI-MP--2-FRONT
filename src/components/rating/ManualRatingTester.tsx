@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// Funciones simples para emitir eventos
 const emitRatingUpdate = (movieId: string, rating: number, action: string) => {
   const event = new CustomEvent('rating-updated', {
     detail: { movieId, rating, action, source: 'manual-test' }

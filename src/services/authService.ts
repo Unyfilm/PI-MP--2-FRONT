@@ -139,10 +139,10 @@ export const authService = {
     const payload = {
       email: input.email.trim().toLowerCase(),
       password: input.password,
-      confirmPassword: input.password, // ← OBLIGATORIO: mismo valor que password
+      confirmPassword: input.password, 
       firstName: input.nombres.trim(),
       lastName: input.apellidos.trim(),
-      age: age  // debe ser NUMBER no string
+      age: age  
     };
 
     

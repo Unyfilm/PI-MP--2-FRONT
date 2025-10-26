@@ -1,6 +1,5 @@
-import { render } from '@testing-library/react';
-import { fireEvent, waitFor } from '@testing-library/dom';
-import { screen } from '@testing-library/dom';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import UsabilityFeatures from '../UsabilityFeatures';
 

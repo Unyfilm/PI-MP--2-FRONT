@@ -20,6 +20,12 @@ type MovieClickData = {
   cloudinaryPublicId?: string;
   cloudinaryUrl?: string;
   duration?: number;
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
 };
 
 

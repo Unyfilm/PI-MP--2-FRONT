@@ -72,7 +72,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       } else {
         const success = await rateMovie(movieId, rating);
         if (success) {
-          // Recargar datos para obtener el rating creado
           await loadRatingData();
         }
       }

@@ -399,9 +399,7 @@ export default function UsabilityFeatures() {
 
   
 
-  /**
-   * Handle keyboard shortcuts
-   */
+  
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       const shortcut = shortcuts.find(s => s.key.toLowerCase() === e.key.toLowerCase());
@@ -426,7 +424,6 @@ export default function UsabilityFeatures() {
 
   return (
     <div className="usability-features">
-      {/* Help Button */}
       <button 
         className="usability-help-btn"
         onClick={() => {
@@ -442,7 +439,6 @@ export default function UsabilityFeatures() {
       </button>
 
 
-      {/* Help Modal */}
       {showHelp && (
         <div className="usability-help-modal" role="dialog" aria-modal="true" aria-labelledby="usability-help-title">
           <div className="usability-help-backdrop" onClick={() => setShowHelp(false)}></div>
@@ -460,7 +456,6 @@ export default function UsabilityFeatures() {
             </div>
 
             <div className="usability-help-sections">
-              {/* Heurística 1: Visibilidad del estado del sistema */}
               <section className="usability-heuristic">
                 <h3>
                   <Eye className="usability-icon" />
@@ -487,7 +482,6 @@ export default function UsabilityFeatures() {
                 </div>
               </section>
 
-              {/* Heurística 2: Coincidencia entre el sistema y el mundo real */}
               <section className="usability-heuristic">
                 <h3>
                   <Globe className="usability-icon" />
@@ -517,7 +511,6 @@ export default function UsabilityFeatures() {
                 </div>
               </section>
 
-              {/* Heurística 3: Control y libertad del usuario */}
               <section className="usability-heuristic">
                 <h3>
                   <ArrowLeft className="usability-icon" />
@@ -543,7 +536,6 @@ export default function UsabilityFeatures() {
                 </div>
               </section>
 
-              {/* Heurística 4: Consistencia y estándares */}
               <section className="usability-heuristic">
                 <h3>
                   <CheckCircle className="usability-icon" />
@@ -569,7 +561,6 @@ export default function UsabilityFeatures() {
                 </div>
               </section>
 
-              {/* Heurística 5: Prevención de errores */}
               <section className="usability-heuristic">
                 <h3>
                   <Shield className="usability-icon" />
@@ -594,7 +585,6 @@ export default function UsabilityFeatures() {
                 </div>
               </section>
 
-              {/* Heurística 6: Reconocimiento antes que recuerdo */}
               <section className="usability-heuristic">
                 <h3>
                   <Brain className="usability-icon" />
@@ -620,7 +610,6 @@ export default function UsabilityFeatures() {
                 </div>
               </section>
 
-              {/* Keyboard Shortcuts */}
               <section className="usability-shortcuts">
                 <h3>
                   <Zap className="usability-icon" />
@@ -629,7 +618,6 @@ export default function UsabilityFeatures() {
                 <p>Usa estos atajos para navegar más rápido por la aplicación:</p>
                 
                 <div className="usability-shortcuts-categories">
-                  {/* Navegación */}
                   <div className="usability-shortcuts-category">
                     <h4>🧭 Navegación</h4>
                     <div className="usability-shortcuts-list">
@@ -642,7 +630,6 @@ export default function UsabilityFeatures() {
                     </div>
                   </div>
 
-                  {/* Páginas */}
                   <div className="usability-shortcuts-category">
                     <h4>📄 Páginas</h4>
                     <div className="usability-shortcuts-list">
@@ -655,7 +642,6 @@ export default function UsabilityFeatures() {
                     </div>
                   </div>
 
-                  {/* Reproductor */}
                   <div className="usability-shortcuts-category">
                     <h4>🎬 Reproductor</h4>
                     <div className="usability-shortcuts-list">
@@ -668,7 +654,6 @@ export default function UsabilityFeatures() {
                     </div>
                   </div>
 
-                  {/* Catálogo */}
                   <div className="usability-shortcuts-category">
                     <h4>📚 Catálogo</h4>
                     <div className="usability-shortcuts-list">
@@ -681,7 +666,6 @@ export default function UsabilityFeatures() {
                     </div>
                   </div>
 
-                  {/* General */}
                   <div className="usability-shortcuts-category">
                     <h4>⚙️ General</h4>
                     <div className="usability-shortcuts-list">
@@ -696,7 +680,6 @@ export default function UsabilityFeatures() {
                 </div>
               </section>
 
-              {/* Pautas WCAG */}
               <section className="usability-wcag">
                 <h3>
                   <Accessibility className="usability-icon" />
@@ -705,7 +688,6 @@ export default function UsabilityFeatures() {
                 <p>Implementación de estándares de accesibilidad web:</p>
                 
                 <div className="usability-wcag-guidelines">
-                  {/* WCAG 1.4.3 - Contraste (mínimo) */}
                   <div className="usability-wcag-guideline">
                     <h4>🎨 1.4.3 - Contraste (Mínimo)</h4>
                     <p>Relación de contraste de al menos 4.5:1 para texto normal:</p>
@@ -726,7 +708,6 @@ export default function UsabilityFeatures() {
                     </div>
                   </div>
 
-                  {/* WCAG 2.1.1 - Navegación por teclado */}
                   <div className="usability-wcag-guideline">
                     <h4>⌨️ 2.1.1 - Navegación por Teclado</h4>
                     <p>Todas las funcionalidades son accesibles mediante teclado:</p>
@@ -754,7 +735,6 @@ export default function UsabilityFeatures() {
         </div>
       )}
 
-      {/* Notifications */}
       <div className="usability-notifications">
         {notifications.map(notification => (
           <div 

@@ -83,7 +83,6 @@ const { ratingStats, isLoading } = useRealtimeRatings({
 
 ### En InteractiveRating
 ```typescript
-// Emitir eventos después de calificar
 emitRatingUpdate({
   movieId,
   rating,

@@ -52,7 +52,7 @@ class CrossBrowserService {
 
     this.pollTimer = setInterval(() => {
       this.checkForNewEvents();
-    }, this.pollInterval);
+    }, this.pollInterval) as any;
   }
 
   

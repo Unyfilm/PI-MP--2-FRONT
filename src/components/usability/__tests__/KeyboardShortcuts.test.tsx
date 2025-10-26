@@ -395,8 +395,12 @@ describe('Keyboard Shortcuts Tests', () => {
       
       const event = new KeyboardEvent('keydown', {
         key: ' ',
-        bubbles: true,
-        target: mockInput
+        bubbles: true
+      });
+      
+      Object.defineProperty(event, 'target', {
+        value: mockInput,
+        writable: false
       });
       
       document.dispatchEvent(event);
