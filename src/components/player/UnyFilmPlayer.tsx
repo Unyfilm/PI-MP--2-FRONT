@@ -251,7 +251,7 @@ export default function UnyFilmPlayer({
     loadSubtitlesImmediately();
   }, [availableSubtitles, subtitlesEnabled, subtitleTrack, selectedSubtitleLanguage, movie?.subtitles, movie?.cloudinaryVideoId]);
 
-  // Asegurar que los subtítulos se muestren cuando el video esté listo
+  
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
