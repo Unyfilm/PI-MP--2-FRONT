@@ -503,45 +503,21 @@ export default function UnyFilmPlayer({
     setSubtitlesEnabled(newSubtitlesEnabled);
     onSubtitleToggle?.(newSubtitlesEnabled);
     
-    console.log('🎬 Toggle de subtítulos:', {
-      newSubtitlesEnabled,
-      availableSubtitles,
-      subtitleTrack: !!subtitleTrack,
-      movieSubtitles: movie?.subtitles,
-      videoElement: !!videoRef.current,
-      textTracks: videoRef.current ? videoRef.current.textTracks.length : 0,
-      allTextTracks: videoRef.current ? Array.from(videoRef.current.textTracks).map(track => ({
-        kind: track.kind,
-        label: track.label,
-        language: track.language,
-        mode: track.mode,
-        cues: track.cues ? track.cues.length : 0
-      })) : []
-    });
-    
     if (videoRef.current) {
       const video = videoRef.current;
       
       if (newSubtitlesEnabled) {
         
         if (availableSubtitles.length > 0 && subtitleTrack) {
-          console.log('✅ Activando subtítulos existentes');
           subtitleTrack.mode = 'showing';
         } else if (availableSubtitles.length > 0) {
-          
-          console.log('🔄 Recargando subtítulos...');
-         
         } else {
-          console.log('⚠️ No hay subtítulos disponibles para esta película');
           setSubtitlesEnabled(false);
         }
       } else {
-        
-        console.log('❌ Ocultando todos los subtítulos');
         const allTracks = Array.from(video.textTracks);
         allTracks.forEach(track => {
           if (track.kind === 'subtitles') {
-            console.log('🗑️ Ocultando track:', track.label);
             track.mode = 'hidden';
           }
         });
