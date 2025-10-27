@@ -166,7 +166,8 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
                     genres: fullMovieData.genre,
                     cloudinaryPublicId: fullMovieData.cloudinaryVideoId,
                     cloudinaryUrl: fullMovieData.videoUrl,
-                    duration: fullMovieData.duration || 0
+                    duration: fullMovieData.duration || 0,
+                    subtitles: fullMovieData.subtitles
                   });
                 } catch (error) {
                   console.error('❌ Error obteniendo datos completos de la película:', error);
@@ -183,7 +184,8 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
                     genres: favorite.movieId.genre,
                     cloudinaryPublicId: favorite.movieId.cloudinaryVideoId,
                     cloudinaryUrl: favorite.movieId.videoUrl,
-                    duration: favorite.movieId.duration || 0
+                    duration: favorite.movieId.duration || 0,
+                    subtitles: (favorite.movieId as any).subtitles
                   });
                 }
               }}

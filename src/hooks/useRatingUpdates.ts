@@ -99,11 +99,17 @@ export const broadcastRatingUpdate = (
   rating: number,
   action: 'create' | 'update' | 'delete'
 ) => {
-  const event = new CustomEvent('ratingUpdated', {
-    detail: { movieId, rating, action }
+  // Emitir evento de rating actualizado
+  const ratingEvent = new CustomEvent('rating-updated', {
+    detail: { movieId, rating, action, source: 'interactive-rating' }
   });
+  window.dispatchEvent(ratingEvent);
   
-  window.dispatchEvent(event);
+  // También emitir evento de estadísticas actualizadas (se cargarán automáticamente)
+  const statsEvent = new CustomEvent('rating-stats-updated', {
+    detail: { movieId, source: 'interactive-rating' }
+  });
+  window.dispatchEvent(statsEvent);
 };
 
 export default useRatingUpdates;

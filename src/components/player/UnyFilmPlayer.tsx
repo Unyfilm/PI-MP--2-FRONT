@@ -105,7 +105,7 @@ export default function UnyFilmPlayer({
           }
         }
       } catch (error) {
-        console.error('❌ Error cargando subtítulos:', error);
+        console.error('Error cargando subtítulos:', error);
         setAvailableSubtitles([]);
       }
     };

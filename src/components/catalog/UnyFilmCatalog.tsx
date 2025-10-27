@@ -308,7 +308,8 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
                 genres: movie.genre,
                 cloudinaryPublicId: movie.cloudinaryVideoId,
                 cloudinaryUrl: movie.videoUrl,
-                duration: movie.duration || 0
+                duration: movie.duration || 0,
+                subtitles: movie.subtitles
               })}
               description={movie.description || ''}
               image={movie.poster}

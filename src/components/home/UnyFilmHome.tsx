@@ -111,9 +111,9 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
         let availableMovies: Movie[] = [];
         const sectionData: Record<string, Movie[]> = {};
 
-        try {
-          availableMovies = await movieService.getAvailableMovies();
-        } catch (error) {
+            try {
+              availableMovies = await movieService.getAvailableMovies();
+            } catch (error) {
         }
 
         const carouselMovies = availableMovies.slice(0, 5);
@@ -234,22 +234,24 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
                 title={movie.title}
                 image={movie.poster || '/images/default-movie.jpg'}
                 movieId={movie._id}
-                onMovieClick={() => handleMovieClick({
-                  _id: movie._id,
-                  title: movie.title,
-                  index: index,
-                  videoUrl: movie.videoUrl || '',
-                  rating: movie.rating?.average || 0,
-                  year: new Date(movie.releaseDate || '').getFullYear() || 0,
-                  genre: movie.genre[0] || '',
-                  description: movie.description || '',
-                  synopsis: movie.synopsis || movie.description,
-                  genres: movie.genre,
-                  cloudinaryPublicId: movie.cloudinaryVideoId,
-                  cloudinaryUrl: movie.videoUrl,
-                  duration: movie.duration || 0,
-                  subtitles: movie.subtitles
-                })}
+                onMovieClick={() => {
+                  handleMovieClick({
+                    _id: movie._id,
+                    title: movie.title,
+                    index: index,
+                    videoUrl: movie.videoUrl || '',
+                    rating: movie.rating?.average || 0,
+                    year: new Date(movie.releaseDate || '').getFullYear() || 0,
+                    genre: movie.genre[0] || '',
+                    description: movie.description || '',
+                    synopsis: movie.synopsis || movie.description,
+                    genres: movie.genre,
+                    cloudinaryPublicId: movie.cloudinaryVideoId,
+                    cloudinaryUrl: movie.videoUrl,
+                    duration: movie.duration || 0,
+                    subtitles: movie.subtitles
+                  });
+                }}
                 description={movie.description || ''}
               />
             );
@@ -381,22 +383,24 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
             <div className="unyfilm-home__hero-actions">
               <button 
                 className="hero-btn hero-btn--primary"
-                onClick={() => handleMovieClick({
-                  _id: featuredMovie._id,
-                  title: featuredMovie.title,
-                  index: featuredIndex,
-                  videoUrl: featuredMovie.videoUrl || '',
-                  rating: hasRealRatings ? averageRating : 0,
-                  year: new Date(featuredMovie.releaseDate || '').getFullYear() || 0,
-                  genre: featuredMovie.genre[0] || '',
-                  description: featuredMovie.description || '',
-                  synopsis: featuredMovie.synopsis || featuredMovie.description,
-                  genres: featuredMovie.genre,
-                  cloudinaryPublicId: featuredMovie.cloudinaryVideoId,
-                  cloudinaryUrl: featuredMovie.videoUrl,
-                  duration: featuredMovie.duration || 0,
-                  subtitles: featuredMovie.subtitles
-                })}
+        onClick={() => {
+          handleMovieClick({
+            _id: featuredMovie._id,
+            title: featuredMovie.title,
+            index: featuredIndex,
+            videoUrl: featuredMovie.videoUrl || '',
+            rating: hasRealRatings ? averageRating : 0,
+            year: new Date(featuredMovie.releaseDate || '').getFullYear() || 0,
+            genre: featuredMovie.genre[0] || '',
+            description: featuredMovie.description || '',
+            synopsis: featuredMovie.synopsis || featuredMovie.description,
+            genres: featuredMovie.genre,
+            cloudinaryPublicId: featuredMovie.cloudinaryVideoId,
+            cloudinaryUrl: featuredMovie.videoUrl,
+            duration: featuredMovie.duration || 0,
+            subtitles: featuredMovie.subtitles
+          });
+        }}
               >
                 <Play size={18} />
                 Ver ahora

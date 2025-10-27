@@ -137,6 +137,7 @@ export default function MovieApp() {
       cloudinaryVideoId: (movie as any).cloudinaryPublicId || (movie as any).cloudinaryVideoId,
       subtitles: (movie as any).subtitles
     };
+    
     setCurrentMovie(fullMovieData);
     setShowPlayer(true);
     
