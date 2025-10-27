@@ -50,7 +50,6 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     e.stopPropagation();
     
     if (isToggling || loading) {
-      console.log('⏳ Already toggling or loading, ignoring click');
       return;
     }
     
@@ -60,34 +59,27 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     try {
       if (isMovieFavorite && favoriteId) {
         
-        console.log('🗑️ Removing from favorites:', movieId);
         const result = await removeFromFavorites(favoriteId);
         
         if (result.success) {
-          console.log('✅ Successfully removed from favorites');
           setIsMovieFavorite(false);
           setFavoriteId(null);
           onToggle?.(false, movieId);
         } else {
-          console.error('❌ Failed to remove from favorites:', result.message);
         }
       } else {
-        console.log('➕ Adding to favorites:', movieId);
         const result = await addToFavorites(movieId);
         
         if (result.success) {
-          console.log('✅ Successfully added to favorites');
           setIsMovieFavorite(true);
           if (result && typeof result === 'object' && '_id' in result) {
             setFavoriteId((result as any)._id);
           }
           onToggle?.(true, movieId);
         } else {
-          console.error('❌ Failed to add to favorites:', result.message);
         }
       }
     } catch (error) {
-      console.error('❌ Error toggling favorite:', error);
     } finally {
       setIsToggling(false);
       setTimeout(() => setIsAnimating(false), 600);

@@ -11,7 +11,6 @@ interface RatingStarsProps {
 const RatingStars: React.FC<RatingStarsProps> = ({
   movieId,
   readonly = false,
-  showAverage = false,
   onRatingChange
 }) => {
   const [userRating, setUserRating] = useState<number>(0);
