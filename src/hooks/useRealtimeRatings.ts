@@ -46,23 +46,19 @@ export function useRealtimeRatings({
     if (!enableRealtime || !movieId) return;
 
     const handleRatingUpdate = (event: CustomEvent) => {
-      const { movieId: updatedMovieId, rating, action, source } = event.detail;
+      const { movieId: updatedMovieId } = event.detail;
       
-      console.log('🔄 [HOOK] Recibido evento rating-updated:', { updatedMovieId, movieId, rating, action, source });
       
       if (updatedMovieId === movieId) {
-        console.log('🔄 [HOOK] Rating actualizado, recargando estadísticas para:', movieId);
         loadRatingStats();
       }
     };
 
     const handleStatsUpdate = (event: CustomEvent) => {
-      const { movieId: updatedMovieId, averageRating, totalRatings, source } = event.detail;
+      const { movieId: updatedMovieId, averageRating, totalRatings } = event.detail;
       
-      console.log('📊 [HOOK] Recibido evento rating-stats-updated:', { updatedMovieId, movieId, averageRating, totalRatings, source });
       
       if (updatedMovieId === movieId) {
-        console.log('📊 [HOOK] Actualizando estadísticas en tiempo real para:', movieId, '→', averageRating);
         setRatingStats(prevStats => {
           if (!prevStats) return null;
           return {
@@ -77,7 +73,6 @@ export function useRealtimeRatings({
     const handleCacheInvalidation = (event: CustomEvent) => {
       const { invalidatedKeys } = event.detail;
       if (invalidatedKeys.includes(`rating-${movieId}`)) {
-        console.log('🗑️ Cache invalidado, recargando estadísticas:', movieId);
         loadRatingStats();
       }
     };

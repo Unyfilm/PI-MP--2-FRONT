@@ -28,6 +28,7 @@ export default function UnyFilmHeader({
   onSearchSubmit
 }: UnyFilmHeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  
   useEffect(() => {
     if (!searchQuery || searchQuery.trim() === '') return;
     
@@ -47,13 +48,9 @@ export default function UnyFilmHeader({
     }
   };
 
-  
-
   const handleProfileClick = () => {
     setShowProfileMenu(!showProfileMenu);
   };
-
- 
 
   return (
     <header className="unyfilm-header">

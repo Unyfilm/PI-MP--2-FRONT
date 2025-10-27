@@ -37,7 +37,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       setIsLoading(true);
       
       if (!movieId || movieId.trim() === '') {
-        console.warn('MovieId inválido en InteractiveRating');
         return;
       }
       
@@ -56,7 +55,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
           });
       }
     } catch (error) {
-      console.error('Error al cargar estadísticas de calificación:', error);
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +82,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
         onRatingUpdate(ratingStats);
       }
     } catch (error) {
-      console.error('Error al calificar:', error);
       alert('Error al calificar la película');
     } finally {
       setIsSubmitting(false);
@@ -104,7 +101,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
         onRatingUpdate(ratingStats);
       }
     } catch (error) {
-      console.error('Error al eliminar calificación:', error);
       alert('Error al eliminar calificación');
     } finally {
       setIsSubmitting(false);
