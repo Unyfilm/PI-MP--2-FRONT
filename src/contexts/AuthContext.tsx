@@ -4,13 +4,7 @@ import authService from '../services/authService';
 import { apiService } from '../services/apiService';
 import type { BackendUser } from '../services/authService';
 
-/**
- * AuthContextType
- *
- * Strongly-typed shape for authentication context values.
- * - Use camelCase for function names and properties
- * - Follows the convention of descriptive and concise names
- */
+
 interface AuthContextType {
   user: BackendUser | null;
   token: string | null;
@@ -36,12 +30,7 @@ interface AuthContextType {
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<{ success: boolean; message?: string }>;
 }
 
-/**
- * AuthContext
- *
- * React context that provides authentication state and actions
- * across the entire application. Must be consumed via `useAuth`.
- */
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**

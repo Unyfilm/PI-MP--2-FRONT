@@ -1,11 +1,4 @@
-/**
- * Shared TypeScript types for the UnyFilm frontend
- *
- * Conventions
- * - PascalCase for exported interfaces and types
- * - camelCase for properties and function names
- * - Descriptive names to reflect purpose and usage
- */
+
 
 /**
  * Application view types
@@ -18,26 +11,23 @@ export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap' | 'favorites';
  * @interface MovieData
  */
 export interface MovieData {
-  /** Optional movie ID */
   _id?: string;
-  /** Movie title */
   title: string;
-  /** Movie video URL */
   videoUrl: string;
-  /** Optional movie rating */
   rating?: number;
-  /** Optional release year */
   year?: number;
-  /** Optional primary genre */
   genre?: string;
-  /** Optional array of genres */
   genres?: string[];
-  /** Optional movie description */
   description?: string;
-  /** Optional movie image URL */
   image?: string;
-  /** Optional movie duration in minutes */
   duration?: number;
+  cloudinaryVideoId?: string;
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
 }
 
 /**
@@ -45,24 +35,21 @@ export interface MovieData {
  * @interface MovieClickData
  */
 export interface MovieClickData {
-  /** Optional movie ID */
   _id?: string;
-  /** Movie title */
   title: string;
-  /** Optional index position */
   index?: number;
-  /** Optional video URL */
   videoUrl?: string;
-  /** Optional movie rating */
   rating?: number;
-  /** Optional release year */
   year?: number;
-  /** Optional primary genre */
   genre?: string;
-  /** Optional movie description */
   description?: string;
-  /** Optional movie duration in minutes */
   duration?: number;
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
 }
 
 /**
@@ -70,9 +57,7 @@ export interface MovieClickData {
  * @interface LoginFormData
  */
 export interface LoginFormData {
-  /** User email */
   email: string;
-  /** User password */
   password: string;
 }
 
@@ -81,15 +66,10 @@ export interface LoginFormData {
  * @interface RegisterFormData
  */
 export interface RegisterFormData {
-  /** User first name */
   nombres: string;
-  /** User last name */
   apellidos: string;
-  /** User age */
   edad: string;
-  /** User email */
   email: string;
-  /** User password */
   password: string;
 }
 
@@ -98,19 +78,23 @@ export interface RegisterFormData {
  * @interface BaseComponentProps
  */
 export interface BaseComponentProps {
-  /** Optional CSS class name */
   className?: string;
-  /** Optional element ID */
   id?: string;
 }
 
-// Tipos para componentes de autenticación
+/**
+ * Interface for authentication component props
+ * @interface AuthProps
+ */
 export interface AuthProps {
   onLogin?: (data: LoginFormData) => void;
   onRegister?: (data: RegisterFormData) => void;
 }
 
-// Tipos para componentes de película
+/**
+ * Interface for movie card component props
+ * @interface MovieCardProps
+ */
 export interface MovieCardProps extends BaseComponentProps {
   title: string;
   isFavorite: boolean;
@@ -123,20 +107,29 @@ export interface MovieCardProps extends BaseComponentProps {
   description?: string;
 }
 
-// Tipos para componentes de navegación
+/**
+ * Interface for navigation component props
+ * @interface NavigationProps
+ */
 export interface NavigationProps extends BaseComponentProps {
   currentView: ViewType;
   setCurrentView: (view: ViewType) => void;
 }
 
-// Tipos para componentes de búsqueda
+/**
+ * Interface for search component props
+ * @interface SearchProps
+ */
 export interface SearchProps {
   searchQuery: string;
   onSearch: (query: string) => void;
   onSearchSubmit: (query: string) => void;
 }
 
-// Tipos para componentes de lista de películas
+/**
+ * Interface for movie list component props
+ * @interface MovieListProps
+ */
 export interface MovieListProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
@@ -145,38 +138,63 @@ export interface MovieListProps {
   onMovieClick: (movie: MovieClickData) => void;
 }
 
-// Tipos para reproductor de video
+/**
+ * Interface for video player component props
+ * @interface PlayerProps
+ */
 export interface PlayerProps {
   movie: MovieData;
   onClose: () => void;
 }
 
-// Tipos para características de usabilidad
+/**
+ * Interface for usability features component props
+ * @interface UsabilityFeaturesProps
+ */
 export interface UsabilityFeaturesProps extends BaseComponentProps {
   onToggleTheme?: () => void;
   onToggleLanguage?: () => void;
 }
 
-// Tipos para características de accesibilidad
+/**
+ * Interface for accessibility features component props
+ * @interface AccessibilityFeaturesProps
+ */
 export interface AccessibilityFeaturesProps extends BaseComponentProps {
   onToggleHighContrast?: () => void;
   onToggleScreenReader?: () => void;
 }
 
-// Tipos para footer
 
-// Tipos para eventos
+/**
+ * Type for input change events
+ * @type {InputChangeEvent}
+ */
 export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
+/**
+ * Type for button click events
+ * @type {ButtonClickEvent}
+ */
 export type ButtonClickEvent = React.MouseEvent<HTMLButtonElement>;
+/**
+ * Type for form submit events
+ * @type {FormSubmitEvent}
+ */
 export type FormSubmitEvent = React.FormEvent<HTMLFormElement>;
 
-// Tipos para estados de carga
+/**
+ * Interface for loading state
+ * @interface LoadingState
+ */
 export interface LoadingState {
   isLoading: boolean;
   error?: string;
 }
 
-// Tipos para configuración de la aplicación
+/**
+ * Interface for application configuration
+ * @interface AppConfig
+ */
 export interface AppConfig {
   apiUrl: string;
   version: string;
@@ -184,14 +202,20 @@ export interface AppConfig {
 }
 
 
-// Tipos para paginación
+/**
+ * Interface for pagination component props
+ * @interface PaginationProps
+ */
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
 }
 
-// Tipos para filtros
+/**
+ * Interface for filter component props
+ * @interface FilterProps
+ */
 export interface FilterProps {
   genre?: string;
   year?: number;
@@ -199,13 +223,21 @@ export interface FilterProps {
   onFilterChange: (filters: Partial<FilterProps>) => void;
 }
 
-// Tipos para API Service
+/**
+ * Interface for API configuration
+ * @interface ApiConfig
+ */
 export interface ApiConfig {
   BASE_URL: string;
   TIMEOUT: number;
   RETRY_ATTEMPTS: number;
 }
 
+/**
+ * Generic interface for API responses
+ * @interface ApiResponse
+ * @template T - The type of data returned
+ */
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
@@ -214,15 +246,19 @@ export interface ApiResponse<T = any> {
   total?: number;
 }
 
+/**
+ * Interface for user data
+ * @interface User
+ */
 export interface User {
   id: number;
   username?: string;
   firstName?: string;
   lastName?: string;
-  nombres?: string;     // Compatibilidad con formato de registro
-  apellidos?: string;   // Compatibilidad con formato de registro
-  edad?: string;        // Compatibilidad con formato de registro
-  age?: number;         // Campo real del backend
+  nombres?: string;     
+  apellidos?: string;   
+  edad?: string;        
+  age?: number;         
   email: string;
   password?: string;
   profilePicture?: string;
@@ -230,16 +266,28 @@ export interface User {
   updatedAt?: string;
 }
 
+/**
+ * Interface for authentication response
+ * @interface AuthResponse
+ */
 export interface AuthResponse {
   user: Omit<User, 'password'>;
   token: string;
 }
 
+/**
+ * Interface for login credentials
+ * @interface LoginCredentials
+ */
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
+/**
+ * Interface for user registration data
+ * @interface RegisterData
+ */
 export interface RegisterData {
   nombres: string;
   apellidos: string;
@@ -248,6 +296,10 @@ export interface RegisterData {
   password: string;
 }
 
+/**
+ * Interface for movie data (legacy)
+ * @interface Movie
+ */
 export interface Movie {
   id: number;
   title: string;
@@ -260,35 +312,35 @@ export interface Movie {
   year?: number;
   genre?: string;
   description?: string;
-  image?: string; // pelis P (cards pequeñas)
-  imageG?: string; // Portadas (card grande)
+  image?: string;
+  imageG?: string; 
   duration?: number;
   bitRate?: number;
   frameRate?: number;
   createdAt: string;
 }
 
+/**
+ * Interface for API service methods
+ * @interface ApiService
+ */
 export interface ApiService {
-  // Movies API
   getMovies: () => Promise<ApiResponse<Movie[]>>;
   getMovie: (id: number) => Promise<ApiResponse<Movie>>;
   createMovie: (movieData: Omit<Movie, 'id' | 'createdAt'>) => Promise<ApiResponse<Movie>>;
   updateMovie: (id: number, movieData: Partial<Movie>) => Promise<ApiResponse<Movie>>;
   deleteMovie: (id: number) => Promise<ApiResponse<void>>;
 
-  // Users API
   getUsers: () => Promise<ApiResponse<User[]>>;
   getUser: (id: number) => Promise<ApiResponse<User>>;
   createUser: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<ApiResponse<User>>;
   updateUser: (id: number, userData: Partial<User>) => Promise<ApiResponse<User>>;
   deleteUser: (id: number) => Promise<ApiResponse<void>>;
 
-  // Profile API
   getProfile: () => Promise<ApiResponse<User>>;
   updateProfile: (profileData: { firstName: string; lastName: string; age: number; email: string }) => Promise<ApiResponse<User>>;
   deleteAccount: (password: string) => Promise<ApiResponse<void>>;
 
-  // Authentication API
   login: (credentials: LoginCredentials) => Promise<ApiResponse<AuthResponse>>;
   register: (userData: RegisterData) => Promise<ApiResponse<AuthResponse>>;
   logout: () => Promise<ApiResponse<void>>;
@@ -297,14 +349,20 @@ export interface ApiService {
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<ApiResponse<void>>;
 }
 
-// Tipos para request options
+/**
+ * Interface for HTTP request options
+ * @interface RequestOptions
+ */
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: string;
   headers?: Record<string, string>;
 }
 
-// Tipos para localStorage keys
+/**
+ * Type for storage keys
+ * @type {StorageKeys}
+ */
 export type StorageKeys = 
   | 'unyfilm-token'
   | 'unyfilm-user'
@@ -312,7 +370,10 @@ export type StorageKeys =
   | 'unyfilm-movies'
   | 'unyfilm-users';
 
-// Tipos para Cloudinary
+/**
+ * Interface for Cloudinary upload response
+ * @interface CloudinaryUploadResponse
+ */
 export interface CloudinaryUploadResponse {
   public_id: string;
   version: number;
@@ -335,6 +396,10 @@ export interface CloudinaryUploadResponse {
   frame_rate?: number;
 }
 
+/**
+ * Interface for Cloudinary upload options
+ * @interface CloudinaryUploadOptions
+ */
 export interface CloudinaryUploadOptions {
   folder?: string;
   tags?: string[];
@@ -344,6 +409,10 @@ export interface CloudinaryUploadOptions {
   resource_type?: 'video' | 'image' | 'raw' | 'auto';
 }
 
+/**
+ * Interface for Cloudinary video information
+ * @interface CloudinaryVideoInfo
+ */
 export interface CloudinaryVideoInfo {
   public_id: string;
   url: string;
@@ -357,7 +426,10 @@ export interface CloudinaryVideoInfo {
   created_at: string;
 }
 
-// Tipos para componentes de subida de video
+/**
+ * Interface for video upload component props
+ * @interface VideoUploadProps
+ */
 export interface VideoUploadProps {
   onUploadSuccess: (response: CloudinaryUploadResponse) => void;
   onUploadError: (error: string) => void;
@@ -368,7 +440,10 @@ export interface VideoUploadProps {
   tags?: string[];
 }
 
-// Tipos para reproductor mejorado
+/**
+ * Interface for enhanced video player props
+ * @interface EnhancedPlayerProps
+ */
 export interface EnhancedPlayerProps extends PlayerProps {
   cloudinaryPublicId?: string;
   quality?: 'auto' | 'high' | 'medium' | 'low';

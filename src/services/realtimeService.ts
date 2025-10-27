@@ -1,7 +1,4 @@
-/**
- * Servicio de tiempo real para comunicación entre usuarios
- * Usa Socket.io para conectar con el servidor backend
- */
+
 
 import { io, Socket } from 'socket.io-client';
 import { API_CONFIG } from '../config/environment';
@@ -28,9 +25,7 @@ class RealTimeService {
     return RealTimeService.instance;
   }
 
-  /**
-   * Conectar al servidor de WebSockets
-   */
+  
   connect() {
     if (this.isConnected || this.socket) {
       console.log('🔄 [REALTIME] Ya conectado, ignorando nueva conexión');
@@ -40,9 +35,8 @@ class RealTimeService {
     try {
       console.log('🔌 [REALTIME] Conectando al servidor WebSocket...');
       
-      // En desarrollo, usar el servidor local
       const serverUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:3001' // Puerto del servidor backend
+        ? 'http://localhost:3001' 
         : API_CONFIG.BASE_URL;
 
       this.socket = io(serverUrl, {
@@ -68,7 +62,6 @@ class RealTimeService {
         this.handleReconnection();
       });
 
-      // Escuchar eventos de rating actualizado
       this.socket.on('rating-updated', (data: RatingUpdateEvent) => {
         console.log('📡 [REALTIME] Rating actualizado recibido:', data);
         this.handleRatingUpdate(data);
@@ -85,11 +78,8 @@ class RealTimeService {
     }
   }
 
-  /**
-   * Manejar actualización de rating
-   */
+  
   private handleRatingUpdate(data: RatingUpdateEvent) {
-    // Emitir evento del DOM para que los componentes lo escuchen
     window.dispatchEvent(new CustomEvent('rating-updated', {
       detail: {
         movieId: data.movieId,
@@ -102,9 +92,7 @@ class RealTimeService {
     }));
   }
 
-  /**
-   * Manejar actualización de estadísticas
-   */
+  
   private handleStatsUpdate(data: any) {
     window.dispatchEvent(new CustomEvent('rating-stats-updated', {
       detail: {
@@ -117,9 +105,6 @@ class RealTimeService {
     }));
   }
 
-  /**
-   * Manejar reconexión automática
-   */
   private handleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.log('❌ [REALTIME] Máximo de intentos de reconexión alcanzado');
@@ -137,9 +122,7 @@ class RealTimeService {
     }, delay);
   }
 
-  /**
-   * Emitir evento de rating actualizado al servidor
-   */
+  
   emitRatingUpdate(movieId: string, rating: number, action: 'create' | 'update' | 'delete') {
     if (!this.socket || !this.isConnected) {
       console.warn('⚠️ [REALTIME] No conectado al servidor, no se puede emitir evento');
@@ -158,11 +141,8 @@ class RealTimeService {
     this.socket.emit('rating-updated', eventData);
   }
 
-  /**
-   * Obtener ID del usuario actual
-   */
+  
   private getCurrentUserId(): string {
-    // Obtener del localStorage o del contexto de autenticación
     const token = localStorage.getItem('token');
     if (token) {
       try {
@@ -175,9 +155,7 @@ class RealTimeService {
     return 'anonymous';
   }
 
-  /**
-   * Desconectar del servidor
-   */
+ 
   disconnect() {
     if (this.socket) {
       console.log('🔌 [REALTIME] Desconectando del servidor WebSocket...');
@@ -187,16 +165,12 @@ class RealTimeService {
     }
   }
 
-  /**
-   * Verificar si está conectado
-   */
+ 
   isConnectedToServer(): boolean {
     return this.isConnected && !!this.socket;
   }
 
-  /**
-   * Obtener estado de la conexión
-   */
+ 
   getConnectionStatus() {
     return {
       connected: this.isConnected,
@@ -207,19 +181,14 @@ class RealTimeService {
   }
 }
 
-// Exportar instancia singleton
 export const realTimeService = RealTimeService.getInstance();
 
-// Función de conveniencia para conectar
 export const connectRealTime = () => realTimeService.connect();
 
-// Función de conveniencia para desconectar
 export const disconnectRealTime = () => realTimeService.disconnect();
 
-// Función de conveniencia para emitir eventos
 export const emitRatingUpdate = (movieId: string, rating: number, action: 'create' | 'update' | 'delete') => {
   realTimeService.emitRatingUpdate(movieId, rating, action);
 };
 
-// Función de conveniencia para verificar estado
 export const getRealTimeStatus = () => realTimeService.getConnectionStatus();

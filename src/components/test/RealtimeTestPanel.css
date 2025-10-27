@@ -147,7 +147,6 @@
   margin-bottom: 4px;
 }
 
-/* Scrollbar personalizado */
 .realtime-test-panel__content::-webkit-scrollbar {
   width: 6px;
 }
@@ -166,7 +165,6 @@
   background: #666;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .realtime-test-panel {
     top: 10px;

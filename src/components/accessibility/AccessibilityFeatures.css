@@ -1,4 +1,3 @@
-/* Accessibility Features Component */
 .accessibility-panel {
   position: fixed;
   top: 20px;
@@ -28,7 +27,7 @@
   box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
 }
 
-/* Tooltip styles */
+
 .accessibility-toggle {
   position: relative;
 }
@@ -133,7 +132,7 @@
   color: #6366f1;
 }
 
-/* Skip Links */
+
 .skip-links {
   position: absolute;
   top: -100px;
@@ -170,7 +169,6 @@
   outline-offset: 2px;
 }
 
-/* Screen Reader Only */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -183,7 +181,6 @@
   border: 0;
 }
 
-/* High Contrast Mode */
 .high-contrast {
   --bg-primary: #000000;
   --bg-secondary: #1a1a1a;
@@ -214,7 +211,6 @@
   border-bottom: 2px solid var(--border);
 }
 
-/* Reduced Motion */
 .reduced-motion * {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
@@ -229,7 +225,6 @@
   transition: none;
 }
 
-/* Fix flickering issues */
 .reduced-motion .accessibility-controls {
   transition: none !important;
 }
@@ -238,7 +233,6 @@
   animation: none !important;
 }
 
-/* Font Size Controls - Cambios más notorios */
 .font-small {
   font-size: 10px !important;
 }
@@ -369,24 +363,6 @@
   font-size: 18px !important;
 }
 
-/* Ajustes de cards - mantener estructura, solo cambiar texto */
-.font-small .unyfilm-card {
-  /* Mantener padding original de las cards */
-}
-
-.font-large .unyfilm-card {
-  /* Mantener padding original de las cards */
-}
-
-/* Remover cambios de ancho del sidebar - mantener estructura */
-.font-small .unyfilm-sidebar {
-  /* Mantener ancho original del sidebar */
-}
-
-.font-large .unyfilm-sidebar {
-  /* Mantener ancho original del sidebar */
-}
-
 .font-small .unyfilm-sidebar__nav-item {
   padding: 4px 8px !important;
   line-height: 1.2 !important;
@@ -397,7 +373,6 @@
   line-height: 1.3 !important;
 }
 
-/* Extra Large Font Size - Muy notorio */
 .font-extra-large {
   font-size: 28px !important;
 }
@@ -420,19 +395,16 @@
 .font-extra-large .unyfilm-header__search-input {
   font-size: 28px !important;
   padding: 8px 12px !important;
-  /* Mantener altura original del input */
 }
 
 .font-extra-large .unyfilm-catalog__filter-select {
   font-size: 28px !important;
   padding: 8px 12px !important;
-  /* Mantener altura original */
 }
 
 .font-extra-large .unyfilm-catalog__view-button {
   font-size: 28px !important;
   padding: 8px 12px !important;
-  /* Mantener altura original */
 }
 
 .font-extra-large .unyfilm-card__rating {
@@ -473,41 +445,12 @@
   font-size: 24px !important;
 }
 
-/* Mantener estructura original de las cards */
-.font-extra-large .unyfilm-card {
-  /* Mantener padding y margin originales de las cards */
-}
-
-/* Mantener ancho original del sidebar para extra-large también */
-.font-extra-large .unyfilm-sidebar {
-  /* Mantener ancho original del sidebar */
-}
-
 .font-extra-large .unyfilm-sidebar__nav-item {
   padding: 10px 12px !important;
   line-height: 1.2 !important;
   margin: 2px 0 !important;
 }
 
-/* Mantener altura original del header */
-.font-extra-large .unyfilm-header {
-  /* Mantener altura original del header */
-}
-
-.font-extra-large .unyfilm-header__search {
-  /* Mantener altura original del search */
-}
-
-/* Mantener estructura original de los filtros y grid */
-.font-extra-large .unyfilm-catalog__filters {
-  /* Mantener padding original */
-}
-
-.font-extra-large .unyfilm-catalog__grid {
-  /* Mantener gap original */
-}
-
-/* Font Change Notification */
 .font-change-notification {
   position: fixed;
   top: 50%;
@@ -571,7 +514,6 @@
   }
 }
 
-/* Focus Visible */
 .focus-visible *:focus {
   outline: 2px solid #6366f1;
   outline-offset: 2px;
@@ -587,15 +529,14 @@
   outline-offset: 2px;
 }
 
-/* Responsive - Hide on mobile, show in sidebar instead */
 @media (max-width: 768px) {
   .accessibility-panel {
-    display: none; /* Hide the floating accessibility panel on mobile */
+    display: none;
   }
 }
 
 @media (min-width: 769px) {
   .accessibility-panel {
-    display: block; /* Show the floating accessibility panel on desktop */
+    display: block;
   }
 }

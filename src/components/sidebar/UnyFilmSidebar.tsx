@@ -7,11 +7,6 @@ import logoImage from '../../images/logo3.png';
 import './UnyFilmSidebar.css';
 import type { ViewType } from '../../types';
 
-/**
- * UnyFilmSidebarProps
- *
- * Props for the fixed navigation sidebar.
- */
 interface UnyFilmSidebarProps {
   currentView: ViewType;
 }
@@ -30,7 +25,6 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
   const navigate = useNavigate();
   const { logout } = useAuth();
   
-  // Hook para cerrar el panel de accesibilidad al hacer clic fuera
   const accessibilityRef = useClickOutside(() => {
     setShowAccessibility(false);
   });
@@ -47,11 +41,9 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
   return (
     <div className="unyfilm-sidebar">
       <div className="unyfilm-sidebar__logo" onClick={() => {
-        // Cerrar sidebar en móvil si existe el contenedor con clase abierta
         const container = document.querySelector('.movie-app-container') as HTMLElement | null;
         if (container && container.classList.contains('movie-app-container--sidebar-open')) {
           container.classList.remove('movie-app-container--sidebar-open');
-          // Re-mostrar botón toggle si estaba oculto
           const toggleBtn = document.querySelector('.sidebar-toggle') as HTMLElement | null;
           if (toggleBtn) toggleBtn.style.display = 'block';
         }
@@ -88,7 +80,6 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
       </nav>
       
       <div className="unyfilm-sidebar__bottom">
-        {/* Accessibility button - only visible on mobile */}
         <div className="unyfilm-sidebar__accessibility">
           <NavIcon 
             icon={<Eye size={24} strokeWidth={2} />}

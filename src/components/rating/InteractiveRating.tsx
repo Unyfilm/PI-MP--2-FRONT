@@ -70,13 +70,14 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
         await updateRating(userRating.id, rating, movieId);
         setUserRating({ ...userRating, rating });
       } else {
-        const newRating = await rateMovie(movieId, rating);
-        setUserRating(newRating);
+        const success = await rateMovie(movieId, rating);
+        if (success) {
+          await loadRatingData();
+        }
       }
       
       await loadRatingData();
       
-      // Disparar evento global para notificar a otros componentes
       broadcastRatingUpdate(movieId, rating, userRating ? 'update' : 'create');
       
       if (onRatingUpdate && ratingStats) {
@@ -97,7 +98,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       setUserRating(null);
       await loadRatingData();
       
-      // Disparar evento global para notificar a otros componentes
       broadcastRatingUpdate(movieId, 0, 'delete');
       
       if (onRatingUpdate && ratingStats) {

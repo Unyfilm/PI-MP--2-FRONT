@@ -1,4 +1,4 @@
-/* UnyFilm Card Component */
+
 .unyfilm-card {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 16px;
@@ -19,12 +19,12 @@
   border-color: rgba(99, 102, 241, 0.3);
 }
 
-/* Image Container */
+
 .unyfilm-card__image-container {
   position: relative;
   width: 100%;
-  /* usa relación de aspecto para un responsive perfecto de póster */
-  aspect-ratio: 2 / 3; /* 3:2 vertical (poster) */
+  
+  aspect-ratio: 2 / 3; 
   overflow: hidden;
   background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
 }
@@ -32,23 +32,23 @@
 .unyfilm-card__image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* llena sin deformar */
-  object-position: center; /* centra el foco */
+  object-fit: cover; 
+  object-position: center; 
   transition: transform 0.3s ease, filter 0.3s ease;
-  /* Mejoras de calidad de imagen */
+  
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   image-rendering: high-quality;
-  /* Suavizado de imagen */
+  
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  /* Optimización de renderizado */
+  
   will-change: transform;
   transform: translateZ(0);
-  /* Mejorar la calidad de escala */
+ 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Filtros para mejorar la calidad */
+  
   filter: brightness(1) contrast(1) saturate(1.05);
 }
 
@@ -79,17 +79,17 @@
   max-width: 100%;
 }
 
-/* Favorite Button Container */
+
 .unyfilm-card__favorite-button {
   position: absolute;
   top: 12px;
   right: 12px;
   z-index: 25;
-  /* Asegurar que el botón sea clickeable */
+  
   pointer-events: auto;
 }
 
-/* Estilos para el botón de favoritos dentro de las cards */
+
 .unyfilm-card__favorite-button .favorite-button {
   width: 36px;
   height: 36px;
@@ -126,7 +126,7 @@
   box-shadow: 0 6px 16px rgba(239, 68, 68, 0.6);
 }
 
-/* Animación de pulso para el corazón */
+
 .unyfilm-card__favorite-button .favorite-button--animating {
   animation: heartPulse 0.6s ease-in-out;
 }
@@ -137,7 +137,7 @@
   100% { transform: scale(1); }
 }
 
-/* Icono dentro del botón de favoritos */
+
 .unyfilm-card__favorite-button .favorite-button__icon {
   width: 18px;
   height: 18px;
@@ -148,7 +148,7 @@
   transform: scale(1.1);
 }
 
-/* Efecto de llenado del corazón */
+
 .unyfilm-card__favorite-button .favorite-button__icon--filled {
   fill: currentColor;
   animation: heartFill 0.3s ease-in-out;
@@ -160,7 +160,7 @@
   100% { transform: scale(1); }
 }
 
-/* Overlay */
+
 .unyfilm-card__overlay {
   position: absolute;
   top: 0;
@@ -184,7 +184,7 @@
   backdrop-filter: blur(8px);
   border-radius: 16px;
   z-index: 15;
-  /* Asegurar que no interfiera con el botón de favoritos */
+ 
   pointer-events: none;
   overflow: hidden;
   box-sizing: border-box;
@@ -338,9 +338,9 @@
   position: relative;
   overflow: hidden;
   z-index: 25;
-  /* Asegurar que el botón sea clickeable */
+ 
   pointer-events: auto;
-  /* Ajustar el área de click */
+  
   min-height: 40px;
   width: 100%;
   max-width: 100%;
@@ -369,11 +369,11 @@
   background: linear-gradient(135deg, #f40612 0%, #c41e3a 100%);
 }
 
-/* Content */
+
 .unyfilm-card__content {
   padding: 12px;
   background: rgba(255, 255, 255, 0.05);
-  min-height: 80px; /* Ensure consistent content height */
+  min-height: 80px; 
   position: relative;
   z-index: 1;
 }
@@ -389,13 +389,13 @@
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-align: center; /* Center title for poster format */
+  text-align: center; 
 }
 
 .unyfilm-card__meta {
   display: flex;
   align-items: center;
-  justify-content: center; /* Center metadata for poster format */
+  justify-content: center; 
   gap: 6px;
   flex-wrap: wrap;
 }
@@ -418,11 +418,11 @@
   font-weight: 600;
 }
 
-/* Hover Effects */
+
 .unyfilm-card:hover .unyfilm-card__image {
   transform: scale(1.08);
   filter: brightness(1.1) contrast(1.1) saturate(1.1) sharpness(1.1);
-  /* Mejorar la calidad durante el hover */
+  
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   image-rendering: high-quality;
@@ -432,7 +432,7 @@
   color: #6366f1;
 }
 
-/* Netflix-style shimmer effect */
+
 .unyfilm-card__overlay::after {
   content: '';
   position: absolute;
@@ -453,7 +453,7 @@
   left: 100%;
 }
 
-/* Enhanced card hover */
+
 .unyfilm-card:hover {
   transform: translateY(-12px) scale(1.02);
   box-shadow: 
@@ -462,7 +462,7 @@
   border-color: rgba(229, 9, 20, 0.3);
 }
 
-/* Animation Enhancements */
+
 .unyfilm-card {
   animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
@@ -487,13 +487,13 @@
   }
 }
 
-/* Mejoras de calidad para diferentes resoluciones */
+
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .unyfilm-card__image {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
     image-rendering: high-quality;
-    /* Mejorar la calidad en pantallas de alta densidad */
+    
     filter: brightness(1.02) contrast(1.02) saturate(1.08);
   }
   
@@ -504,7 +504,7 @@
 
 @media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
   .unyfilm-card__image {
-    /* Optimización para pantallas 3x */
+   
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
     image-rendering: high-quality;
@@ -512,12 +512,11 @@
   }
 }
 
-/* Responsive Design */
-/* con aspect-ratio ya no necesitamos alturas fijas */
+
 
 @media (max-width: 768px) {
   .unyfilm-card__image-container {
-    height: 160px; /* Smaller but maintains poster proportions */
+    height: 160px; 
   }
   
   .unyfilm-card__content {
@@ -539,7 +538,6 @@
     font-size: 10px;
   }
   
-  /* Botón de favoritos en móviles */
   .unyfilm-card__favorite-button {
     top: 8px;
     right: 8px;
@@ -556,7 +554,6 @@
     height: 16px;
   }
   
-  /* Overlay responsive */
   .unyfilm-card__overlay-content {
     padding: 10px 12px 12px 12px;
   }
@@ -573,7 +570,6 @@
     line-clamp: 2;
   }
   
-  /* Botón de play más grande en móviles */
   .unyfilm-card__play-button {
     padding: 10px 12px;
     font-size: 11px;
@@ -582,7 +578,6 @@
   }
 }
 
-/* Focus States for Accessibility */
 .unyfilm-card:focus {
   outline: 3px solid #6366f1;
   outline-offset: 3px;
@@ -606,7 +601,6 @@
   outline: 2px solid white;
   outline-offset: 2px;
 }
-/* Estilos para el sistema de rating visual en las cards */
 .unyfilm-card__rating-stars {
   margin: 4px 0;
   padding: 0;
@@ -616,7 +610,6 @@
   align-items: center;
 }
 
-/* Integración con VisualRatingStars */
 .unyfilm-card__rating-stars .visual-rating-stars {
   width: 100%;
   justify-content: center;
@@ -631,7 +624,6 @@
   gap: 4px;
 }
 
-/* Responsive adjustments for different card sizes */
 @media (max-width: 480px) {
   .unyfilm-card__rating-stars .visual-star--small {
     font-size: 14px !important;

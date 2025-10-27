@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock del DOM
 const mockVideoElement = {
   paused: true,
   play: vi.fn(),
@@ -31,7 +30,7 @@ describe('Keyboard Shortcuts Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Mock de querySelector
+
     vi.spyOn(document, 'querySelector').mockImplementation((selector) => {
       switch (selector) {
         case 'video':
@@ -47,7 +46,6 @@ describe('Keyboard Shortcuts Tests', () => {
       }
     });
 
-    // Mock de window.location
     Object.defineProperty(window, 'location', {
       value: {
         href: ''
@@ -390,7 +388,6 @@ describe('Keyboard Shortcuts Tests', () => {
       const mockInput = document.createElement('input');
       mockInput.type = 'text';
       
-      // Simular que el foco está en un input
       Object.defineProperty(document, 'activeElement', {
         value: mockInput,
         writable: true
@@ -398,13 +395,16 @@ describe('Keyboard Shortcuts Tests', () => {
       
       const event = new KeyboardEvent('keydown', {
         key: ' ',
-        bubbles: true,
-        target: mockInput
+        bubbles: true
+      });
+      
+      Object.defineProperty(event, 'target', {
+        value: mockInput,
+        writable: false
       });
       
       document.dispatchEvent(event);
       
-      // No debería ejecutar la acción del video
       expect(document.querySelector).not.toHaveBeenCalledWith('video');
     });
   });

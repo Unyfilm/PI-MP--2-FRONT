@@ -1,12 +1,6 @@
-import React from 'react';
 import './VisualRatingStars.css';
 
-/**
- * VisualRatingStarsProps
- *
- * Props for the visual rating stars component that displays average ratings
- * without interaction capabilities.
- */
+
 interface VisualRatingStarsProps {
   averageRating: number;
   totalRatings?: number;

@@ -1,23 +1,28 @@
-/**
- * Environment configuration for UnyFilm (TypeScript)
- *
- * Exposes typed configuration objects loaded from Vite env variables.
- * Follows naming conventions: PascalCase for interfaces, UPPER_CASE-like
- * keys within config objects to mirror environment names.
- */
 
+/**
+ * Interface for API configuration
+ * @interface ApiConfig
+ */
 export interface ApiConfig {
   BASE_URL: string;
   TIMEOUT: number;
   RETRY_ATTEMPTS: number;
   RETRY_DELAY: number;
 }
+/**
+ * Interface for application configuration
+ * @interface AppConfig
+ */
 export interface AppConfig {
   NAME: string;
   VERSION: string;
   DESCRIPTION: string;
   AUTHOR: string;
 }
+/**
+ * Interface for video player configuration
+ * @interface VideoConfig
+ */
 export interface VideoConfig {
   QUALITY: string;
   AUTOPLAY: boolean;
@@ -25,6 +30,10 @@ export interface VideoConfig {
   DEFAULT_VOLUME: number;
   SEEK_STEP: number;
 }
+/**
+ * Interface for UI configuration
+ * @interface UiConfig
+ */
 export interface UiConfig {
   THEME: string;
   LANGUAGE: string;
@@ -32,18 +41,30 @@ export interface UiConfig {
   ANIMATIONS: boolean;
   TRANSITIONS: boolean;
 }
+/**
+ * Interface for security configuration
+ * @interface SecurityConfig
+ */
 export interface SecurityConfig {
   JWT_SECRET: string;
   ENCRYPTION_KEY: string;
   SESSION_TIMEOUT: number;
   MAX_LOGIN_ATTEMPTS: number;
 }
+/**
+ * Interface for external services configuration
+ * @interface ExternalServices
+ */
 export interface ExternalServices {
   GOOGLE_ANALYTICS_ID: string;
   SENTRY_DSN: string;
   GOOGLE_MAPS_API_KEY: string;
 }
 
+/**
+ * Interface for Cloudinary configuration
+ * @interface CloudinaryConfig
+ */
 export interface CloudinaryConfig {
   CLOUD_NAME: string;
   API_KEY: string;
@@ -51,32 +72,35 @@ export interface CloudinaryConfig {
   UPLOAD_PRESET: string;
   BASE_URL: string;
 }
+/**
+ * Interface for development configuration
+ * @interface DevConfig
+ */
 export interface DevConfig {
   DEBUG_MODE: boolean;
   LOG_LEVEL: string;
   MOCK_API: boolean;
 }
+/**
+ * Interface for movie URLs mapping
+ * @interface MovieUrls
+ */
 export interface MovieUrls {
   [key: string]: string;
 }
 
-// Detect environment and set default API URL
 const isProduction = import.meta.env.PROD || import.meta.env.VITE_NODE_ENV === 'production';
 
-// Force correct API URL for production
 const getApiBaseUrl = () => {
   if (isProduction) {
-    // In production, always use the correct URL with /api
     return 'https://pi-mp-2-back-prod.onrender.com/api';
   } else {
-    // In development, use environment variable or default
     return import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
   }
 };
 
 const apiBaseUrl = getApiBaseUrl();
 
-// Debug logging for production - removed console logs
 
 export const API_CONFIG: ApiConfig = {
   BASE_URL: apiBaseUrl,
@@ -85,7 +109,6 @@ export const API_CONFIG: ApiConfig = {
   RETRY_DELAY: 1000
 };
 
-// Environment configuration loaded
 
 export const APP_CONFIG: AppConfig = {
   NAME: import.meta.env.VITE_APP_NAME || 'UnyFilm',

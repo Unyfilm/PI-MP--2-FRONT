@@ -1,32 +1,33 @@
 import React, { useState } from 'react';
-import { emitRatingUpdate, emitStatsUpdate } from '../../services/ratingEventSystem';
 
-/**
- * Componente para probar manualmente los eventos de rating
- */
+const emitRatingUpdate = (movieId: string, rating: number, action: string) => {
+  const event = new CustomEvent('rating-updated', {
+    detail: { movieId, rating, action, source: 'manual-test' }
+  });
+  window.dispatchEvent(event);
+};
+
+const emitStatsUpdate = (movieId: string, averageRating: number, totalRatings: number) => {
+  const event = new CustomEvent('rating-stats-updated', {
+    detail: { movieId, averageRating, totalRatings, source: 'manual-test' }
+  });
+  window.dispatchEvent(event);
+};
+
+
 const ManualRatingTester: React.FC = () => {
   const [testRating, setTestRating] = useState(3);
 
   const testRatingUpdate = () => {
     console.log('🧪 [MANUAL TEST] Emitiendo evento de prueba...');
     
-    emitRatingUpdate({
-      movieId: '68f84e9aba5b03d95f2d6ce4',
-      rating: testRating,
-      action: 'create',
-      movieTitle: 'Primate (2026)',
-      userId: 'test-user'
-    });
+    emitRatingUpdate('68f84e9aba5b03d95f2d6ce4', testRating, 'create');
   };
 
   const testStatsUpdate = () => {
     console.log('🧪 [MANUAL TEST] Emitiendo estadísticas de prueba...');
     
-    emitStatsUpdate({
-      movieId: '68f84e9aba5b03d95f2d6ce4',
-      averageRating: testRating,
-      totalRatings: 5
-    });
+    emitStatsUpdate('68f84e9aba5b03d95f2d6ce4', testRating, 5);
   };
 
   return (

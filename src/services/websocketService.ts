@@ -1,7 +1,3 @@
-/**
- * Servicio WebSocket para sincronización en tiempo real entre navegadores
- * Usa WebSocket para comunicación bidireccional
- */
 
 interface WebSocketEvent {
   type: 'rating-updated' | 'rating-stats-updated';
@@ -17,7 +13,7 @@ class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
-  private serverUrl = 'wss://echo.websocket.org'; // Servidor público de prueba
+  private serverUrl = 'wss://echo.websocket.org';
 
   static getInstance(): WebSocketService {
     if (!WebSocketService.instance) {
@@ -26,9 +22,6 @@ class WebSocketService {
     return WebSocketService.instance;
   }
 
-  /**
-   * Conectar al servidor WebSocket
-   */
   connect() {
     if (this.isConnected || this.ws) {
       console.log('🔄 [WEBSOCKET] Ya conectado, ignorando nueva conexión');
@@ -51,7 +44,6 @@ class WebSocketService {
           const data = JSON.parse(event.data);
           console.log('📡 [WEBSOCKET] Mensaje recibido:', data);
           
-          // Procesar evento según el tipo
           this.handleWebSocketEvent(data);
         } catch (error) {
           console.error('❌ [WEBSOCKET] Error procesando mensaje:', error);
@@ -76,9 +68,7 @@ class WebSocketService {
     }
   }
 
-  /**
-   * Manejar reconexión automática
-   */
+  
   private handleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.log('❌ [WEBSOCKET] Máximo de intentos de reconexión alcanzado');
@@ -96,13 +86,11 @@ class WebSocketService {
     }, delay);
   }
 
-  /**
-   * Procesar eventos WebSocket
-   */
+  
   private handleWebSocketEvent(event: WebSocketEvent) {
     console.log(`🎯 [WEBSOCKET] Procesando evento ${event.type} para película ${event.movieId}`);
     
-    // Emitir evento local para que los componentes lo escuchen
+   
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
         movieId: event.movieId,
@@ -113,9 +101,7 @@ class WebSocketService {
     }));
   }
 
-  /**
-   * Enviar evento al servidor
-   */
+  
   sendEvent(event: WebSocketEvent) {
     if (this.ws && this.isConnected) {
       console.log('📤 [WEBSOCKET] Enviando evento:', event);
@@ -125,9 +111,7 @@ class WebSocketService {
     }
   }
 
-  /**
-   * Desconectar del servidor
-   */
+  
   disconnect() {
     if (this.ws) {
       console.log('🔌 [WEBSOCKET] Desconectando del servidor...');
@@ -137,16 +121,11 @@ class WebSocketService {
     }
   }
 
-  /**
-   * Verificar si está conectado
-   */
   isConnectedToServer(): boolean {
     return this.isConnected;
   }
 
-  /**
-   * Obtener estado de la conexión
-   */
+ 
   getConnectionStatus() {
     return {
       connected: this.isConnected,
@@ -156,17 +135,17 @@ class WebSocketService {
   }
 }
 
-// Exportar instancia singleton
+
 export const websocketService = WebSocketService.getInstance();
 
-// Función de conveniencia para conectar
+
 export const connectWebSocket = () => websocketService.connect();
 
-// Función de conveniencia para desconectar
+
 export const disconnectWebSocket = () => websocketService.disconnect();
 
-// Función de conveniencia para enviar evento
+
 export const sendWebSocketEvent = (event: WebSocketEvent) => websocketService.sendEvent(event);
 
-// Función de conveniencia para verificar estado
+
 export const getWebSocketStatus = () => websocketService.getConnectionStatus();

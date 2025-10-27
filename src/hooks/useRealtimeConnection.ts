@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { realtimeService, getRealtimeStatus } from '../services/realtimeService';
+import { realTimeService, getRealTimeStatus } from '../services/realtimeService';
 
 interface RealtimeStatus {
   connected: boolean;
@@ -7,9 +7,7 @@ interface RealtimeStatus {
   maxAttempts: number;
 }
 
-/**
- * Hook para manejar la conexión en tiempo real
- */
+
 export const useRealtimeConnection = () => {
   const [status, setStatus] = useState<RealtimeStatus>({
     connected: false,
@@ -19,10 +17,10 @@ export const useRealtimeConnection = () => {
 
   useEffect(() => {
     console.log('🔌 [HOOK] Iniciando conexión en tiempo real...');
-    realtimeService.connect();
+    realTimeService.connect();
 
     const statusInterval = setInterval(() => {
-      const currentStatus = getRealtimeStatus();
+      const currentStatus = getRealTimeStatus();
       setStatus(currentStatus);
     }, 1000);
 

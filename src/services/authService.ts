@@ -1,14 +1,4 @@
-/**
- * AuthService
- *
- * Integration layer with the real backend authentication endpoints.
- * Endpoints used: /api/auth/login, /api/auth/register, /api/auth/logout
- *
- * Naming conventions:
- * - camelCase for function and variable names
- * - PascalCase for exported interfaces and types
- * - UPPER_CASE for constant-like configuration values
- */
+
 import { API_CONFIG } from '../config/environment';
 
 const ENV_BASE = (API_CONFIG.BASE_URL || 'http://localhost:5000').replace(/\/$/, '');
@@ -28,23 +18,15 @@ const authHeaders = (): HeadersInit => ({
  * @interface BackendUser
  */
 export interface BackendUser {
-  /** User unique identifier */
   _id: string;
-  /** Username */
   username: string;
-  /** User email */
   email: string;
-  /** Optional first name */
   firstName?: string;
-  /** Optional last name */
   lastName?: string;
-  /** Optional age */
   age?: number;
-  /** Optional profile picture URL */
   profilePicture?: string;
-  /** Optional creation timestamp */
   createdAt?: string;
-  /** Optional last update timestamp */
+  
   updatedAt?: string;
 }
 
@@ -157,10 +139,10 @@ export const authService = {
     const payload = {
       email: input.email.trim().toLowerCase(),
       password: input.password,
-      confirmPassword: input.password, // ← OBLIGATORIO: mismo valor que password
+      confirmPassword: input.password, 
       firstName: input.nombres.trim(),
       lastName: input.apellidos.trim(),
-      age: age  // debe ser NUMBER no string
+      age: age  
     };
 
     

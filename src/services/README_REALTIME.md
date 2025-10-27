@@ -22,15 +22,12 @@ Implementar sincronización en tiempo real de calificaciones entre diferentes us
 ### Opción 1: Server-Sent Events (SSE) - Recomendado
 
 ```javascript
-// backend/routes/realtime.js
 const express = require('express');
 const router = express.Router();
 
-// Almacenar conexiones activas
 const activeConnections = new Set();
 
 router.get('/api/realtime/events', (req, res) => {
-  // Configurar SSE
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -39,23 +36,19 @@ router.get('/api/realtime/events', (req, res) => {
     'Access-Control-Allow-Headers': 'Cache-Control'
   });
 
-  // Agregar conexión
   const connection = { res, id: Date.now() };
   activeConnections.add(connection);
 
-  // Enviar evento de conexión
   res.write(`data: ${JSON.stringify({
     type: 'connected',
     message: 'Conectado al servidor de eventos'
   })}\n\n`);
 
-  // Manejar desconexión
   req.on('close', () => {
     activeConnections.delete(connection);
   });
 });
 
-// Función para broadcast a todos los usuarios
 function broadcastToAllUsers(event) {
   const message = `data: ${JSON.stringify(event)}\n\n`;
   
@@ -63,17 +56,14 @@ function broadcastToAllUsers(event) {
     try {
       connection.res.write(message);
     } catch (error) {
-      // Remover conexión si hay error
       activeConnections.delete(connection);
     }
   });
 }
 
-// Endpoint para recibir eventos de rating
 router.post('/api/realtime/broadcast', (req, res) => {
   const { type, movieId, data } = req.body;
   
-  // Broadcast a todos los usuarios conectados
   broadcastToAllUsers({
     type,
     movieId,
@@ -90,7 +80,6 @@ module.exports = router;
 ### Opción 2: WebSockets (Más Robusto)
 
 ```javascript
-// backend/websocket.js
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 8080 });
 
@@ -103,7 +92,6 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     const data = JSON.parse(message);
     
-    // Broadcast a todos los clientes
     clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
@@ -122,12 +110,9 @@ wss.on('connection', (ws) => {
 ### 1. Modificar `ratingService.ts`
 
 ```typescript
-// Después de una calificación exitosa, notificar al servidor
 export const rateMovie = async (movieId: string, rating: number): Promise<RatingResponse> => {
-  // ... código existente ...
   
   if (data.success) {
-    // Notificar al servidor para broadcast
     await fetch('/api/realtime/broadcast', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -146,11 +131,11 @@ export const rateMovie = async (movieId: string, rating: number): Promise<Rating
 ### 2. Actualizar `realtimeService.ts`
 
 ```typescript
-// Reemplazar la implementación mock con SSE real
+
 export class RealtimeService {
   connect() {
     this.eventSource = new EventSource('/api/realtime/events');
-    // ... resto del código ...
+    
   }
 }
 ```

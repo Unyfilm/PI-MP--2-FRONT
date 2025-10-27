@@ -1,23 +1,18 @@
-// Mixins SASS para UnyFilm
-// ================================
 
 @use 'sass:color';
 @use 'variables' as *;
 
-// Mixin para flexbox centrado
 @mixin flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-// Mixin para flexbox column
 @mixin flex-column {
   display: flex;
   flex-direction: column;
 }
 
-// Mixin para botones
 @mixin button-base {
   padding: $spacing-sm $spacing-md;
   border: none;
@@ -37,7 +32,6 @@
   }
 }
 
-// Mixin para botón primario
 @mixin button-primary {
   @include button-base;
   background: linear-gradient(135deg, $primary-color, $secondary-color);
@@ -52,7 +46,6 @@
   }
 }
 
-// Mixin para botón secundario
 @mixin button-secondary {
   @include button-base;
   background: transparent;
@@ -65,7 +58,6 @@
   }
 }
 
-// Mixin para inputs
 @mixin input-base {
   padding: $spacing-sm $spacing-md;
   border: 1px solid $accent-color;
@@ -86,7 +78,6 @@
   }
 }
 
-// Mixin para cards
 @mixin card-base {
   background: rgba(255, 255, 255, 0.1);
   border-radius: $border-radius-lg;
@@ -101,7 +92,6 @@
   }
 }
 
-// Mixin para responsive
 @mixin mobile {
   @media (max-width: #{$breakpoint-sm - 1px}) {
     @content;
@@ -120,7 +110,6 @@
   }
 }
 
-// Mixin para animaciones
 @mixin fade-in($duration: $transition-normal) {
   animation: fadeIn $duration ease-in-out;
 }
@@ -136,12 +125,10 @@
   }
 }
 
-// Mixin para gradientes
 @mixin gradient-bg($start: $background-dark, $end: $background-light) {
   background: linear-gradient(135deg, $start, $end);
 }
 
-// Mixin para texto truncado
 @mixin text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;

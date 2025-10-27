@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Play, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
-import { movieConfig, homeSections } from '../../data/moviesData';
+import { homeSections } from '../../data/moviesData';
 import { movieService, type Movie } from '../../services/movieService';
 import { useRealRating } from '../../hooks/useRealRating';
 import './UnyFilmHome.css';
@@ -20,13 +20,15 @@ type MovieClickData = {
   cloudinaryPublicId?: string;
   cloudinaryUrl?: string;
   duration?: number;
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
 };
 
-/**
- * HomeProps
- *
- * Props for the UnyFilm home component containing hero and movie sections.
- */
+
 interface HomeProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
@@ -97,43 +99,24 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
       changeToNextMovie();
     }, 5000);
     
-    carouselIntervalRef.current = interval;
+    carouselIntervalRef.current = interval as any;
   }, [changeToNextMovie]);
 
-  // Cargar datos de la API
   useEffect(() => {
     const loadMovies = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        let featuredMovieData: Movie | null = null;
         let availableMovies: Movie[] = [];
         const sectionData: Record<string, Movie[]> = {};
 
-        try {
-          availableMovies = await movieService.getAvailableMovies();
-        } catch (error) {
+            try {
+              availableMovies = await movieService.getAvailableMovies();
+            } catch (error) {
         }
 
-        let carouselMovies: Movie[] = [];
-        
-        if (availableMovies.length > 0) {
-          carouselMovies = availableMovies.slice(0, 5);
-        } else {
-          const carouselIds = [
-            movieConfig.featuredMovieId,
-            "68f84e9aba5b03d95f2d6ce2", // Mortal Kombat 2
-            "68f84e9aba5b03d95f2d6ce3", // Tron: Ares
-            "68f84e9aba5b03d95f2d6ce4", // Avatar: El Origen del Agua
-            "68f84e9aba5b03d95f2d6ce5", // Primate (2026)
-          ];
-          
-          try {
-            carouselMovies = await movieService.getMovies(carouselIds);
-          } catch (error) {
-          }
-        }
+        const carouselMovies = availableMovies.slice(0, 5);
         
         if (carouselMovies.length > 0) {
           setFeaturedMovies(carouselMovies);
@@ -149,39 +132,38 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               try {
                 movies = await movieService.getTrendingMovies();
               } catch (trendingError) {
-                movies = await movieService.getMovies(section.movieIds);
+                movies = availableMovies
+                  .sort((a, b) => (b.rating?.average || 0) - (a.rating?.average || 0))
+                  .slice(0, 3);
               }
             } else {
-              movies = await movieService.getMovies(section.movieIds);
-            }
-            
-            if (movies.length === 0) {
+              const genreMap: Record<string, string[]> = {
+                'popular': ['action', 'drama', 'comedy'],
+                'kids': ['family', 'animation', 'comedy'],
+                'action': ['action', 'adventure', 'thriller'],
+                'sci-fi': ['sci-fi', 'fantasy', 'adventure'],
+                'horror': ['horror', 'thriller', 'mystery']
+              };
               
-              if (availableMovies.length > 0) {
-                const fallbackMovies = availableMovies.slice(0, 3);
-                sectionData[section.id] = fallbackMovies;
-              }
-              else if (featuredMovieData) {
-                sectionData[section.id] = [featuredMovieData];
-              }
-              else {
-                sectionData[section.id] = [];
-              }
-            } else {
-              sectionData[section.id] = movies;
+              const targetGenres = genreMap[section.id] || [];
+              movies = availableMovies
+                .filter(movie => 
+                  movie.genre.some(genre => 
+                    targetGenres.some(target => 
+                      genre.toLowerCase().includes(target.toLowerCase())
+                    )
+                  )
+                )
+                .slice(0, 3);
             }
-          } catch (error) {
             
-            if (availableMovies.length > 0) {
-              const fallbackMovies = availableMovies.slice(0, 3);
-              sectionData[section.id] = fallbackMovies;
+            if (movies.length === 0 && availableMovies.length > 0) {
+              movies = availableMovies.slice(0, 3);
             }
-            else if (featuredMovieData) {
-              sectionData[section.id] = [featuredMovieData];
-            }
-            else {
-              sectionData[section.id] = [];
-            }
+            
+            sectionData[section.id] = movies;
+          } catch (error) {
+            sectionData[section.id] = availableMovies.slice(0, 3);
           }
         }
 
@@ -252,21 +234,24 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
                 title={movie.title}
                 image={movie.poster || '/images/default-movie.jpg'}
                 movieId={movie._id}
-                onMovieClick={() => handleMovieClick({
-                  _id: movie._id,
-                  title: movie.title,
-                  index: index,
-                  videoUrl: movie.videoUrl || '',
-                  rating: movie.rating?.average || 0,
-                  year: new Date(movie.releaseDate || '').getFullYear() || 0,
-                  genre: movie.genre[0] || '',
-                  description: movie.description || '',
-                  synopsis: movie.synopsis || movie.description,
-                  genres: movie.genre,
-                  cloudinaryPublicId: movie.cloudinaryVideoId,
-                  cloudinaryUrl: movie.videoUrl,
-                  duration: movie.duration || 0
-                })}
+                onMovieClick={() => {
+                  handleMovieClick({
+                    _id: movie._id,
+                    title: movie.title,
+                    index: index,
+                    videoUrl: movie.videoUrl || '',
+                    rating: movie.rating?.average || 0,
+                    year: new Date(movie.releaseDate || '').getFullYear() || 0,
+                    genre: movie.genre[0] || '',
+                    description: movie.description || '',
+                    synopsis: movie.synopsis || movie.description,
+                    genres: movie.genre,
+                    cloudinaryPublicId: movie.cloudinaryVideoId,
+                    cloudinaryUrl: movie.videoUrl,
+                    duration: movie.duration || 0,
+                    subtitles: movie.subtitles
+                  });
+                }}
                 description={movie.description || ''}
               />
             );
@@ -398,21 +383,24 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
             <div className="unyfilm-home__hero-actions">
               <button 
                 className="hero-btn hero-btn--primary"
-                onClick={() => handleMovieClick({
-                  _id: featuredMovie._id,
-                  title: featuredMovie.title,
-                  index: featuredIndex,
-                  videoUrl: featuredMovie.videoUrl || '',
-                  rating: hasRealRatings ? averageRating : 0,
-                  year: new Date(featuredMovie.releaseDate || '').getFullYear() || 0,
-                  genre: featuredMovie.genre[0] || '',
-                  description: featuredMovie.description || '',
-                  synopsis: featuredMovie.synopsis || featuredMovie.description,
-                  genres: featuredMovie.genre,
-                  cloudinaryPublicId: featuredMovie.cloudinaryVideoId,
-                  cloudinaryUrl: featuredMovie.videoUrl,
-                  duration: featuredMovie.duration || 0
-                })}
+        onClick={() => {
+          handleMovieClick({
+            _id: featuredMovie._id,
+            title: featuredMovie.title,
+            index: featuredIndex,
+            videoUrl: featuredMovie.videoUrl || '',
+            rating: hasRealRatings ? averageRating : 0,
+            year: new Date(featuredMovie.releaseDate || '').getFullYear() || 0,
+            genre: featuredMovie.genre[0] || '',
+            description: featuredMovie.description || '',
+            synopsis: featuredMovie.synopsis || featuredMovie.description,
+            genres: featuredMovie.genre,
+            cloudinaryPublicId: featuredMovie.cloudinaryVideoId,
+            cloudinaryUrl: featuredMovie.videoUrl,
+            duration: featuredMovie.duration || 0,
+            subtitles: featuredMovie.subtitles
+          });
+        }}
               >
                 <Play size={18} />
                 Ver ahora

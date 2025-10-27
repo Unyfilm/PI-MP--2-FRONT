@@ -1,7 +1,4 @@
-/**
- * Servidor mock para simular eventos en tiempo real
- * En producción, esto sería reemplazado por un servidor real con WebSockets o SSE
- */
+
 
 import { updateMockRatingStats } from './mockRatingService';
 import { broadcastToOtherTabs } from './crossTabService';
@@ -26,9 +23,6 @@ class MockRealtimeServer {
     return MockRealtimeServer.instance;
   }
 
-  /**
-   * Simular evento de rating actualizado
-   */
   simulateRatingUpdate(movieId: string, rating: number, action: string, movieTitle: string) {
     const event: MockEvent = {
       type: 'rating-updated',
@@ -44,18 +38,14 @@ class MockRealtimeServer {
 
     console.log('🎭 [MOCK SERVER] Simulando evento de rating:', event);
     
-    // Actualizar datos mock
     updateMockRatingStats(movieId, rating, action as 'create' | 'update' | 'delete');
     
-    // Enviar evento a otras pestañas
     broadcastToOtherTabs(movieId, rating, action);
     
     this.broadcastEvent(event);
   }
 
-  /**
-   * Simular evento de estadísticas actualizadas
-   */
+  
   simulateStatsUpdate(movieId: string, averageRating: number, totalRatings: number) {
     const event: MockEvent = {
       type: 'rating-stats-updated',
@@ -71,9 +61,7 @@ class MockRealtimeServer {
     this.broadcastEvent(event);
   }
 
-  /**
-   * Transmitir evento a todos los listeners
-   */
+  
   private broadcastEvent(event: MockEvent) {
     this.events.push(event);
     this.listeners.forEach(listener => {
@@ -84,7 +72,6 @@ class MockRealtimeServer {
       }
     });
 
-    // También emitir evento del DOM para compatibilidad
     console.log('🎭 [MOCK SERVER] Emitiendo evento del DOM:', event);
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
@@ -96,9 +83,7 @@ class MockRealtimeServer {
     }));
   }
 
-  /**
-   * Simular eventos aleatorios para testing
-   */
+  
   startRandomEvents() {
     if (this.isRunning) return;
     
@@ -125,25 +110,20 @@ class MockRealtimeServer {
 
       this.simulateRatingUpdate(randomMovieId, randomRating, randomAction, 'Película Mock');
       
-      // Simular estadísticas después de un delay
       setTimeout(() => {
         this.simulateStatsUpdate(randomMovieId, randomRating, Math.floor(Math.random() * 10) + 1);
       }, 1000);
 
-    }, 10000); // Cada 10 segundos
+    }, 10000); 
   }
 
-  /**
-   * Detener eventos aleatorios
-   */
+ 
   stopRandomEvents() {
     this.isRunning = false;
     console.log('🎭 [MOCK SERVER] Deteniendo eventos aleatorios...');
   }
 
-  /**
-   * Obtener historial de eventos
-   */
+  
   getEventHistory(): MockEvent[] {
     return [...this.events];
   }
@@ -151,12 +131,10 @@ class MockRealtimeServer {
 
 export const mockRealtimeServer = MockRealtimeServer.getInstance();
 
-// Función para simular evento manual
 export const simulateRatingEvent = (movieId: string, rating: number, action: string = 'create') => {
   mockRealtimeServer.simulateRatingUpdate(movieId, rating, action, 'Película de Prueba');
 };
 
-// Función para simular estadísticas
 export const simulateStatsEvent = (movieId: string, averageRating: number, totalRatings: number) => {
   mockRealtimeServer.simulateStatsUpdate(movieId, averageRating, totalRatings);
 };

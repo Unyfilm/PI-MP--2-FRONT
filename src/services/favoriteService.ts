@@ -1,9 +1,4 @@
-/**
- * FavoriteService
- *
- * Service for handling favorite operations with the backend API.
- * Implements the new endpoint logic according to the provided guide.
- */
+
 
 import { API_CONFIG } from '../config/environment';
 
@@ -12,51 +7,30 @@ import { API_CONFIG } from '../config/environment';
  * @interface Favorite
  */
 export interface Favorite {
-  /** Unique identifier for the favorite */
   _id: string;
-  /** User ID who favorited the movie */
   userId: string;
-  /** Movie information */
   movieId: {
-    /** Movie unique identifier */
     _id: string;
-    /** Movie title */
     title: string;
-    /** Movie poster URL */
     poster: string;
-    /** Array of movie genres */
     genre: string[];
-    /** Movie director */
     director: string;
-    /** Movie duration in minutes */
     duration: number;
-    /** Movie release date */
     releaseDate: string;
-    /** Optional video URL */
     videoUrl?: string;
-    /** Optional Cloudinary video ID */
     cloudinaryVideoId?: string;
-    /** Optional movie synopsis */
     synopsis?: string;
-    /** Optional movie description */
     description?: string;
-    /** Optional trailer URL */
     trailer?: string;
-    /** Optional port image URL */
     port?: string;
-    /** Optional rating information */
     rating?: {
       average?: number;
       count?: number;
     };
   };
-  /** Optional user notes for the favorite */
   notes?: string;
-  /** Optional user rating for the movie */
   rating?: number;
-  /** Creation timestamp */
   createdAt: string;
-  /** Last update timestamp */
   updatedAt: string;
 }
 
@@ -66,25 +40,15 @@ export interface Favorite {
  * @template T - Type of data returned
  */
 export interface FavoriteResponse<T = any> {
-  /** Whether the operation was successful */
   success: boolean;
-  /** Response message */
   message: string;
-  /** Optional response data */
   data?: T;
-  /** Optional pagination information */
   pagination?: {
-    /** Current page number */
     currentPage: number;
-    /** Total number of pages */
     totalPages: number;
-    /** Total number of items */
     totalItems: number;
-    /** Number of items per page */
     itemsPerPage: number;
-    /** Whether there is a next page */
     hasNextPage: boolean;
-    /** Whether there is a previous page */
     hasPrevPage: boolean;
   };
 }
@@ -94,11 +58,8 @@ export interface FavoriteResponse<T = any> {
  * @interface FavoriteStats
  */
 export interface FavoriteStats {
-  /** Total number of favorites */
   totalFavorites: number;
-  /** Average rating of favorites */
   averageRating: number;
-  /** Most favorited genre */
   mostFavoritedGenre: string;
 }
 
@@ -108,18 +69,12 @@ export interface FavoriteStats {
  * @class FavoriteService
  */
 class FavoriteService {
-  /** Base URL for API requests */
   private baseUrl: string;
-  /** Cache for favorite status to avoid repeated API calls */
   private favoritesCache: { [movieId: string]: { isFavorite: boolean; favoriteId?: string } } = {};
-  /** Timestamp of last cache update */
   private cacheTimestamp: number = 0;
-  /** Cache duration in milliseconds (30 seconds) */
   private readonly CACHE_DURATION = 30000;
 
-  /**
-   * Creates an instance of FavoriteService
-   */
+ 
   constructor() {
     this.baseUrl = API_CONFIG.BASE_URL;
   }
@@ -173,14 +128,12 @@ class FavoriteService {
         hasToken: !!token
       });
       
-      // Prioridad 1: ObjectId del JWT token (más confiable)
       const tokenObjectId = this.extractObjectIdFromToken();
       if (tokenObjectId) {
         console.log('✅ ObjectId extraído del JWT token:', tokenObjectId);
         return tokenObjectId;
       }
       
-      // Prioridad 2: Intentar obtener ObjectId del backend
       if (typeof userId === 'number' || (typeof userId === 'string' && /^\d+$/.test(userId))) {
         console.log('🔍 UserId es un número, obteniendo ObjectId del backend...');
         try {
@@ -191,13 +144,11 @@ class FavoriteService {
         }
       }
       
-      // Prioridad 3: Si ya es un ObjectId válido
       if (typeof userId === 'string' && /^[0-9a-fA-F]{24}$/.test(userId)) {
         console.log('✅ UserId es un ObjectId válido');
         return userId;
       }
       
-      // Prioridad 4: Intentar backend como último recurso
       console.log('⚠️ UserId no es ni número ni ObjectId válido, obteniendo del backend...');
       try {
         return await this.getUserObjectId();
@@ -212,9 +163,7 @@ class FavoriteService {
     }
   }
 
-  /**
-   * Extraer ObjectId del JWT token si está disponible
-   */
+
   private extractObjectIdFromToken(): string | null {
     try {
       const token = localStorage.getItem('token');
@@ -259,10 +208,7 @@ class FavoriteService {
     }
   }
 
-  /**
-   * Obtener el ObjectId del usuario desde el backend
-   * Usa el endpoint /users/profile que devuelve el perfil completo del usuario
-   */
+  
   private async getUserObjectId(): Promise<string> {
     try {
       console.log('🌐 Obteniendo ObjectId del usuario desde /users/profile...');
@@ -318,10 +264,7 @@ class FavoriteService {
     }
   }
 
-  /**
-   * Generar un ObjectId temporal CONSISTENTE basado únicamente en el userId
-   * Esto asegura que el mismo usuario siempre tenga el mismo ObjectId temporal
-   */
+  
   private generateTemporaryObjectId(): string {
     const userData = localStorage.getItem('auth:user');
     if (!userData) {
@@ -331,8 +274,6 @@ class FavoriteService {
     const user = JSON.parse(userData);
     const userId = user.id;
     
-    // Generar ObjectId consistente basado únicamente en userId
-    // Formato: 000000000000000000000000 + userId (8 dígitos hex)
     const userIdHex = userId.toString(16).padStart(8, '0');
     const consistentObjectId = '000000000000000000000000'.substring(0, 16) + userIdHex;
     
@@ -340,9 +281,7 @@ class FavoriteService {
     return consistentObjectId;
   }
 
-  /**
-   * Invalidar cache cuando se modifican favoritos
-   */
+ 
   private invalidateCache(): void {
     this.favoritesCache = {};
     this.cacheTimestamp = 0;
@@ -391,8 +330,8 @@ class FavoriteService {
           success: true,
           message: data.message,
           data: {
-            favorites: data.data,        // ✅ CORRECCIÓN: data.data es el array de favoritos
-            pagination: data.pagination  // ✅ CORRECCIÓN: pagination está en el nivel raíz
+            favorites: data.data,      
+            pagination: data.pagination 
           }
         };
       } else {
@@ -559,9 +498,7 @@ class FavoriteService {
     }
   }
 
-  /**
-   * Actualizar favorito
-   */
+  
   async updateFavorite(favoriteId: string, updates: {
     notes?: string;
     rating?: number;
@@ -618,8 +555,8 @@ class FavoriteService {
           success: true,
           message: data.message,
           data: {
-            favorites: data.data,        // ✅ CORRECCIÓN: data.data es el array de favoritos
-            pagination: data.pagination  // ✅ CORRECCIÓN: pagination está en el nivel raíz
+            favorites: data.data,       
+            pagination: data.pagination 
           }
         };
       } else {
@@ -664,39 +601,6 @@ class FavoriteService {
     } catch (error) {
       console.error('Error verificando favoritos:', error);
       return false;
-    }
-  }
-
-  /**
-   * Manejo de errores para operaciones de favoritos
-   * ✅ CÓDIGOS DE ESTADO VALIDADOS EN PRUEBAS
-   */
-  private handleFavoriteError(error: any, operation: string): void {
-    if (error.response?.status) {
-      switch (error.response.status) {
-        case 401:
-          console.error('No autenticado - redirigir al login');
-          window.location.href = '/login';
-          break;
-        case 403:
-          console.error('Sin permisos - no puedes gestionar este favorito');
-          alert('No tienes permisos para realizar esta acción');
-          break;
-        case 404:
-          console.error('Favorito no encontrado');
-          alert('El favorito no existe');
-          break;
-        case 409:
-          console.error('La película ya está en favoritos');
-          alert('Esta película ya está en tus favoritos');
-          break;
-        default:
-          console.error(`Error en ${operation}:`, error.response.data?.message);
-          alert(`Error: ${error.response.data?.message}`);
-      }
-    } else {
-      console.error(`Error de conexión en ${operation}:`, error.message);
-      alert('Error de conexión. Verifica tu internet.');
     }
   }
 }

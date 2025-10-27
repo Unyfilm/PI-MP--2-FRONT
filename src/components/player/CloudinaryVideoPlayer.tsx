@@ -1,6 +1,4 @@
-/**
- * CloudinaryVideoPlayer - Simplified working version
- */
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, X } from 'lucide-react';
 import type { MovieData } from '../../types';

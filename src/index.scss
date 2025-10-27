@@ -1,16 +1,13 @@
-// Global Styles for UnyFilm Application
 @use './styles/variables' as *;
 @use './styles/mixins' as *;
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-// CSS Reset and Base Styles
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-// Mejoras globales de calidad de imagen
 img {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
@@ -38,7 +35,6 @@ body {
   overflow-x: hidden;
 }
 
-// Typography
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
@@ -97,7 +93,6 @@ a {
   }
 }
 
-// Button Base Styles - Usar mixins de main.scss
 button {
   @include button-base;
   
@@ -112,7 +107,6 @@ button {
   }
 }
 
-// Input Base Styles - Usar mixins de main.scss
 input, textarea, select {
   @include input-base;
   
@@ -128,7 +122,6 @@ input, textarea, select {
   }
 }
 
-// Scrollbar Styles
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -148,7 +141,6 @@ input, textarea, select {
   }
 }
 
-// Selection Styles
 ::selection {
   background: rgba(15, 98, 254, 0.3);
   color: #FFFFFF;
@@ -159,7 +151,6 @@ input, textarea, select {
   color: #FFFFFF;
 }
 
-// Utility Classes - Usar las de main.scss para evitar duplicación
 .sr-only {
   position: absolute;
   width: 1px;
@@ -172,7 +163,6 @@ input, textarea, select {
   border: 0;
 }
 
-// Loading Animation
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -186,7 +176,6 @@ input, textarea, select {
   animation: spin 1s linear infinite;
 }
 
-// Fade Animation
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -202,7 +191,6 @@ input, textarea, select {
   animation: fadeIn 0.6s ease-out;
 }
 
-// Responsive Design - Usar mixins de main.scss
 @include tablet {
   h1 {
     font-size: 2rem;
@@ -237,7 +225,6 @@ input, textarea, select {
   }
 }
 
-// Accessibility
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -247,7 +234,6 @@ input, textarea, select {
   }
 }
 
-// High Contrast Mode
 @media (prefers-contrast: high) {
   body {
     background: #000000;
@@ -269,7 +255,6 @@ input, textarea, select {
   }
 }
 
-// Print Styles
 @media print {
   body {
     background: #FFFFFF;

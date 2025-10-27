@@ -26,13 +26,11 @@ import type {
 import { API_CONFIG as ENV_API_CONFIG } from '../config/environment';
 import { authService } from './authService';
 
-// Base configuration desde environment
-// Derive backend root (without /api) to compose routes like /api/*
 const ENV_BASE = (ENV_API_CONFIG.BASE_URL || 'http://localhost:5000').replace(/\/$/, '');
 const ROOT_URL = ENV_BASE.replace(/\/api$/, '');
 
 const API_CONFIG: ApiConfig = {
-  BASE_URL: ROOT_URL, // Base URL sin /api, agregaremos /api en cada endpoint
+  BASE_URL: ROOT_URL,
   TIMEOUT: ENV_API_CONFIG.TIMEOUT || 10000,
   RETRY_ATTEMPTS: ENV_API_CONFIG.RETRY_ATTEMPTS || 3
 };
@@ -89,7 +87,6 @@ const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): 
   }
 };
 
-// Eliminado: mockApiCall y handlers mock. Ahora usamos backend real.
 
 /**
  * Handle movies API requests
@@ -97,7 +94,6 @@ const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): 
  * @param options - Request options
  * @returns Movies data
  */
-// Nota: se removieron handlers locales de movies/users para no mantener dos fuentes de verdad.
 
 /**
  * Handle users API requests
@@ -105,31 +101,25 @@ const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): 
  * @param options - Request options
  * @returns Users data
  */
-// --
 
 /**
  * Handle login request
  * @param options - Request options
  * @returns Login response
  */
-// Auth se maneja en authService
 
 /**
  * Handle register request
  * @param options - Request options
  * @returns Register response
  */
-// --
 
 /**
  * Handle logout request
  * @returns Logout response
  */
-// --
 
-// API Service Methods
 export const apiService: ApiService = {
-  // Movies API
   getMovies: (): Promise<ApiResponse<Movie[]>> => 
     makeRequest<Movie[]>(`${API_CONFIG.BASE_URL}/api/movies`, { method: 'GET' }),
   
@@ -154,7 +144,6 @@ export const apiService: ApiService = {
       body: JSON.stringify({ id })
     }),
 
-  // Users API
   getUsers: (): Promise<ApiResponse<User[]>> => 
     makeRequest<User[]>(`${API_CONFIG.BASE_URL}/api/users`, { method: 'GET' }),
   
@@ -179,7 +168,6 @@ export const apiService: ApiService = {
       body: JSON.stringify({ id })
     }),
 
-  // Profile API
   getProfile: (): Promise<ApiResponse<User>> => 
     makeRequest<User>(`${API_CONFIG.BASE_URL}/api/users/profile`, { method: 'GET' }),
   
@@ -196,9 +184,7 @@ export const apiService: ApiService = {
     });
   },
 
-  // Authentication API
   login: (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
-    // Delegar a authService para mapear correctamente y persistir token
     return authService.login({ email: credentials.email, password: credentials.password }) as unknown as Promise<ApiResponse<AuthResponse>>;
   },
   
@@ -227,7 +213,7 @@ export const apiService: ApiService = {
       method: 'POST',
       body: JSON.stringify({ 
         token, 
-        password: newPassword,  // El backend espera 'password', no 'newPassword'
+        password: newPassword, 
         confirmPassword 
       })
     }),

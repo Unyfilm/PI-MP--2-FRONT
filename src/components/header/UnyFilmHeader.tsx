@@ -4,14 +4,9 @@ import { Search, User, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import './UnyFilmHeader.scss';
 
-// Tipos locales para el header
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
-/**
- * UnyFilmHeaderProps
- *
- * Props for the UnyFilm header component which includes search and profile actions.
- */
+
 interface UnyFilmHeaderProps {
   searchQuery: string;
   onSearch: (query: string) => void;
@@ -33,9 +28,6 @@ export default function UnyFilmHeader({
   onSearchSubmit
 }: UnyFilmHeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  // const [showNotifications, setShowNotifications] = useState(false);
-
-  // Debounce para búsqueda automática
   useEffect(() => {
     if (!searchQuery || searchQuery.trim() === '') return;
     
@@ -43,10 +35,10 @@ export default function UnyFilmHeader({
       if (onSearchSubmit) {
         onSearchSubmit(searchQuery);
       }
-    }, 1000); // Esperar 1 segundo después de que el usuario deje de escribir
+    }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery]); // Removido onSearchSubmit de las dependencias
+  }, [searchQuery]);
 
   const handleSearchChange = (e: InputChangeEvent): void => {
     const query = e.target.value;
@@ -55,20 +47,18 @@ export default function UnyFilmHeader({
     }
   };
 
-  // Form submission is handled automatically through onChange debounce
+  
 
   const handleProfileClick = () => {
     setShowProfileMenu(!showProfileMenu);
   };
 
-  // const handleNotificationClick = () => {
-  //   setShowNotifications(!showNotifications);
-  // };
+ 
 
   return (
     <header className="unyfilm-header">
       <div className="unyfilm-header__container">
-        {/* Search Bar */}
+        
         <div className="unyfilm-header__search" id="search">
           <div className="unyfilm-header__search-input-container">
             <Search className="unyfilm-header__search-icon" size={20} />
@@ -83,9 +73,9 @@ export default function UnyFilmHeader({
           </div>
         </div>
 
-        {/* Right Section */}
+        
         <div className="unyfilm-header__right">
-          {/* Profile Dropdown */}
+         
           <div className="unyfilm-header__profile">
             <button
               onClick={handleProfileClick}
@@ -96,10 +86,10 @@ export default function UnyFilmHeader({
               <div className="unyfilm-header__profile-avatar">
                 <User size={20} />
               </div>
-              {/* Only the icon is displayed inside the circular button */}
+              
             </button>
 
-          {/* Profile Dropdown Menu */}
+          
           {showProfileMenu && (
             <>
               <div className="unyfilm-profile-backdrop" onClick={() => setShowProfileMenu(false)} aria-hidden="true"></div>
@@ -132,7 +122,7 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
   const { logout } = useAuth();
 
   useEffect(() => {
-    // Pequeño delay para asegurar que el DOM esté listo
+    
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 10);

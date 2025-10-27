@@ -6,49 +6,35 @@ import { API_CONFIG } from '../config/environment';
  * @interface Movie
  */
 export interface Movie {
-  /** Unique movie identifier */
   _id: string;
-  /** Movie title */
   title: string;
-  /** Movie description */
   description: string;
-  /** Optional movie synopsis */
   synopsis?: string;
-  /** Movie poster URL */
   poster: string;
-  /** Movie port image URL */
   port: string;
-  /** Movie trailer URL */
   trailer: string;
-  /** Movie video URL */
   videoUrl: string;
-  /** Cloudinary video ID */
   cloudinaryVideoId: string;
-  /** Movie duration in minutes */
   duration: number;
-  /** Array of movie genres */
   genre: string[];
-  /** Movie director */
   director: string;
-  /** Array of cast members */
   cast: string[];
-  /** Movie language */
   language: string;
-  /** Array of movie tags */
   tags: string[];
-  /** Number of views */
   views: number;
-  /** Movie rating information */
   rating: {
-    /** Average rating */
     average: number;
-    /** Number of ratings */
     count: number;
   };
-  /** Optional release date */
   releaseDate?: string;
-  /** Whether the movie is active */
   isActive: boolean;
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
+  defaultSubtitleLanguage?: string;
 }
 
 /**
@@ -56,19 +42,12 @@ export interface Movie {
  * @interface MovieVideoInfo
  */
 export interface MovieVideoInfo {
-  /** Movie ID */
   movieId: string;
-  /** Movie title */
   title: string;
-  /** Cloudinary video ID */
   cloudinaryVideoId: string;
-  /** Video duration in seconds */
   duration: number;
-  /** Video width in pixels */
   width: number;
-  /** Video height in pixels */
   height: number;
-  /** Video format */
   format: string;
 }
 
@@ -77,15 +56,10 @@ export interface MovieVideoInfo {
  * @interface MovieVideoResponse
  */
 export interface MovieVideoResponse {
-  /** Video URL */
   videoUrl: string;
-  /** Expiration time in seconds */
   expiresIn: number;
-  /** Movie ID */
   movieId: string;
-  /** Movie title */
   title: string;
-  /** Video duration in seconds */
   duration: number;
 }
 
@@ -95,12 +69,9 @@ export interface MovieVideoResponse {
  * @class MovieService
  */
 class MovieService {
-  /** Base URL for API requests */
   private baseUrl: string;
 
-  /**
-   * Creates an instance of MovieService
-   */
+  
   constructor() {
     this.baseUrl = API_CONFIG.BASE_URL.replace('/api', '');
   }

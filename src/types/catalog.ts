@@ -1,4 +1,7 @@
-// Tipos para el catálogo
+/**
+ * Interface for movie click data in catalog
+ * @interface MovieClickData
+ */
 export interface MovieClickData {
   _id?: string;
   title: string;
@@ -13,8 +16,18 @@ export interface MovieClickData {
   cloudinaryPublicId?: string;
   cloudinaryUrl?: string;
   duration?: number;
+  subtitles?: Array<{
+    language: string;
+    languageCode: string;
+    url: string;
+    isDefault: boolean;
+  }>;
 }
 
+/**
+ * Interface for UnyFilm catalog component props
+ * @interface UnyFilmCatalogProps
+ */
 export interface UnyFilmCatalogProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;

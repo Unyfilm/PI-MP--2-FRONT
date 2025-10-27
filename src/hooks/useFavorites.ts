@@ -1,9 +1,4 @@
-/**
- * Custom hook for managing favorites
- * 
- * Provides global favorites state with the new endpoint logic.
- * Implements all CRUD operations according to the provided guide.
- */
+
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { favoriteService, type Favorite } from '../services/favoriteService';
@@ -13,31 +8,29 @@ import { favoriteService, type Favorite } from '../services/favoriteService';
  * @interface UseFavoritesReturn
  */
 interface UseFavoritesReturn {
-  /** Array of user's favorite movies */
+  
   favorites: Favorite[];
-  /** Loading state */
+  
   loading: boolean;
-  /** Error message if any */
+  
   error: string | null;
-  /** Whether favorites have been loaded */
+  
   isLoaded: boolean;
-  /** Function to load favorites */
+  
   loadFavorites: () => Promise<void>;
-  /** Function to add a movie to favorites */
+  
   addToFavorites: (movieId: string, notes?: string, rating?: number) => Promise<{ success: boolean; message?: string }>;
-  /** Function to remove a movie from favorites */
+  
   removeFromFavorites: (favoriteId: string) => Promise<{ success: boolean; message?: string }>;
-  /** Function to clear all favorites (for user switching) */
+  
   clearFavorites: () => void;
-  /** Function to update a favorite */
+  
   updateFavorite: (favoriteId: string, updates: { notes?: string; rating?: number }) => Promise<{ success: boolean; message?: string }>;
-  /** Function to check if a movie is in favorites */
+  
   isMovieInFavorites: (movieId: string) => Promise<boolean>;
-  /** Function to get a favorite by ID */
+  
   getFavoriteById: (favoriteId: string) => Promise<Favorite | null>;
-  /** Function to clear all favorites */
-  clearFavorites: () => void;
-  /** Function to get favorites statistics */
+  
   getStats: () => { total: number; byGenre: Record<string, number> };
 }
 
@@ -50,14 +43,11 @@ export const useFavorites = (): UseFavoritesReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const loadingRef = useRef(false); // Ref para evitar cargar múltiples veces
+  const loadingRef = useRef(false); 
 
-  /**
-   * Cargar favoritos del usuario
-   */
+  
   const loadFavorites = useCallback(async () => {
     if (loadingRef.current) {
-      console.log('📋 Favorites already loading, skipping...');
       return;
     }
     
@@ -66,13 +56,11 @@ export const useFavorites = (): UseFavoritesReturn => {
     setError(null);
     
     try {
-      console.log('📋 Loading user favorites...');
       const result = await favoriteService.getMyFavorites(1, 100);
       
       if (result.success && result.data) {
         setFavorites(result.data.favorites);
         setIsLoaded(true);
-        console.log('✅ Favorites loaded successfully:', result.data.favorites.length, 'items');
       } else {
         setError(result.message || 'Error al cargar favoritos');
         console.error('❌ Failed to load favorites:', result.message);
@@ -87,9 +75,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  /**
-   * Agregar a favoritos
-   */
+ 
   const addToFavorites = useCallback(async (
     movieId: string, 
     notes: string = '', 
@@ -99,7 +85,6 @@ export const useFavorites = (): UseFavoritesReturn => {
     setError(null);
     
     try {
-      console.log('➕ Adding to favorites:', movieId);
       const result = await favoriteService.addToFavorites(movieId, notes, rating);
       
       if (result.success && result.data) {
@@ -110,7 +95,6 @@ export const useFavorites = (): UseFavoritesReturn => {
           }
           return prev;
         });
-        console.log('✅ Successfully added to favorites');
         return { success: true };
       } else {
         const errorMsg = result.message || 'Error al agregar a favoritos';
@@ -128,9 +112,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  /**
-   * Eliminar de favoritos
-   */
+ 
   const removeFromFavorites = useCallback(async (
     favoriteId: string
   ): Promise<{ success: boolean; message?: string }> => {
@@ -138,12 +120,10 @@ export const useFavorites = (): UseFavoritesReturn => {
     setError(null);
     
     try {
-      console.log('🗑️ Removing from favorites:', favoriteId);
       const result = await favoriteService.removeFromFavorites(favoriteId);
       
       if (result.success) {
         setFavorites(prev => prev.filter(fav => fav._id !== favoriteId));
-        console.log('✅ Successfully removed from favorites');
         return { success: true };
       } else {
         const errorMsg = result.message || 'Error al eliminar de favoritos';
@@ -161,9 +141,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  /**
-   * Actualizar favorito
-   */
+
   const updateFavorite = useCallback(async (
     favoriteId: string,
     updates: { notes?: string; rating?: number }
@@ -172,14 +150,12 @@ export const useFavorites = (): UseFavoritesReturn => {
     setError(null);
     
     try {
-      console.log('✏️ Updating favorite:', favoriteId);
       const result = await favoriteService.updateFavorite(favoriteId, updates);
       
       if (result.success && result.data) {
         setFavorites(prev => prev.map(fav => 
           fav._id === favoriteId ? { ...fav, ...updates } : fav
         ));
-        console.log('✅ Successfully updated favorite');
         return { success: true };
       } else {
         const errorMsg = result.message || 'Error al actualizar favorito';
@@ -197,18 +173,13 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  /**
-   * Verificar si una película está en favoritos (usando cache local)
-   */
   const isMovieInFavorites = useCallback(async (movieId: string): Promise<boolean> => {
     try {
       if (isLoaded && favorites.length >= 0) {
         const isFavorite = favorites.some(fav => fav.movieId._id === movieId);
-        console.log(`🔍 Cache local - Película ${movieId} ${isFavorite ? 'está' : 'no está'} en favoritos`);
         return isFavorite;
       }
       
-      console.log(`🌐 Petición al backend para verificar ${movieId}`);
       return await favoriteService.isMovieInFavorites(movieId);
     } catch (error) {
       console.error('Error verificando favoritos:', error);
@@ -216,9 +187,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, [favorites, isLoaded]);
 
-  /**
-   * Obtener favorito por ID
-   */
+ 
   const getFavoriteById = useCallback(async (favoriteId: string): Promise<Favorite | null> => {
     try {
       const result = await favoriteService.getFavoriteById(favoriteId);
@@ -229,20 +198,13 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  /**
-   * Limpiar favoritos (al cerrar sesión)
-   */
   const clearFavorites = useCallback(() => {
     setFavorites([]);
     setError(null);
     setIsLoaded(false);
     loadingRef.current = false;
-    console.log('🗑️ Favorites cleared');
   }, []);
 
-  /**
-   * Obtener estadísticas de favoritos
-   */
   const getStats = useCallback(() => {
     const total = favorites.length;
     const byGenre: Record<string, number> = {};
@@ -256,20 +218,15 @@ export const useFavorites = (): UseFavoritesReturn => {
     return { total, byGenre };
   }, [favorites]);
 
-  /**
-   * Cargar favoritos al montar el componente (optimizado)
-   */
+ 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token && !isLoaded && !loadingRef.current && favorites.length === 0) {
-      console.log('🚀 Initializing favorites load...');
       loadFavorites();
     }
-  }, [isLoaded, favorites.length]); // Dependencias optimizadas
+  }, [isLoaded, favorites.length]); 
 
-  /**
-   * Detectar cambios en el token del mismo tab
-   */
+ 
   useEffect(() => {
     const checkTokenChange = () => {
       const token = localStorage.getItem('token');
@@ -278,11 +235,10 @@ export const useFavorites = (): UseFavoritesReturn => {
       if (token && userData) {
         try {
           const user = JSON.parse(userData);
-          const currentUserId = user.id?.toString();
+          const currentUserId = user._id?.toString();
           
-          // Si hay un usuario autenticado y no hemos cargado favoritos
+          
           if (currentUserId && !isLoaded && !loadingRef.current) {
-            console.log('🔄 Token detectado, cargando favoritos para usuario:', currentUserId);
             loadFavorites();
           }
         } catch (error) {
@@ -291,32 +247,25 @@ export const useFavorites = (): UseFavoritesReturn => {
       }
     };
 
-    // Verificar inmediatamente
+  
     checkTokenChange();
     
-    // Verificar periódicamente (cada 1 segundo) para detectar cambios
+
     const interval = setInterval(checkTokenChange, 1000);
     
     return () => clearInterval(interval);
   }, [isLoaded, loadFavorites]);
 
-  /**
-   * Limpiar favoritos cuando el usuario cierre sesión
-   * y cargar favoritos cuando el usuario se loguee
-   */
+  
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'token') {
         if (!e.newValue) {
-          // Usuario cerró sesión
-          console.log('🚪 Usuario cerró sesión, limpiando favoritos');
           clearFavorites();
         } else if (e.newValue && !e.oldValue) {
-          // Usuario se logueó (nuevo token)
-          console.log('🚪 Usuario se logueó, cargando favoritos');
           setTimeout(() => {
             loadFavorites();
-          }, 500); // Pequeño delay para asegurar que el contexto se actualice
+          }, 500); 
         }
       }
     };

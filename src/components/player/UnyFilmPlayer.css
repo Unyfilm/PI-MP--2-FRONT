@@ -1,4 +1,3 @@
-/* Video Player Wrapper */
 .unyfilm-player-wrapper {
   position: fixed;
   top: 0;
@@ -10,7 +9,6 @@
   backdrop-filter: blur(5px);
 }
 
-/* Video Player Page */
 .unyfilm-player-page {
   position: fixed;
   top: 0;
@@ -22,10 +20,9 @@
   padding: 20px;
   z-index: 9999;
   overflow-y: auto;
-  overflow-x: hidden; /* evita scroll horizontal en reproductor */
+  overflow-x: hidden;
 }
 
-/* Mosaico animado de fondo para el reproductor */
 .unyfilm-player-mosaic {
   position: absolute;
   inset: 0;
@@ -67,7 +64,6 @@
   animation-delay: 2s;
 }
 
-/* Asegurar que el contenido del reproductor esté por encima del mosaico */
 .unyfilm-video-container,
 .unyfilm-movie-info-section,
 .unyfilm-player-close-btn {
@@ -75,7 +71,6 @@
   z-index: 2;
 }
 
-/* Animaciones del mosaico */
 @keyframes mosaic-fade {
   0%, 100% { 
     opacity: 0.14; 
@@ -99,7 +94,6 @@
   }
 }
 
-/* Responsive para el mosaico del reproductor */
 @media (max-width: 768px) {
   .unyfilm-player-mosaic {
     grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
@@ -107,7 +101,6 @@
   }
 }
 
-/* Close Button */
 .unyfilm-player-close-btn {
   position: fixed;
   top: 20px;
@@ -132,7 +125,6 @@
   transform: scale(1.1);
 }
 
-/* Video Container */
 .unyfilm-video-container {
   position: relative;
   width: 100%;
@@ -145,7 +137,6 @@
   cursor: pointer;
 }
 
-/* Center Play overlay when paused */
 .unyfilm-center-play {
   position: absolute;
   top: 50%;
@@ -185,8 +176,7 @@
   width: 100%;
   height: auto;
   display: block;
-  /* Reducir altura ~10% manteniendo ancho → relación más ancha */
-  aspect-ratio: 16 / 7; /* antes 16/9 */
+  aspect-ratio: 16 / 7; 
   background: #000;
 }
 
@@ -195,7 +185,6 @@
   object-fit: contain;
 }
 
-/* Video Controls */
 .unyfilm-video-controls {
   position: absolute;
   bottom: 0;
@@ -213,7 +202,6 @@
   pointer-events: all;
 }
 
-/* Progress Bar */
 .unyfilm-progress-container {
   width: 100%;
   height: 6px;
@@ -257,7 +245,6 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Control Buttons */
 .unyfilm-controls-bottom {
   display: flex;
   justify-content: space-between;
@@ -290,7 +277,6 @@
   transform: scale(1.1);
 }
 
-/* Volume Control */
 .unyfilm-volume-control {
   display: flex;
   align-items: center;
@@ -337,7 +323,6 @@
   transform: scale(1.2);
 }
 
-/* Time Display */
 .unyfilm-time-display {
   font-size: 14px;
   color: white;
@@ -345,7 +330,6 @@
   white-space: nowrap;
 }
 
-/* Movie Info Section */
 .unyfilm-movie-info-section {
   max-width: 1200px;
   margin: 0 auto;
@@ -465,7 +449,6 @@
   margin: 0;
 }
 
-/* User Rating Section */
 .unyfilm-user-rating-section {
   margin-bottom: 35px;
 }
@@ -493,7 +476,6 @@
   transform: scale(1.2);
 }
 
-/* Review Section */
 .unyfilm-review-section {
   margin-bottom: 40px;
 }
@@ -550,7 +532,6 @@
   box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
 }
 
-/* Comments */
 .unyfilm-comments-section { margin-bottom: 40px; }
 .unyfilm-comments-section h3 { font-size: 18px; font-weight: 600; margin: 0 0 15px 0; color: white; }
 .unyfilm-comments-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
@@ -579,7 +560,6 @@
   .unyfilm-comment-actions { gap: 6px; }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .unyfilm-player-page {
     padding: 10px;
@@ -614,7 +594,6 @@
   .unyfilm-submit-review-btn { padding: 10px 20px; font-size: 14px; border-radius: 10px; }
 }
 
-/* Sinopsis Section */
 .unyfilm-movie-synopsis {
   margin-bottom: 30px;
 }
@@ -637,7 +616,6 @@
   border-left: 4px solid #3b82f6;
 }
 
-/* Géneros Section */
 .unyfilm-movie-genres {
   margin-bottom: 30px;
 }
@@ -704,7 +682,6 @@
   }
 }
 
-/* Mensaje de cambio de calidad */
 .unyfilm-quality-message {
   position: absolute;
   top: 20px;
@@ -729,7 +706,6 @@
   100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
 }
 
-/* Indicador de carga para cambio de calidad */
 .unyfilm-loading-overlay {
   position: absolute;
   top: 0;
@@ -757,7 +733,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Panel de configuración */
 .unyfilm-settings-panel {
   position: absolute;
   bottom: 60px;

@@ -7,9 +7,7 @@ interface WebSocketStatus {
   maxAttempts: number;
 }
 
-/**
- * Hook para manejar la conexión WebSocket
- */
+
 export const useWebSocketConnection = () => {
   const [status, setStatus] = useState<WebSocketStatus>({
     connected: false,

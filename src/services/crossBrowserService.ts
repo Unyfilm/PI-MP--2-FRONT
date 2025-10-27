@@ -1,7 +1,4 @@
-/**
- * Servicio para sincronización entre navegadores usando localStorage + polling
- * Funciona entre diferentes navegadores y pestañas
- */
+
 
 interface CrossBrowserEvent {
   type: 'rating-updated' | 'rating-stats-updated';
@@ -15,9 +12,9 @@ class CrossBrowserService {
   private static instance: CrossBrowserService;
   private browserId: string;
   private isPolling = false;
-  private pollInterval: number = 2000; // 2 segundos
+  private pollInterval: number = 2000; 
   private lastProcessedTimestamp: number = 0;
-  private pollTimer: NodeJS.Timeout | null = null;
+  private pollTimer: number | null = null;
 
   static getInstance(): CrossBrowserService {
     if (!CrossBrowserService.instance) {
@@ -27,14 +24,11 @@ class CrossBrowserService {
   }
 
   constructor() {
-    // Generar ID único para este navegador
     this.browserId = this.generateBrowserId();
     console.log('🌐 [CROSS BROWSER] Iniciado con ID:', this.browserId);
   }
 
-  /**
-   * Generar ID único para el navegador
-   */
+
   private generateBrowserId(): string {
     const existingId = localStorage.getItem('browser-id');
     if (existingId) {
@@ -46,9 +40,6 @@ class CrossBrowserService {
     return newId;
   }
 
-  /**
-   * Iniciar polling para eventos entre navegadores
-   */
   startPolling() {
     if (this.isPolling) {
       console.log('🔄 [CROSS BROWSER] Ya está haciendo polling');
@@ -61,12 +52,10 @@ class CrossBrowserService {
 
     this.pollTimer = setInterval(() => {
       this.checkForNewEvents();
-    }, this.pollInterval);
+    }, this.pollInterval) as any;
   }
 
-  /**
-   * Detener polling
-   */
+  
   stopPolling() {
     if (this.pollTimer) {
       clearInterval(this.pollTimer);
@@ -76,9 +65,7 @@ class CrossBrowserService {
     console.log('🔄 [CROSS BROWSER] Polling detenido');
   }
 
-  /**
-   * Verificar nuevos eventos desde otros navegadores
-   */
+  
   private checkForNewEvents() {
     try {
       const eventsData = localStorage.getItem('cross-browser-events');
@@ -86,7 +73,6 @@ class CrossBrowserService {
 
       const events: CrossBrowserEvent[] = JSON.parse(eventsData);
       
-      // Filtrar eventos nuevos y de otros navegadores
       const newEvents = events.filter(event => 
         event.timestamp > this.lastProcessedTimestamp && 
         event.browserId !== this.browserId
@@ -99,7 +85,6 @@ class CrossBrowserService {
           this.processCrossBrowserEvent(event);
         });
 
-        // Actualizar timestamp
         this.lastProcessedTimestamp = Math.max(...newEvents.map(e => e.timestamp));
       }
     } catch (error) {
@@ -107,13 +92,10 @@ class CrossBrowserService {
     }
   }
 
-  /**
-   * Procesar evento de otro navegador
-   */
+  
   private processCrossBrowserEvent(event: CrossBrowserEvent) {
     console.log(`🌐 [CROSS BROWSER] Procesando evento de navegador ${event.browserId}:`, event);
     
-    // Emitir evento del DOM para que los componentes lo escuchen
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
         movieId: event.movieId,
@@ -125,9 +107,7 @@ class CrossBrowserService {
     }));
   }
 
-  /**
-   * Enviar evento a otros navegadores
-   */
+  
   sendEvent(type: 'rating-updated' | 'rating-stats-updated', movieId: string, data: any) {
     const event: CrossBrowserEvent = {
       type,
@@ -140,19 +120,15 @@ class CrossBrowserService {
     console.log('🌐 [CROSS BROWSER] Enviando evento a otros navegadores:', event);
 
     try {
-      // Obtener eventos existentes
       const existingEvents = localStorage.getItem('cross-browser-events');
       let events: CrossBrowserEvent[] = existingEvents ? JSON.parse(existingEvents) : [];
 
-      // Agregar nuevo evento
       events.push(event);
 
-      // Mantener solo los últimos 50 eventos para evitar que localStorage se llene
       if (events.length > 50) {
         events = events.slice(-50);
       }
 
-      // Guardar en localStorage
       localStorage.setItem('cross-browser-events', JSON.stringify(events));
 
       console.log('✅ [CROSS BROWSER] Evento enviado correctamente');
@@ -161,9 +137,7 @@ class CrossBrowserService {
     }
   }
 
-  /**
-   * Obtener estado del servicio
-   */
+  
   getStatus() {
     return {
       browserId: this.browserId,
@@ -173,19 +147,14 @@ class CrossBrowserService {
   }
 }
 
-// Exportar instancia singleton
 export const crossBrowserService = CrossBrowserService.getInstance();
 
-// Función de conveniencia para iniciar
 export const startCrossBrowserSync = () => crossBrowserService.startPolling();
 
-// Función de conveniencia para detener
 export const stopCrossBrowserSync = () => crossBrowserService.stopPolling();
 
-// Función de conveniencia para enviar evento
 export const sendCrossBrowserEvent = (type: 'rating-updated' | 'rating-stats-updated', movieId: string, data: any) => {
   crossBrowserService.sendEvent(type, movieId, data);
 };
 
-// Función de conveniencia para obtener estado
 export const getCrossBrowserStatus = () => crossBrowserService.getStatus();

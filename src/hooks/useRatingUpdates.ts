@@ -1,9 +1,4 @@
-/**
- * Custom hook for real-time rating updates
- * 
- * Provides a way to listen for rating changes across the application
- * and update all rating displays in real-time.
- */
+
 
 import { useEffect, useCallback } from 'react';
 import { getMovieRatingStats } from '../services/ratingService';
@@ -104,11 +99,17 @@ export const broadcastRatingUpdate = (
   rating: number,
   action: 'create' | 'update' | 'delete'
 ) => {
-  const event = new CustomEvent('ratingUpdated', {
-    detail: { movieId, rating, action }
+  // Emitir evento de rating actualizado
+  const ratingEvent = new CustomEvent('rating-updated', {
+    detail: { movieId, rating, action, source: 'interactive-rating' }
   });
+  window.dispatchEvent(ratingEvent);
   
-  window.dispatchEvent(event);
+  // También emitir evento de estadísticas actualizadas (se cargarán automáticamente)
+  const statsEvent = new CustomEvent('rating-stats-updated', {
+    detail: { movieId, source: 'interactive-rating' }
+  });
+  window.dispatchEvent(statsEvent);
 };
 
 export default useRatingUpdates;

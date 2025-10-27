@@ -162,18 +162,18 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
 
   return (
     <div className="unyfilm-catalog">
-      {/* Header */}
+     
       <div className="unyfilm-catalog__header">
         <div className="unyfilm-catalog__breadcrumb">
           <span>Catálogo</span>
         </div>
       </div>
 
-      {/* Title Section */}
+    
       <div className="unyfilm-catalog__title-section">
         <h1 className="unyfilm-catalog__title">Todas las películas</h1>
         
-        {/* Search Bar */}
+       
         <div className="unyfilm-catalog__search">
           <div className="unyfilm-catalog__search-input-wrapper">
             <Search size={20} className="unyfilm-catalog__search-icon" />
@@ -191,7 +191,6 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
             )}
           </div>
           
-          {/* Search Mode Indicator */}
           {searchQuery && !isSearching && (
             <div className="unyfilm-catalog__search-mode">
               {searchMode === 'server' && (
@@ -267,14 +266,14 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
         </div>
       </div>
 
-      {/* Results Info */}
+      
       <div className="unyfilm-catalog__results-info">
         <p className="unyfilm-catalog__results-count">
           {sortedMovies.length} película{sortedMovies.length !== 1 ? 's' : ''} encontrada{sortedMovies.length !== 1 ? 's' : ''}
         </p>
       </div>
 
-      {/* Movie Grid */}
+     
       {isLoading ? (
         <div className="unyfilm-catalog-loading">
           <div className="loading-spinner"></div>
@@ -295,7 +294,7 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
             <UnyFilmCard
                 key={movie._id || index}
               title={movie.title}
-              movieId={movie._id} // NUEVO: Pasar el ID de la película
+              movieId={movie._id}
               onMovieClick={() => handleMovieClick({ 
                 _id: movie._id,
                 title: movie.title, 
@@ -309,7 +308,8 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
                 genres: movie.genre,
                 cloudinaryPublicId: movie.cloudinaryVideoId,
                 cloudinaryUrl: movie.videoUrl,
-                duration: movie.duration || 0
+                duration: movie.duration || 0,
+                subtitles: movie.subtitles
               })}
               description={movie.description || ''}
               image={movie.poster}
@@ -323,7 +323,7 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
       </div>
       )}
 
-      {/* No Results */}
+     
       {sortedMovies.length === 0 && (
         <div className="unyfilm-catalog__no-results">
           <div className="unyfilm-catalog__no-results-icon">
@@ -336,7 +336,7 @@ export default function UnyFilmCatalog({ favorites: _favorites, toggleFavorite: 
         </div>
       )}
 
-      {/* Load More Button */}
+      
       {sortedMovies.length > 0 && (
         <div className="unyfilm-catalog__load-more">
           <button className="unyfilm-catalog__load-more-button">

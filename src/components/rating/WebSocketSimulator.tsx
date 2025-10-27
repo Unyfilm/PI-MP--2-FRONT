@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { sendWebSocketEvent } from '../../services/websocketService';
 
-/**
- * Simulador WebSocket para testing entre navegadores
- * Solo se muestra en desarrollo
- */
+
 const WebSocketSimulator: React.FC = () => {
   const [testMovieId, setTestMovieId] = useState('68f84e9aba5b03d95f2d6ce4');
   const [testRating, setTestRating] = useState(3);
@@ -39,7 +36,6 @@ const WebSocketSimulator: React.FC = () => {
     });
   };
 
-  // Solo mostrar en desarrollo
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }

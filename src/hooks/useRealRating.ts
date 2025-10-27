@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react';
 import { getMovieRatingStats } from '../services/ratingService';
 import type { RatingStats } from '../services/ratingService';
 
-/**
- * Hook para obtener calificaciones reales de usuarios
- * Solo muestra calificaciones cuando hay calificaciones reales de usuarios
- */
+
 export const useRealRating = (movieId: string | undefined) => {
   const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +20,8 @@ export const useRealRating = (movieId: string | undefined) => {
         setIsLoading(true);
         const stats = await getMovieRatingStats(movieId);
         
-        // Solo considerar que hay calificaciones reales si totalRatings > 0
+        
+        
         if (stats.totalRatings > 0) {
           setRatingStats(stats);
           setHasRealRatings(true);

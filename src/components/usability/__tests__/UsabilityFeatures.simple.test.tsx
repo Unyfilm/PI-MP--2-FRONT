@@ -62,7 +62,6 @@ describe('UsabilityFeatures - Simple Tests', () => {
     
     expect(shortcuts).toHaveLength(25);
     
-    // Verificar categorías de atajos
     const navigationShortcuts = shortcuts.filter(s => s.description.includes('Saltar') || s.description.includes('Ir a'));
     const videoShortcuts = shortcuts.filter(s => s.description.includes('video') || s.description.includes('volumen') || s.description.includes('segundos'));
     const catalogShortcuts = shortcuts.filter(s => s.description.includes('filtros') || s.description.includes('vista') || s.description.includes('Ordenar'));
@@ -124,9 +123,9 @@ describe('UsabilityFeatures - Simple Tests', () => {
       ]
     };
     
-    Object.keys(heuristicExamples).forEach(heuristic => {
-      expect(heuristicExamples[heuristic]).toHaveLength(4);
-      expect(heuristicExamples[heuristic].every(example => example.length > 0)).toBe(true);
+    Object.keys(heuristicExamples).forEach((heuristic: string) => {
+      expect(heuristicExamples[heuristic as keyof typeof heuristicExamples]).toHaveLength(4);
+      expect(heuristicExamples[heuristic as keyof typeof heuristicExamples].every((example: string) => example.length > 0)).toBe(true);
     });
   });
 

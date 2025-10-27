@@ -1,9 +1,3 @@
-/**
- * Favorite Button Component
- * 
- * Reusable button for adding/removing movies from favorites
- * with animations and optimized state management.
- */
 
 
 import React, { useState, useEffect } from 'react';
@@ -34,32 +28,23 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   const [isMovieFavorite, setIsMovieFavorite] = useState(false);
   const [favoriteId, setFavoriteId] = useState<string | null>(null);
   
-  // Check if the movie is in favorites using the global context (without API requests)
   useEffect(() => {
     const checkFavoriteStatus = () => {
       try {
-        // Use the global favorites context (without backend requests)
         const isFavorite = isMovieInFavorites(movieId);
         const favorite = getFavoriteById(movieId);
         
         setIsMovieFavorite(isFavorite);
         setFavoriteId(favorite?._id || null);
-        
-        console.log(`🔍 FavoriteButton - Película ${movieId} ${isFavorite ? 'está' : 'no está'} en favoritos (contexto global)`, {
-          favoritesCount: favorites.length,
-          isLoaded: !loading
-        });
       } catch (error) {
         console.error('Error checking favorite status:', error);
       }
     };
     
     checkFavoriteStatus();
-  }, [movieId, favorites, isMovieInFavorites, getFavoriteById, loading]); // Dependencias del contexto
+  }, [movieId, favorites, isMovieInFavorites, getFavoriteById, loading]); 
 
-  /**
-   * Handle favorites toggle
-   */
+ 
   const handleToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -74,7 +59,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     
     try {
       if (isMovieFavorite && favoriteId) {
-        // Eliminar de favoritos
+        
         console.log('🗑️ Removing from favorites:', movieId);
         const result = await removeFromFavorites(favoriteId);
         
@@ -87,16 +72,14 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
           console.error('❌ Failed to remove from favorites:', result.message);
         }
       } else {
-        // Add to favorites
         console.log('➕ Adding to favorites:', movieId);
         const result = await addToFavorites(movieId);
         
         if (result.success) {
           console.log('✅ Successfully added to favorites');
           setIsMovieFavorite(true);
-          // Update favoriteId if available in the response
-          if (result.data && result.data._id) {
-            setFavoriteId(result.data._id);
+          if (result && typeof result === 'object' && '_id' in result) {
+            setFavoriteId((result as any)._id);
           }
           onToggle?.(true, movieId);
         } else {
@@ -107,14 +90,11 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
       console.error('❌ Error toggling favorite:', error);
     } finally {
       setIsToggling(false);
-      // Maintain animation for a moment
       setTimeout(() => setIsAnimating(false), 600);
     }
   };
 
-  /**
-   * Get CSS classes based on size
-   */
+ 
   const getSizeClasses = (): string => {
     switch (size) {
       case 'small':
@@ -126,9 +106,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     }
   };
 
-  /**
-   * Get button text
-   */
+
   const getButtonText = (): string => {
     if (isMovieFavorite) {
       return 'En favoritos';
@@ -136,9 +114,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     return 'Agregar a favoritos';
   };
 
-  /**
-   * Get aria-label
-   */
+
   const getAriaLabel = (): string => {
     if (isMovieFavorite) {
       return `Eliminar ${movieTitle || 'película'} de favoritos`;

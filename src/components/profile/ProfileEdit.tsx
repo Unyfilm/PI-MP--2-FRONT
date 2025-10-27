@@ -25,7 +25,6 @@ export default function ProfileEdit() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   
-  // Estados para cambio de contraseña
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -38,7 +37,6 @@ export default function ProfileEdit() {
   const [passwordError, setPasswordError] = useState('');
   const [showPasswordSection, setShowPasswordSection] = useState(false);
   
-  // Estados para notificaciones
   const [notification, setNotification] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -49,7 +47,7 @@ export default function ProfileEdit() {
     show: false
   });
 
-  // Validaciones de contraseña (igual que en registro)
+
   const passwordChecks = {
     length: newPassword.length >= 8,
     upper: /[A-Z]/.test(newPassword),
@@ -58,7 +56,7 @@ export default function ProfileEdit() {
     special: /[^A-Za-z0-9]/.test(newPassword),
   };
 
-  // Cargar datos del usuario cuando el componente se monta
+  
   useEffect(() => {
     if (user) {
       setName(user.firstName || '');
@@ -68,7 +66,7 @@ export default function ProfileEdit() {
     }
   }, [user]);
 
-  // Función para mostrar notificaciones
+  
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({
       type,
@@ -76,7 +74,7 @@ export default function ProfileEdit() {
       show: true
     });
     
-    // Auto-ocultar después de 4 segundos
+    
     setTimeout(() => {
       setNotification(prev => ({ ...prev, show: false }));
     }, 4000);
@@ -86,7 +84,7 @@ export default function ProfileEdit() {
     setIsSaving(true);
     setError('');
     
-    // Validaciones básicas
+   
     if (!name.trim()) {
       setError('El nombre es requerido');
       setIsSaving(false);
@@ -140,7 +138,7 @@ export default function ProfileEdit() {
     setIsChangingPassword(true);
     setPasswordError('');
     
-    // Validaciones
+
     if (!currentPassword.trim()) {
       setPasswordError('La contraseña actual es requerida');
       setIsChangingPassword(false);
@@ -159,7 +157,7 @@ export default function ProfileEdit() {
       return;
     }
 
-    // Validaciones de seguridad de contraseña
+
     if (!passwordChecks.upper) {
       setPasswordError('La nueva contraseña debe contener al menos una mayúscula');
       setIsChangingPassword(false);
@@ -200,7 +198,7 @@ export default function ProfileEdit() {
       const result = await changePassword(currentPassword, newPassword, confirmPassword);
       
       if (result.success) {
-        // Limpiar campos y cerrar sección
+        
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -233,7 +231,7 @@ export default function ProfileEdit() {
     setShowPasswordSection(false);
   };
 
-  // Si no hay usuario, mostrar loading
+  
   if (!user) {
     return (
       <div className="profile-page">
@@ -294,7 +292,7 @@ export default function ProfileEdit() {
           </div>
         </div>
 
-        {/* Sección de cambio de contraseña */}
+     
         <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <h3 style={{ color: '#ffffff', fontSize: '18px', fontWeight: '600', margin: 0 }}>Cambiar contraseña</h3>
@@ -365,7 +363,7 @@ export default function ProfileEdit() {
                 </div>
               </div>
 
-              {/* Checklist visual de requisitos de contraseña */}
+              
               {newPassword && (
                 <div className="password-checklist password-checklist--show" style={{ marginTop: '12px' }}>
                   <div className={`password-checklist__item ${passwordChecks.length ? 'password-checklist__item--ok' : ''}`}>
@@ -474,7 +472,7 @@ export default function ProfileEdit() {
         </div>
       </div>
 
-      {/* Componente de notificación */}
+     
       {notification.show && (
         <div className={`password-notification password-notification--${notification.type}`}>
           <div className="password-notification__content">

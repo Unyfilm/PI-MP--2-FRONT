@@ -1,15 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Play } from 'lucide-react';
 import VisualRatingStars from '../rating/VisualRatingStars';
-import { getMovieRatingStats, type RatingStats } from '../../services/ratingService';
+import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
 import FavoriteButton from '../favorite/FavoriteButton';
 import './UnyFilmCard.css';
 
-/**
- * Represents the data associated with a clicked movie.
- * Used to pass detailed information about the selected movie
- * to higher-level components or event handlers.
- */
+
 interface MovieClickData {
   _id?: string;
   title: string;
@@ -76,27 +72,13 @@ export default function UnyFilmCard({
   const [isHover, setIsHover] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
-  const [ratingStats, setRatingStats] = useState<RatingStats | null>(null);
-
-  useEffect(() => {
-    const loadRatingStats = async () => {
-      if (!movieId || movieId.trim() === '') return;
-      
-      try {
-        const stats = await getMovieRatingStats(movieId);
-        setRatingStats(stats);
-      } catch (error) {
-        setRatingStats({
-          movieId,
-          averageRating: rating || 0,
-          totalRatings: 0,
-          distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
-        });
-      }
-    };
-
-    loadRatingStats();
-  }, [movieId, rating]);
+  
+  // Usar el hook de ratings en tiempo real
+  const { ratingStats } = useRealtimeRatings({ 
+    movieId: movieId || '', 
+    autoLoad: true, 
+    enableRealtime: true 
+  });
 
   const handleImageError = () => {
     if (!imageError && fallbackImage) {
@@ -159,7 +141,7 @@ export default function UnyFilmCard({
           </div>
         )}
         
-        {/* Botón de favoritos en la esquina superior derecha */}
+        
         {movieId && (
           <div className="unyfilm-card__favorite-button">
             <FavoriteButton
@@ -175,7 +157,7 @@ export default function UnyFilmCard({
       <div className="unyfilm-card__content">
         <h3 className="unyfilm-card__title">{title}</h3>
         
-        {/* SISTEMA DE RATING VISUAL */}
+       
         {movieId && ratingStats && (
           <div className="unyfilm-card__rating-stars">
             <VisualRatingStars

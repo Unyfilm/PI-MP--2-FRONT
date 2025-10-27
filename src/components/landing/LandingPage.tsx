@@ -27,11 +27,9 @@ export default function LandingPage() {
 
   return (
     <div className="landing-page">
-      {/* Navbar */}
       <nav className={`landing-navbar ${scrolled ? 'landing-navbar--scrolled' : ''}`}>
         <div className="landing-navbar__container">
           <div className="landing-navbar__content">
-            {/* Logo */}
             <div className="landing-navbar__logo">
               <img 
                 src="/images/logo4.png" 
@@ -40,7 +38,6 @@ export default function LandingPage() {
               />
             </div>
 
-            {/* Action Buttons */}
             <div className="landing-navbar__actions">
               <Link to="/login" className="landing-navbar__btn-login">
                 Iniciar Sesión
@@ -50,7 +47,6 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            {/* Mobile Menu Button */}
             <button 
               className="landing-navbar__mobile-btn"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -60,7 +56,6 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {menuOpen && (
           <div className="landing-mobile-menu">
             <div className="landing-mobile-menu__content">
@@ -73,7 +68,6 @@ export default function LandingPage() {
         )}
       </nav>
 
-      {/* Hero Section */}
       <section id="inicio" className="landing-hero">
         <div className="landing-hero__bg">
             <img 
@@ -110,7 +104,6 @@ export default function LandingPage() {
       </section>
 
 
-      {/* Features */}
       <section id="por-que-unyfilm" className="landing-features">
         <div className="landing-section-container">
           <h2 className="landing-section-title landing-section-title--centered">
@@ -148,7 +141,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section id="faq" className="landing-faq">
         <div className="landing-faq__container">
           <h2 className="landing-faq__title">
@@ -187,10 +179,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="footer">
         <div className="footer__container">
-          {/* Bottom Horizontal Bar */}
           <div className="footer__bottom">
             <div className="footer__bottom-content">
               <p className="footer__copyright">
