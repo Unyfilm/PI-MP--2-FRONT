@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X, Heart } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
 import InteractiveRating from '../rating/InteractiveRating';
+import MovieComments from '../comments/MovieComments';
 import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import { cloudinaryService } from '../../services/cloudinaryService';
@@ -852,6 +853,13 @@ export default function UnyFilmPlayer({
               movieId={movie._id}
               movieTitle={movie.title || 'Película'}
               onRatingUpdate={handleRatingUpdate}
+            />
+          )}
+
+          {movie && movie._id && (
+            <MovieComments
+              movieId={movie._id}
+              movieTitle={movie.title || 'Película'}
             />
           )}
 
