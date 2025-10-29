@@ -64,6 +64,17 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
     }
   }, [comments, currentPage]);
 
+  // Debug: Monitorear cambios en el usuario
+  useEffect(() => {
+    console.log('👤 Estado del usuario actualizado:', {
+      user,
+      isAuthenticated,
+      userKeys: user ? Object.keys(user) : [],
+      userId: user?._id,
+      userIdType: typeof user?._id
+    });
+  }, [user, isAuthenticated]);
+
   /**
    * Carga los comentarios de la película desde el servidor.
    * Maneja la paginación y actualiza el estado de los comentarios.
@@ -440,6 +451,39 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       return false;
     }
     
+    // Verificar que user._id existe y es válido
+    if (!user._id) {
+      console.log('❌ user._id no está definido:', { user, userKeys: Object.keys(user || {}) });
+      
+      // Intentar obtener el ID del token como fallback
+      const token = localStorage.getItem('token') || localStorage.getItem('unyfilm-token');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const tokenUserId = payload.userId || payload.id || payload._id;
+          console.log('🔑 Intentando usar ID del token:', { tokenUserId, payload });
+          
+          if (tokenUserId) {
+            const actualUserId = typeof comment.userId === 'object' ? (comment.userId as any)._id || (comment.userId as any).id : comment.userId;
+            const canEdit = String(actualUserId) === String(tokenUserId);
+            
+            console.log('🔍 Verificando con ID del token:', {
+              commentId: comment._id,
+              actualUserId,
+              tokenUserId,
+              canEdit
+            });
+            
+            return canEdit;
+          }
+        } catch (error) {
+          console.log('❌ Error al decodificar token:', error);
+        }
+      }
+      
+      return false;
+    }
+    
     const actualUserId = typeof comment.userId === 'object' ? (comment.userId as any)._id || (comment.userId as any).id : comment.userId;
     const canEdit = String(actualUserId) === String(user._id);
     
@@ -450,6 +494,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       currentUserId: user._id,
       canEdit,
       isAuthenticated,
+      userObject: user,
       types: {
         actualUserIdType: typeof actualUserId,
         currentUserIdType: typeof user._id,
