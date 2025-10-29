@@ -10,9 +10,7 @@ import './MovieComments.scss';
  * @interface MovieCommentsProps
  */
 interface MovieCommentsProps {
-  /** ID único de la película */
   movieId: string;
-  /** Título de la película para mostrar en el placeholder */
   movieTitle: string;
 }
 
@@ -50,6 +48,9 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const firstFocusableRef = useRef<HTMLButtonElement>(null);
+  const lastFocusableRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     loadComments();
@@ -63,6 +64,55 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       }
     }
   }, [comments, currentPage]);
+
+  useEffect(() => {
+    if (showDeleteModal) {
+      setTimeout(() => {
+        if (firstFocusableRef.current) {
+          firstFocusableRef.current.focus();
+        }
+      }, 100);
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          cancelDeleteComment();
+          return;
+        }
+
+        if (e.key === 'Tab') {
+          const focusableElements = modalRef.current?.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          ) as NodeListOf<HTMLElement>;
+
+          if (focusableElements && focusableElements.length > 0) {
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey) {
+              if (document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+              }
+            } else {
+              if (document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+              }
+            }
+          }
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+      
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [showDeleteModal]);
 
 
   /**
@@ -421,10 +471,10 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   const canEditComment = (comment: Comment) => {
     if (!isAuthenticated || !user) return false;
     
-    // Obtener el ID del usuario actual (prioridad: user._id, fallback: token)
+    
     let currentUserId = user._id;
     
-    // Si user._id no está disponible o es undefined, intentar con el token
+    
     if (!currentUserId) {
       const token = localStorage.getItem('token') || localStorage.getItem('unyfilm-token');
       if (token) {
@@ -432,12 +482,12 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
           const payload = JSON.parse(atob(token.split('.')[1]));
           currentUserId = payload.userId || payload.id || payload._id;
         } catch (error) {
-          // Error al decodificar token, continuar sin fallback
+          
         }
       }
     }
     
-    // Si aún no tenemos un ID válido, no se puede editar
+    
     if (!currentUserId) return false;
     
     const actualUserId = typeof comment.userId === 'object' ? (comment.userId as any)._id || (comment.userId as any).id : comment.userId;
@@ -445,17 +495,21 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   return (
-    <div className="movie-comments">
+    <section className="movie-comments" aria-labelledby="comments-heading">
       <div className="movie-comments__header">
-        <h3 className="movie-comments__title">
+        <h3 id="comments-heading" className="movie-comments__title">
           Comentarios ({totalComments})
         </h3>
       </div>
 
       {isAuthenticated ? (
-        <form onSubmit={handleSubmitComment} className="movie-comments__form">
+        <form onSubmit={handleSubmitComment} className="movie-comments__form" role="form" aria-label="Formulario de comentarios">
           <div className="movie-comments__input-group">
+            <label htmlFor="comment-textarea" className="sr-only">
+              Escribir comentario sobre {movieTitle}
+            </label>
             <textarea
+              id="comment-textarea"
               ref={textareaRef}
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
@@ -464,15 +518,21 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
               maxLength={200}
               rows={3}
               disabled={submitting}
+              tabIndex={0}
+              aria-label={`Escribir comentario sobre ${movieTitle}`}
+              aria-describedby="char-count"
+              aria-invalid={newComment.length > 200 ? 'true' : 'false'}
             />
-            <div className="movie-comments__char-count">
-              {newComment.length}/200
+            <div id="char-count" className="movie-comments__char-count" aria-live="polite">
+              {newComment.length}/200 caracteres
             </div>
           </div>
           <button
             type="submit"
             disabled={!newComment.trim() || submitting || newComment.length > 200}
             className="movie-comments__submit-btn"
+            tabIndex={0}
+            aria-label="Enviar comentario"
           >
             {submitting ? (
               <div className="movie-comments__spinner" />
@@ -491,16 +551,16 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       )}
 
       {error && (
-        <div className="movie-comments__error">
+        <div className="movie-comments__error" role="alert" aria-live="assertive">
           {error}
         </div>
       )}
 
-      <div className="movie-comments__list">
+      <div className="movie-comments__list" role="list" aria-label="Lista de comentarios">
         {loading && (!comments || comments.length === 0) ? (
-          <div className="movie-comments__loading">
+          <div className="movie-comments__loading" role="status" aria-live="polite">
             <div className="movie-comments__loading-container">
-              <div className="movie-comments__loading-spinner">
+              <div className="movie-comments__loading-spinner" aria-hidden="true">
                 <div className="movie-comments__loading-dot"></div>
                 <div className="movie-comments__loading-dot"></div>
                 <div className="movie-comments__loading-dot"></div>
@@ -509,34 +569,35 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
             </div>
           </div>
         ) : !comments || comments.length === 0 ? (
-          <div className="movie-comments__empty">
+          <div className="movie-comments__empty" role="status">
             <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
           </div>
         ) : (
           <>
-            {(comments || []).map((comment) => {
+            {(comments || []).map((comment, index) => {
               const userInfo = getUserInfo(comment.userId);
+              const stableKey = (comment as any)?._id || (comment as any)?.id || `${index}-${userInfo?._id || 'comment'}`;
               
               return (
-              <div key={comment._id} className="movie-comments__comment">
+              <article key={stableKey} className="movie-comments__comment" role="listitem" aria-labelledby={`comment-${(comment as any)?._id || (comment as any)?.id || index}-author`}>
                 <div className="movie-comments__comment-header">
                   <div className="movie-comments__user-info">
-                     <div className="movie-comments__user-avatar">
+                     <div className="movie-comments__user-avatar" aria-hidden="true">
                        {userInfo.firstName?.charAt(0)?.toUpperCase() || 'E'}
                      </div>
                      <div className="movie-comments__user-details">
-                       <span className="movie-comments__user-name">
+                       <span id={`comment-${(comment as any)?._id || (comment as any)?.id || index}-author`} className="movie-comments__user-name">
                          {userInfo.firstName}{userInfo.lastName}
                        </span>
-                      <span className="movie-comments__comment-date">
+                     <time className="movie-comments__comment-date" dateTime={comment.createdAt}>
                         {formatDate(comment.createdAt)}
                         {comment.updatedAt !== comment.createdAt && ' (editado)'}
-                      </span>
+                      </time>
                     </div>
                   </div>
                   
                   {canEditComment(comment) && (
-                    <div className="movie-comments__comment-actions">
+                    <div className="movie-comments__comment-actions" role="group" aria-label={`Acciones para el comentario de ${userInfo.firstName}`}>
                       {editingComment === comment._id ? (
                         <>
                           <button
@@ -544,16 +605,22 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
                             disabled={submitting}
                             className="movie-comments__action-btn movie-comments__action-btn--save"
                             title="Guardar cambios"
+                            tabIndex={0}
+                            aria-label="Guardar cambios del comentario"
                           >
-                            <Check size={18} />
+                            <Check size={18} aria-hidden="true" />
+                            <span className="sr-only">Guardar cambios</span>
                           </button>
                           <button
                             onClick={handleCancelEdit}
                             disabled={submitting}
                             className="movie-comments__action-btn movie-comments__action-btn--cancel"
                             title="Cancelar edición"
+                            tabIndex={0}
+                            aria-label="Cancelar edición del comentario"
                           >
-                            <X size={18} />
+                            <X size={18} aria-hidden="true" />
+                            <span className="sr-only">Cancelar edición</span>
                           </button>
                         </>
                       ) : (
@@ -563,16 +630,22 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
                             disabled={submitting}
                             className="movie-comments__action-btn movie-comments__action-btn--edit"
                             title="Editar comentario"
+                            tabIndex={0}
+                            aria-label="Editar comentario"
                           >
-                            <Edit2 size={18} />
+                            <Edit2 size={18} aria-hidden="true" />
+                            <span className="sr-only">Editar comentario</span>
                           </button>
                           <button
                             onClick={() => handleDeleteComment(comment._id)}
                             disabled={submitting}
                             className="movie-comments__action-btn movie-comments__action-btn--delete"
                             title="Eliminar comentario"
+                            tabIndex={0}
+                            aria-label="Eliminar comentario"
                           >
-                            <Trash2 size={18} />
+                            <Trash2 size={18} aria-hidden="true" />
+                            <span className="sr-only">Eliminar comentario</span>
                           </button>
                         </>
                       )}
@@ -589,14 +662,17 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
                       maxLength={200}
                       rows={3}
                       disabled={submitting}
+                      tabIndex={0}
+                      aria-label="Editar comentario"
+                      aria-describedby={`char-count-edit-${comment._id}`}
                     />
                   ) : (
-                    <p className="movie-comments__comment-text">
+                    <p className="movie-comments__comment-text" id={`comment-${comment._id}-content`}>
                       {comment.content}
                     </p>
                   )}
                 </div>
-              </div>
+              </article>
               );
             })}
             
@@ -605,49 +681,81 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
                 onClick={loadMoreComments}
                 disabled={loading}
                 className="movie-comments__load-more"
+                tabIndex={0}
+                aria-label="Cargar más comentarios"
+                aria-describedby="load-more-description"
               >
               {loading ? (
                 <>
-                  <div className="movie-comments__loading-spinner-small">
+                  <div className="movie-comments__loading-spinner-small" aria-hidden="true">
                     <div className="movie-comments__loading-dot-small"></div>
                     <div className="movie-comments__loading-dot-small"></div>
                     <div className="movie-comments__loading-dot-small"></div>
                   </div>
-                  Cargando más...
+                  <span aria-live="polite">Cargando más comentarios...</span>
                 </>
               ) : (
                 'Cargar más comentarios'
               )}
               </button>
             )}
+            <div id="load-more-description" className="sr-only">
+              Presiona Enter o Espacio para cargar más comentarios
+            </div>
           </>
         )}
         
       </div>
       
       {showDeleteModal && (
-        <div className="movie-comments__modal-overlay">
-          <div className="movie-comments__modal">
+        <div 
+          className="movie-comments__modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              cancelDeleteComment();
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          aria-describedby="modal-message"
+        >
+          <div 
+            ref={modalRef}
+            className="movie-comments__modal"
+          >
             <div className="movie-comments__modal-header">
-              <h3 className="movie-comments__modal-title">Eliminar comentario</h3>
+              <h3 
+                id="modal-title"
+                className="movie-comments__modal-title"
+              >
+                Eliminar comentario
+              </h3>
             </div>
             <div className="movie-comments__modal-body">
-              <p className="movie-comments__modal-message">
+              <p 
+                id="modal-message"
+                className="movie-comments__modal-message"
+              >
                 ¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer.
               </p>
             </div>
             <div className="movie-comments__modal-footer">
               <button
+                ref={firstFocusableRef}
                 onClick={cancelDeleteComment}
                 disabled={submitting}
                 className="movie-comments__modal-btn movie-comments__modal-btn--cancel"
+                aria-label="Cancelar eliminación del comentario"
               >
                 Cancelar
               </button>
               <button
+                ref={lastFocusableRef}
                 onClick={confirmDeleteComment}
                 disabled={submitting}
                 className="movie-comments__modal-btn movie-comments__modal-btn--confirm"
+                aria-label="Confirmar eliminación del comentario"
               >
                 {submitting ? 'Eliminando...' : 'Eliminar'}
               </button>
@@ -655,7 +763,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

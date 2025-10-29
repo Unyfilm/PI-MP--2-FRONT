@@ -124,6 +124,7 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
           onMouseLeave={() => setHoverRating(0)}
           disabled={isSubmitting}
           aria-label={`Calificar con ${i} estrella${i > 1 ? 's' : ''}`}
+          tabIndex={0}
         >
           <Star 
             size={24} 
@@ -181,6 +182,8 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
               className="delete-rating-btn"
               onClick={handleDeleteRating}
               disabled={isSubmitting}
+              tabIndex={0}
+              aria-label="Eliminar calificación"
             >
               Eliminar
             </button>

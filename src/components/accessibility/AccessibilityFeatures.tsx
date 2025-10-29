@@ -313,7 +313,8 @@ export default function AccessibilityFeatures() {
           aria-label="Abrir panel de accesibilidad"
           title="Opciones de accesibilidad"
         >
-          <Eye size={20} />
+          <Eye size={20} aria-hidden="true" />
+          <span className="sr-only">Panel de accesibilidad</span>
         </button>
 
         <div className="accessibility-controls">
