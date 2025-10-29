@@ -452,3 +452,66 @@ export interface EnhancedPlayerProps extends PlayerProps {
   onQualityChange?: (quality: string) => void;
   onSubtitleToggle?: (enabled: boolean) => void;
 }
+
+/**
+ * Interface for comment data
+ * @interface Comment
+ */
+export interface Comment {
+  _id: string;
+  content: string;
+  movieId: string;
+  userId: string;
+  user: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    username?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+}
+
+/**
+ * Interface for comment creation data
+ * @interface CreateCommentData
+ */
+export interface CreateCommentData {
+  movieId: string;
+  content: string;
+}
+
+/**
+ * Interface for comment update data
+ * @interface UpdateCommentData
+ */
+export interface UpdateCommentData {
+  content: string;
+}
+
+/**
+ * Interface for comment pagination response
+ * @interface CommentPaginationResponse
+ */
+export interface CommentPaginationResponse {
+  comments: Comment[];
+  totalComments: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+/**
+ * Interface for comment service methods
+ * @interface CommentService
+ */
+export interface CommentService {
+  createComment: (data: CreateCommentData) => Promise<ApiResponse<Comment>>;
+  getCommentsByMovie: (movieId: string, page?: number, limit?: number) => Promise<ApiResponse<CommentPaginationResponse>>;
+  getMyComments: (page?: number, limit?: number) => Promise<ApiResponse<CommentPaginationResponse>>;
+  updateComment: (commentId: string, data: UpdateCommentData) => Promise<ApiResponse<Comment>>;
+  deleteComment: (commentId: string) => Promise<ApiResponse<void>>;
+  getComment: (commentId: string) => Promise<ApiResponse<Comment>>;
+}
