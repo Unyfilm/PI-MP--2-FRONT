@@ -225,7 +225,8 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
    * @returns {void}
    */
   const handleEditComment = (comment: Comment) => {
-    setEditingComment(comment._id);
+    const id = (comment as any)?._id || (comment as any)?.id;
+    setEditingComment(id);
     setEditContent(comment.content);
   };
 
@@ -278,9 +279,10 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       
       if (response.success && response.data) {
         setComments(prev => 
-          (prev || []).map(comment => 
-            comment._id === commentId ? response.data! : comment
-          )
+          (prev || []).map(comment => {
+            const cid = (comment as any)?._id || (comment as any)?.id;
+            return cid === commentId ? (response.data as any) : comment;
+          })
         );
         setEditingComment(null);
         setEditContent('');
@@ -576,17 +578,18 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
           <>
             {(comments || []).map((comment, index) => {
               const userInfo = getUserInfo(comment.userId);
-              const stableKey = (comment as any)?._id || (comment as any)?.id || `${index}-${userInfo?._id || 'comment'}`;
+              const commentId = (comment as any)?._id || (comment as any)?.id;
+              const stableKey = commentId || `${index}-${userInfo?._id || 'comment'}`;
               
               return (
-              <article key={stableKey} className="movie-comments__comment" role="listitem" aria-labelledby={`comment-${(comment as any)?._id || (comment as any)?.id || index}-author`}>
+              <article key={stableKey} className="movie-comments__comment" role="listitem" aria-labelledby={`comment-${commentId || index}-author`}>
                 <div className="movie-comments__comment-header">
                   <div className="movie-comments__user-info">
                      <div className="movie-comments__user-avatar" aria-hidden="true">
                        {userInfo.firstName?.charAt(0)?.toUpperCase() || 'E'}
                      </div>
                      <div className="movie-comments__user-details">
-                       <span id={`comment-${(comment as any)?._id || (comment as any)?.id || index}-author`} className="movie-comments__user-name">
+                       <span id={`comment-${commentId || index}-author`} className="movie-comments__user-name">
                          {userInfo.firstName}{userInfo.lastName}
                        </span>
                      <time className="movie-comments__comment-date" dateTime={comment.createdAt}>
@@ -598,10 +601,10 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
                   
                   {canEditComment(comment) && (
                     <div className="movie-comments__comment-actions" role="group" aria-label={`Acciones para el comentario de ${userInfo.firstName}`}>
-                      {editingComment === comment._id ? (
+                      {editingComment === commentId ? (
                         <>
                           <button
-                            onClick={() => handleUpdateComment(comment._id)}
+                            onClick={() => handleUpdateComment(String(commentId))}
                             disabled={submitting}
                             className="movie-comments__action-btn movie-comments__action-btn--save"
                             title="Guardar cambios"
@@ -637,7 +640,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
                             <span className="sr-only">Editar comentario</span>
                           </button>
                           <button
-                            onClick={() => handleDeleteComment(comment._id)}
+                            onClick={() => handleDeleteComment(String(commentId))}
                             disabled={submitting}
                             className="movie-comments__action-btn movie-comments__action-btn--delete"
                             title="Eliminar comentario"
@@ -654,7 +657,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
                 </div>
                 
                 <div className="movie-comments__comment-content">
-                  {editingComment === comment._id ? (
+                  {editingComment === commentId ? (
                     <textarea
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
@@ -664,10 +667,10 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
                       disabled={submitting}
                       tabIndex={0}
                       aria-label="Editar comentario"
-                      aria-describedby={`char-count-edit-${comment._id}`}
+                      aria-describedby={`char-count-edit-${commentId}`}
                     />
                   ) : (
-                    <p className="movie-comments__comment-text" id={`comment-${comment._id}-content`}>
+                    <p className="movie-comments__comment-text" id={`comment-${commentId}-content`}>
                       {comment.content}
                     </p>
                   )}
