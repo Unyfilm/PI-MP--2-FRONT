@@ -134,7 +134,16 @@ export default function AccessibilityFeatures() {
  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.altKey || e.ctrlKey) {
+      // No interceptar si Ctrl está presionado (para permitir caracteres especiales como @ con Ctrl+Alt+2)
+      // o si el usuario está en un input/textarea (para permitir pegado, copiado, etc.)
+      if (e.ctrlKey || (e.target && 'matches' in e.target && (e.target as Element).matches('input, textarea, [contenteditable]'))) {
+        return;
+      }
+
+      // Solo prevenir el comportamiento por defecto para las combinaciones específicas que manejamos
+      const handledKeys = ['n', 's', 'a', 'h', 'p', 'f', 'r', 'v', 'o'];
+
+      if (e.altKey && handledKeys.includes(e.key.toLowerCase())) {
         e.preventDefault();
       }
 
