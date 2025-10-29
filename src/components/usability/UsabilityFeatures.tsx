@@ -215,8 +215,14 @@ export default function UsabilityFeatures() {
 
     
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Solo prevenir el comportamiento por defecto para las combinaciones específicas que manejamos
+      const handledAltKeys = ['n', 's', 'm', '1', '2', '3', '4', '5', '0', 'p', 'f', 'r', 'g', 'o', 'y', 't', 'a', 'h', '/'];
       
-      if (event.altKey || (event.key === ' ' && event.target && 'matches' in event.target && !(event.target as Element).matches('input, textarea'))) {
+      if (event.altKey && handledAltKeys.includes(event.key.toLowerCase())) {
+        event.preventDefault();
+      }
+      
+      if (event.key === ' ' && event.target && 'matches' in event.target && !(event.target as Element).matches('input, textarea')) {
         event.preventDefault();
       }
 
@@ -399,19 +405,6 @@ export default function UsabilityFeatures() {
 
   
 
-  
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      const shortcut = shortcuts.find(s => s.key.toLowerCase() === e.key.toLowerCase());
-      if (shortcut) {
-        e.preventDefault();
-        shortcut.action();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [shortcuts]);
 
   
   useEffect(() => {
@@ -435,7 +428,8 @@ export default function UsabilityFeatures() {
         aria-label="Mostrar u ocultar ayuda"
         type="button"
       >
-        <HelpCircle size={20} />
+        <HelpCircle size={20} aria-hidden="true" />
+        <span className="sr-only">Mostrar ayuda</span>
       </button>
 
 
