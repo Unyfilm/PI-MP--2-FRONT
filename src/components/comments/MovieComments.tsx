@@ -331,6 +331,13 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
    * - Si no hay información, devuelve 'Error' como fallback
    */
   const getUserInfo = (userId: any) => {
+    console.log('👤 getUserInfo llamado con:', {
+      userId,
+      userIdType: typeof userId,
+      currentUser: user,
+      isAuthenticated
+    });
+    
     let actualUserId: string;
     let userData: any = {};
     
@@ -341,11 +348,19 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       actualUserId = userId;
     }
     
+    console.log('🔍 Datos procesados:', {
+      actualUserId,
+      userData,
+      userDataKeys: Object.keys(userData || {})
+    });
+    
     if (userCache[actualUserId]) {
+      console.log('💾 Usando caché para:', actualUserId);
       return userCache[actualUserId];
     }
     
-    if (user && user._id === actualUserId) {
+    if (user && String(user._id) === String(actualUserId)) {
+      console.log('✅ Usuario actual detectado:', actualUserId);
       const userInfo = {
         _id: user._id,
         firstName: user.firstName,
@@ -357,6 +372,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
     }
     
     if (userData && Object.keys(userData).length > 0) {
+      console.log('📋 Usando datos del servidor:', userData);
       const userInfo = {
         _id: actualUserId,
         firstName: userData.firstName || '',
@@ -367,6 +383,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       return userInfo;
     }
     
+    console.log('❌ Fallback a Error para:', actualUserId);
     return {
       _id: actualUserId,
       firstName: 'Error',
@@ -418,10 +435,30 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
    * @returns {boolean} true si el usuario puede editar el comentario, false en caso contrario
    */
   const canEditComment = (comment: Comment) => {
-    if (!isAuthenticated || !user) return false;
+    if (!isAuthenticated || !user) {
+      console.log('🔒 No autenticado o sin usuario:', { isAuthenticated, user: !!user });
+      return false;
+    }
     
     const actualUserId = typeof comment.userId === 'object' ? (comment.userId as any)._id || (comment.userId as any).id : comment.userId;
-    return actualUserId === user._id;
+    const canEdit = String(actualUserId) === String(user._id);
+    
+    console.log('🔍 Verificando permisos de edición:', {
+      commentId: comment._id,
+      commentUserId: comment.userId,
+      actualUserId,
+      currentUserId: user._id,
+      canEdit,
+      isAuthenticated,
+      types: {
+        actualUserIdType: typeof actualUserId,
+        currentUserIdType: typeof user._id,
+        actualUserIdString: String(actualUserId),
+        currentUserIdString: String(user._id)
+      }
+    });
+    
+    return canEdit;
   };
 
   return (
@@ -494,9 +531,20 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
           </div>
         ) : (
           <>
-             {(comments || []).map((comment) => {
-               const userInfo = getUserInfo(comment.userId);
-               return (
+            {(comments || []).map((comment) => {
+              const userInfo = getUserInfo(comment.userId);
+              const canEdit = canEditComment(comment);
+              
+              console.log('📝 Renderizando comentario:', {
+                commentId: comment._id,
+                commentUserId: comment.userId,
+                userInfo,
+                canEdit,
+                currentUser: user,
+                isAuthenticated
+              });
+              
+              return (
               <div key={comment._id} className="movie-comments__comment">
                 <div className="movie-comments__comment-header">
                   <div className="movie-comments__user-info">
