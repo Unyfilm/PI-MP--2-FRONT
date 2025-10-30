@@ -3,7 +3,8 @@ import { Play, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull }
 import UnyFilmCard from '../card/UnyFilmCard';
 import { homeSections } from '../../data/moviesData';
 import { movieService, type Movie } from '../../services/movieService';
-import { useRealRating } from '../../hooks/useRealRating';
+import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
+import { getMovieRatingStats } from '../../services/ratingService';
 import './UnyFilmHome.css';
 
 type MovieClickData = {
@@ -56,7 +57,14 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
   const [featuredMovies, setFeaturedMovies] = useState<Movie[]>([]);
   const carouselIntervalRef = useRef<number | null>(null);
 
-  const { hasRealRatings, averageRating } = useRealRating(featuredMovie?._id);
+  const { ratingStats, loadRatingStats } = useRealtimeRatings({
+    movieId: featuredMovie?._id || '',
+    autoLoad: true,
+    enableRealtime: true
+  });
+
+  // Estado local para asegurar valor inmediato en Home
+  const [heroRating, setHeroRating] = useState<{ avg: number; total: number; loading: boolean }>({ avg: 0, total: 0, loading: true });
   const getHeroImage = (movie: Movie): string => {
     if (movie.port) return movie.port;
     
@@ -179,6 +187,54 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
       loadMovies();
     }
   }, []);
+
+  // Cargar/recargar rating cuando cambia la película destacada
+  useEffect(() => {
+    if (featuredMovie?._id) {
+      loadRatingStats();
+    }
+  }, [featuredMovie?._id, loadRatingStats]);
+
+  // Fetch directo para el héroe (no depende de eventos) con timeout de seguridad
+  useEffect(() => {
+    let cancelled = false;
+    let safetyTimer: number | null = null;
+    const fetchHeroRating = async () => {
+      if (!featuredMovie?._id) {
+        setHeroRating({ avg: 0, total: 0, loading: false });
+        return;
+      }
+      setHeroRating(prev => ({ ...prev, loading: true }));
+      // timeout de 2s para evitar "…" indefinido si hay problemas de red
+      safetyTimer = window.setTimeout(() => {
+        if (!cancelled) {
+          setHeroRating(prev => ({ ...prev, loading: false }));
+        }
+      }, 2000);
+
+      try {
+        const stats = await getMovieRatingStats(featuredMovie._id);
+        if (!cancelled) {
+          setHeroRating({ avg: stats.averageRating || 0, total: stats.totalRatings || 0, loading: false });
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setHeroRating({ avg: 0, total: 0, loading: false });
+        }
+      } finally {
+        if (safetyTimer) {
+          clearTimeout(safetyTimer);
+        }
+      }
+    };
+    fetchHeroRating();
+    return () => { 
+      cancelled = true; 
+      if (safetyTimer) {
+        clearTimeout(safetyTimer);
+      }
+    };
+  }, [featuredMovie?._id]);
 
   useEffect(() => {
     if (featuredMovie && !isLoading && featuredMovies.length > 1) {
@@ -371,7 +427,12 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               <span className="hero-genre">{featuredMovie.genre[0] || 'N/A'}</span>
               <span className="hero-rating">
                 <Star size={16} />
-                {hasRealRatings ? averageRating.toFixed(1) : '0'}
+                {
+                  // Preferir stats del hook en tiempo real si ya llegaron
+                  (ratingStats && ratingStats.totalRatings > 0)
+                    ? ratingStats.averageRating.toFixed(1)
+                    : (heroRating.loading ? '…' : (heroRating.total > 0 ? heroRating.avg.toFixed(1) : '—'))
+                }
               </span>
               <span className="hero-duration">{featuredMovie.duration ? `${featuredMovie.duration} min` : 'N/A'}</span>
             </div>
@@ -389,7 +450,7 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
             title: featuredMovie.title,
             index: featuredIndex,
             videoUrl: featuredMovie.videoUrl || '',
-            rating: hasRealRatings ? averageRating : 0,
+            rating: ratingStats && ratingStats.totalRatings > 0 ? ratingStats.averageRating : 0,
             year: new Date(featuredMovie.releaseDate || '').getFullYear() || 0,
             genre: featuredMovie.genre[0] || '',
             description: featuredMovie.description || '',
