@@ -124,10 +124,14 @@ export default function Login() {
                   onBlur={() => handleBlur('email')}
                   placeholder="example@correo.com"
                   className={`form-field__input ${errors.email && touched.email ? 'form-field__input--error' : ''}`}
+                  tabIndex={0}
+                  aria-label="Correo electrónico"
+                  aria-invalid={errors.email && touched.email ? 'true' : 'false'}
+                  aria-describedby={errors.email && touched.email ? 'email-error' : undefined}
                 />
               </div>
               {errors.email && touched.email && (
-                <p className="form-field__error">{errors.email}</p>
+                <p id="email-error" className="form-field__error" role="alert">{errors.email}</p>
               )}
             </div>
 
@@ -142,16 +146,23 @@ export default function Login() {
                   onBlur={() => handleBlur('password')}
                   placeholder="••••••••"
                   className={`form-field__input form-field__input--password ${errors.password && touched.password ? 'form-field__input--error' : ''}`}
+                  tabIndex={0}
+                  aria-label="Contraseña"
+                  aria-invalid={errors.password && touched.password ? 'true' : 'false'}
+                  aria-describedby={errors.password && touched.password ? 'password-error' : undefined}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="form-field__toggle">
+                  className="form-field__toggle"
+                  tabIndex={0}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
                   {showPassword ? <EyeOff size={22} strokeWidth={2.5} color="#ffffff" /> : <Eye size={22} strokeWidth={2.5} color="#ffffff" />}
                 </button>
               </div>
               {errors.password && touched.password && (
-                <p className="form-field__error">{errors.password}</p>
+                <p id="password-error" className="form-field__error" role="alert">{errors.password}</p>
               )}
             </div>
 
@@ -162,7 +173,10 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`login-form__button ${isLoading ? 'login-form__button--loading' : ''}`}>
+              className={`login-form__button ${isLoading ? 'login-form__button--loading' : ''}`}
+              tabIndex={0}
+              aria-label="Iniciar sesión"
+            >
               {isLoading ? (
                 <>
                   <div className="login-form__spinner" />
