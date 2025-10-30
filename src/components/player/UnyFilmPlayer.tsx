@@ -1,3 +1,9 @@
+/**
+ * UnyFilmPlayer component
+ * Custom HTML5 video player with Cloudinary transformations, subtitles (VTT),
+ * accessibility labels and integration with favorites and ratings.
+ * Props typed via EnhancedPlayerProps.
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X, Heart } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
@@ -106,7 +112,7 @@ export default function UnyFilmPlayer({
           }
         }
       } catch (error) {
-        console.error('Error cargando subtítulos:', error);
+        console.error('Error loading subtitles:', error);
         setAvailableSubtitles([]);
       }
     };
@@ -179,7 +185,7 @@ export default function UnyFilmPlayer({
           track.mode = subtitlesEnabled ? 'showing' : 'hidden';
           setSubtitleTrack(track);
         } catch (error) {
-          console.error('❌ Error cargando subtítulos:', error);
+          console.error('Error loading subtitles:', error);
         }
       }
     };
@@ -290,7 +296,7 @@ export default function UnyFilmPlayer({
           track.mode = subtitlesEnabled ? 'showing' : 'hidden';
           setSubtitleTrack(track);
         } catch (error) {
-          console.error('❌ Error cargando subtítulos:', error);
+          console.error('Error loading subtitles:', error);
         }
       }
     };
@@ -569,7 +575,7 @@ export default function UnyFilmPlayer({
         track.mode = subtitlesEnabled ? 'showing' : 'hidden';
         setSubtitleTrack(track);
       } catch (error) {
-        console.error('❌ Error cambiando idioma de subtítulos:', error);
+        console.error('Error changing subtitle language:', error);
       }
     }
   };

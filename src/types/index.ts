@@ -62,13 +62,19 @@ export interface LoginFormData {
 }
 
 /**
- * Interface for registration form data
+ * Interface for registration form data (UI)
+ * Spanish keys kept for backward-compatibility; prefer English keys.
  * @interface RegisterFormData
  */
 export interface RegisterFormData {
-  nombres: string;
-  apellidos: string;
-  edad: string;
+  // Preferred English
+  firstName?: string;
+  lastName?: string;
+  age?: string;
+  // Legacy Spanish (deprecated)
+  nombres?: string;
+  apellidos?: string;
+  edad?: string;
   email: string;
   password: string;
 }
@@ -165,7 +171,6 @@ export interface AccessibilityFeaturesProps extends BaseComponentProps {
   onToggleScreenReader?: () => void;
 }
 
-
 /**
  * Type for input change events
  * @type {InputChangeEvent}
@@ -200,7 +205,6 @@ export interface AppConfig {
   version: string;
   environment: 'development' | 'production' | 'test';
 }
-
 
 /**
  * Interface for pagination component props
@@ -247,7 +251,7 @@ export interface ApiResponse<T = any> {
 }
 
 /**
- * Interface for user data
+ * Interface for user data (keeps Spanish legacy fields for compatibility)
  * @interface User
  */
 export interface User {
@@ -255,10 +259,11 @@ export interface User {
   username?: string;
   firstName?: string;
   lastName?: string;
-  nombres?: string;     
-  apellidos?: string;   
-  edad?: string;        
-  age?: number;         
+  // Legacy
+  nombres?: string;
+  apellidos?: string;
+  edad?: string;
+  age?: number;
   email: string;
   password?: string;
   profilePicture?: string;
@@ -285,13 +290,17 @@ export interface LoginCredentials {
 }
 
 /**
- * Interface for user registration data
+ * Interface for user registration data (service)
+ * English preferred; Spanish accepted for compatibility.
  * @interface RegisterData
  */
 export interface RegisterData {
-  nombres: string;
-  apellidos: string;
-  edad: string;
+  firstName?: string;
+  lastName?: string;
+  age?: string;
+  nombres?: string;
+  apellidos?: string;
+  edad?: string;
   email: string;
   password: string;
 }

@@ -1,3 +1,8 @@
+/**
+ * UnyFilmHeader component
+ * Persistent top navigation with search input and profile dropdown.
+ * Receives search handlers via props and exposes accessible controls.
+ */
 import { useState, useEffect, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, User, LogOut } from 'lucide-react';

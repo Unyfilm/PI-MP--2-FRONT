@@ -1,3 +1,8 @@
+/**
+ * Recover component
+ * Requests a password reset link by email using the API service.
+ * UI remains Spanish; code/docs in English.
+ */
 import { useState } from 'react';
 import { Mail, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';

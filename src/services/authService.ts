@@ -48,12 +48,22 @@ export interface BackendErrorResponse {
 export type BackendResponse<T> = BackendSuccessResponse<T> | BackendErrorResponse;
 
 export interface LoginInput { email: string; password: string; }
+/**
+ * Registration input accepted by the UI layer.
+ * English fields are preferred; Spanish legacy fields are accepted
+ * for backward compatibility and will be normalized.
+ */
 export interface RegisterInput {
-  nombres: string;
-  apellidos: string;
+  // English (preferred)
+  firstName?: string;
+  lastName?: string;
+  age?: string | number;
+  // Spanish (legacy)
+  nombres?: string;
+  apellidos?: string;
+  edad?: string;
   email: string;
   password: string;
-  edad?: string;
 }
 
 export interface AuthData { user: BackendUser; token: string; }
@@ -121,14 +131,17 @@ export const authService = {
   },
 
   /**
-   * Register a new user
+   * Register a new user, normalizing both English and Spanish field names.
    * @param {RegisterInput} input - Registration input from UI
    * @returns {Promise<BackendResponse<AuthData>>} Auth payload on success
    */
   async register(input: RegisterInput) {
-    const age = parseInt(input.edad || '0', 10);
-    
-    if (!input.email || !input.password || !input.nombres || !input.apellidos || !age || age < 13 || age > 120) {
+    const firstName = (input.firstName ?? input.nombres ?? '').toString().trim();
+    const lastName = (input.lastName ?? input.apellidos ?? '').toString().trim();
+    const ageRaw = input.age ?? input.edad ?? '';
+    const ageNum = typeof ageRaw === 'number' ? ageRaw : parseInt((ageRaw as string) || '0', 10);
+
+    if (!input.email || !input.password || !firstName || !lastName || !ageNum || ageNum < 13 || ageNum > 120) {
       return {
         success: false,
         message: 'Email, contraseña, nombre, apellido y edad son requeridos',
@@ -139,13 +152,12 @@ export const authService = {
     const payload = {
       email: input.email.trim().toLowerCase(),
       password: input.password,
-      confirmPassword: input.password, 
-      firstName: input.nombres.trim(),
-      lastName: input.apellidos.trim(),
-      age: age  
+      confirmPassword: input.password,
+      firstName,
+      lastName,
+      age: ageNum
     };
 
-    
     const res = await request<AuthData>('/api/auth/register', {
       method: 'POST',
       headers: defaultHeaders,

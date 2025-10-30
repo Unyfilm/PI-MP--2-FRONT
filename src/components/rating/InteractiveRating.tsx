@@ -1,3 +1,8 @@
+/**
+ * InteractiveRating component
+ * Displays and submits user star ratings, updates aggregate stats,
+ * and broadcasts rating changes for real-time listeners.
+ */
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { getMovieRatingStats, getUserRating, rateMovie, updateRating, deleteRating } from '../../services/ratingService';

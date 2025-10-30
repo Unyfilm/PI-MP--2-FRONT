@@ -1,3 +1,7 @@
+/**
+ * FavoritesPage component
+ * Lists the user's favorite movies with basic stats and opens the player via onMovieClick.
+ */
 
 import React, { useState, useEffect } from 'react';
 import { Heart, Star, Tag } from 'lucide-react';

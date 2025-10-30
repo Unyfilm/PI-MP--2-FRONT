@@ -13,11 +13,16 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
   register: (userData: {
-    nombres: string;
-    apellidos: string;
+    // English (preferred)
+    firstName?: string;
+    lastName?: string;
+    age?: string | number;
+    // Spanish (legacy)
+    nombres?: string;
+    apellidos?: string;
+    edad?: string;
     email: string;
     password: string;
-    edad: string;
   }) => Promise<{ success: boolean; message?: string }>;
   updateProfile: (profileData: {
     firstName: string;
@@ -159,19 +164,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   /**
    * register
    *
-   * Performs a user registration through the auth service and establishes
-   * the session on success.
-   *
-   * @param {{nombres: string; apellidos: string; email: string; password: string; edad: string}} userData - Registration input
-   * @returns {Promise<{success: boolean; message?: string}>} Operation result
+   * Performs a user registration through the auth service, accepting both
+   * English and Spanish field names, and establishes the session on success.
    */
-  const register = async (userData: {
-    nombres: string;
-    apellidos: string;
-    email: string;
-    password: string;
-    edad: string;
-  }) => {
+  const register: AuthContextType['register'] = async (userData) => {
     try {
       const response = await authService.register(userData);
       if (response.success) {
@@ -191,9 +187,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    *
    * Updates user profile information using the backend API
    * and updates the local user state if successful.
-   *
-   * @param {Object} profileData - Profile data to update
-   * @returns {Promise<Object>} Update result with success status
    */
   const updateProfile = async (profileData: {
     firstName: string;
@@ -253,8 +246,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * refreshProfile
    *
    * Loads the user profile from the backend to ensure we have the latest data
-   *
-   * @returns {Promise<{success: boolean, message?: string, user?: BackendUser}>}
    */
   const refreshProfile = async () => {
     try {
@@ -303,11 +294,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   /**
    * logout
-   *
-   * Clears in-memory auth state, removes persisted tokens, and
-   * invokes the backend to invalidate the session token.
-   *
-   * @returns {void}
    */
   const logout = () => {
     setUser(null);
@@ -323,12 +309,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   /**
    * deleteAccount
-   *
-   * Deletes the user account from the backend and clears all local state.
-   * Requires the user's password for confirmation.
-   *
-   * @param {string} password - User's current password for confirmation
-   * @returns {Promise<Object>} Delete result with success status
    */
   const deleteAccount = async (password: string) => {
     try {
@@ -364,13 +344,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   /**
    * changePassword
-   *
-   * Changes the user's password using their current password for verification.
-   * 
-   * @param {string} currentPassword - User's current password
-   * @param {string} newPassword - New password to set
-   * @param {string} confirmPassword - Confirmation of new password
-   * @returns {Promise<Object>} Change password result with success status
    */
   const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
     try {
@@ -431,7 +404,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isTokenValid = () => {
     if (!token) return false;
     
-    // Si el token tiene forma JWT, validar expiración; si no, considerarlo válido (por backend que no usa JWT)
+    // If token looks like a JWT, validate expiration; otherwise consider it valid
     const isJwtLike = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(token);
     if (!isJwtLike) {
       return true;
@@ -441,7 +414,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const currentTime = Math.floor(Date.now() / 1000);
       return payload.exp > currentTime;
     } catch (error) {
-      // En caso de error al decodificar, asumir válido para no bloquear navegación
+      // In case of decode error assume valid to avoid blocking navigation
       return true;
     }
   };
