@@ -431,12 +431,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isTokenValid = () => {
     if (!token) return false;
     
+    // Si el token tiene forma JWT, validar expiración; si no, considerarlo válido (por backend que no usa JWT)
+    const isJwtLike = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(token);
+    if (!isJwtLike) {
+      return true;
+    }
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Math.floor(Date.now() / 1000);
       return payload.exp > currentTime;
     } catch (error) {
-      return false;
+      // En caso de error al decodificar, asumir válido para no bloquear navegación
+      return true;
     }
   };
 
