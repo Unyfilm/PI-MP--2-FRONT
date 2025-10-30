@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { HelpCircle, AlertTriangle, CheckCircle, Info, Zap, Shield, Eye, Globe, ArrowLeft, Brain, Accessibility } from 'lucide-react';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import './UsabilityFeatures.css';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Usability features component implementing 3 usability heuristics
@@ -12,6 +13,9 @@ type Notification = { id: number; type: 'info' | 'success' | 'error'; message: s
 type Shortcut = { key: string; description: string; action: () => void };
 
 export default function UsabilityFeatures() {
+  const location = useLocation();
+  const isPlayerRoute = location.pathname.startsWith('/player');
+
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   
@@ -138,7 +142,8 @@ export default function UsabilityFeatures() {
   };
 
   useEffect(() => {
-   
+    if (isPlayerRoute) return; // no inicializar atajos en el reproductor
+
     const cleanupKeyboard = initializeKeyboardShortcuts();
     initializeHelpSystem();
     
@@ -148,7 +153,7 @@ export default function UsabilityFeatures() {
         cleanupKeyboard();
       }
     };
-  }, []);
+  }, [isPlayerRoute]);
 
   
   const initializeKeyboardShortcuts = () => {
@@ -423,23 +428,23 @@ export default function UsabilityFeatures() {
 
   return (
     <div className="usability-features">
-      <button 
-        className="usability-help-btn"
-        onClick={() => {
-          console.log('Help button clicked, current state:', showHelp);
-          setShowHelp(!showHelp);
-        }}
-        title="Mostrar ayuda (Alt + H)"
-        aria-pressed={showHelp}
-        aria-label="Mostrar u ocultar ayuda"
-        type="button"
-      >
-        <HelpCircle size={20} aria-hidden="true" />
-        <span className="sr-only">Mostrar ayuda</span>
-      </button>
+      {!isPlayerRoute && (
+        <button 
+          className="usability-help-btn"
+          onClick={() => {
+            setShowHelp(!showHelp);
+          }}
+          title="Mostrar ayuda (Alt + H)"
+          aria-pressed={showHelp}
+          aria-label="Mostrar u ocultar ayuda"
+          type="button"
+        >
+          <HelpCircle size={20} aria-hidden="true" />
+          <span className="sr-only">Mostrar ayuda</span>
+        </button>
+      )}
 
-
-      {showHelp && (
+      {!isPlayerRoute && showHelp && (
         <div className="usability-help-modal" role="dialog" aria-modal="true" aria-labelledby="usability-help-title">
           <div className="usability-help-backdrop" onClick={() => setShowHelp(false)}></div>
           <div className="usability-help-content" ref={helpModalRef}>
