@@ -14,9 +14,10 @@ interface RegisterProps extends AuthProps {
 }
 
 export default function Register({ onRegister }: RegisterProps = {}) {
-    const [nombres, setNombres] = useState<string>('');
-    const [apellidos, setApellidos] = useState<string>('');
-    const [edad, setEdad] = useState<string>('');
+    // Preferred English state (UI texts remain in Spanish)
+    const [firstName, setFirstName] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
+    const [age, setAge] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -38,18 +39,22 @@ export default function Register({ onRegister }: RegisterProps = {}) {
 
     const handleRegister = async (): Promise<void> => {
         const formData: RegisterFormData = {
-            nombres,
-            apellidos,
-            edad,
+            firstName,
+            lastName,
+            age,
+            // legacy fields for compatibility (will be ignored by service if English is present)
+            nombres: firstName,
+            apellidos: lastName,
+            edad: age,
             email,
             password
         };
         
         const newErrors: Record<string, string> = {};
-        if (!nombres) newErrors.nombres = 'Los nombres son requeridos';
-        if (!apellidos) newErrors.apellidos = 'Los apellidos son requeridos';
-        if (!edad) newErrors.edad = 'La edad es requerida';
-        if (edad && (Number(edad) < 13 || Number(edad) > 120)) newErrors.edad = 'Ingresa una edad válida (13-120)';
+        if (!firstName) newErrors.firstName = 'Los nombres son requeridos';
+        if (!lastName) newErrors.lastName = 'Los apellidos son requeridos';
+        if (!age) newErrors.age = 'La edad es requerida';
+        if (age && (Number(age) < 13 || Number(age) > 120)) newErrors.age = 'Ingresa una edad válida (13-120)';
         if (!email) newErrors.email = 'El correo electrónico es requerido';
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (email && !emailRegex.test(email)) newErrors.email = 'Correo electrónico inválido';
@@ -62,21 +67,24 @@ export default function Register({ onRegister }: RegisterProps = {}) {
         if (!confirmPassword) newErrors.confirmPassword = 'Confirma tu contraseña';
         if (password && confirmPassword && password !== confirmPassword) newErrors.confirmPassword = 'Las contraseñas no coinciden';
         setErrors(newErrors);
-        setTouched({ nombres: true, apellidos: true, edad: true, email: true, password: true, confirmPassword: true });
+        setTouched({ firstName: true, lastName: true, age: true, email: true, password: true, confirmPassword: true });
         if (Object.keys(newErrors).length) return;
 
         setApiError('');
         try {
             setIsLoading(true);
             const result = await register({
-                nombres,
-                apellidos,
-                edad,
+                firstName,
+                lastName,
+                age,
+                // legacy copies
+                nombres: firstName,
+                apellidos: lastName,
+                edad: age,
                 email,
                 password
             });
             if (result.success) {
-                
                 navigate('/home');
                 if (onRegister) onRegister(formData);
             } else {
@@ -95,13 +103,16 @@ export default function Register({ onRegister }: RegisterProps = {}) {
         
         switch (name) {
             case 'nombres':
-                setNombres(value);
+            case 'firstName':
+                setFirstName(value);
                 break;
             case 'apellidos':
-                setApellidos(value);
+            case 'lastName':
+                setLastName(value);
                 break;
             case 'edad':
-                setEdad(value);
+            case 'age':
+                setAge(value);
                 break;
             case 'email':
                 setEmail(value);
@@ -138,27 +149,27 @@ export default function Register({ onRegister }: RegisterProps = {}) {
                             <label className="form-field__label">Nombres</label>
                             <div className="form-field__input-wrapper">
                                 <User size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
-                                <input type="text" name="nombres" value={nombres} onChange={handleInputChange} placeholder="Ejemplo: Ana María" className={`form-field__input ${touched.nombres && errors.nombres ? 'form-field__input--error' : ''}`} />
+                                <input type="text" name="firstName" value={firstName} onChange={handleInputChange} placeholder="Ejemplo: Ana María" className={`form-field__input ${touched.firstName && errors.firstName ? 'form-field__input--error' : ''}`} />
                             </div>
-                            {touched.nombres && errors.nombres && <p className="form-field__error">{errors.nombres}</p>}
+                            {touched.firstName && errors.firstName && <p className="form-field__error">{errors.firstName}</p>}
                         </div>
 
                         <div className="form-field">
                             <label className="form-field__label">Apellidos</label>
                             <div className="form-field__input-wrapper">
                                 <User size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
-                                <input type="text" name="apellidos" value={apellidos} onChange={handleInputChange} placeholder="Ejemplo: García López" className={`form-field__input ${touched.apellidos && errors.apellidos ? 'form-field__input--error' : ''}`} />
+                                <input type="text" name="lastName" value={lastName} onChange={handleInputChange} placeholder="Ejemplo: García López" className={`form-field__input ${touched.lastName && errors.lastName ? 'form-field__input--error' : ''}`} />
                             </div>
-                            {touched.apellidos && errors.apellidos && <p className="form-field__error">{errors.apellidos}</p>}
+                            {touched.lastName && errors.lastName && <p className="form-field__error">{errors.lastName}</p>}
                         </div>
 
                         <div className="form-field">
                             <label className="form-field__label">Edad</label>
                             <div className="form-field__input-wrapper">
                                 <Calendar size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
-                                <input type="number" name="edad" value={edad} onChange={handleInputChange} placeholder="Ejemplo: 28" className={`form-field__input ${touched.edad && errors.edad ? 'form-field__input--error' : ''}`} />
+                                <input type="number" name="age" value={age} onChange={handleInputChange} placeholder="Ejemplo: 28" className={`form-field__input ${touched.age && errors.age ? 'form-field__input--error' : ''}`} />
                             </div>
-                            {touched.edad && errors.edad && <p className="form-field__error">{errors.edad}</p>}
+                            {touched.age && errors.age && <p className="form-field__error">{errors.age}</p>}
                         </div>
 
                         <div className="form-field">

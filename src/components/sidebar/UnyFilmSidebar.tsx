@@ -1,3 +1,8 @@
+/**
+ * UnyFilmSidebar component
+ * Fixed navigation sidebar with quick links, accessibility options and logout.
+ * Uses Favorites and Auth contexts indirectly via navigation and actions.
+ */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Home, Film, Heart, LogOut, Eye } from 'lucide-react';

@@ -1,3 +1,8 @@
+/**
+ * MovieApp root component
+ * Coordinates main layout (sidebar, header, footer) and view routing inside the app.
+ * Handles player overlay route state and search navigation.
+ */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';

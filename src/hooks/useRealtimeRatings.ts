@@ -8,8 +8,14 @@ interface UseRealtimeRatingsOptions {
 }
 
 /**
- * Hook to handle real-time ratings
- * Listens to update events and keeps the state synchronized
+ * useRealtimeRatings
+ * Fetches and keeps movie rating stats up to date. When enabled, listens to
+ * custom window events (rating-updated, rating-stats-updated, cache-invalidated)
+ * to refresh or partially update the local state.
+ * @param options.movieId - Target movie id
+ * @param options.autoLoad - Immediately load stats on mount
+ * @param options.enableRealtime - Attach window listeners for live updates
+ * @returns {object} ratingStats, loading/error flags, and loader/setter helpers
  */
 export function useRealtimeRatings({ 
   movieId, 
@@ -47,8 +53,6 @@ export function useRealtimeRatings({
 
     const handleRatingUpdate = (event: CustomEvent) => {
       const { movieId: updatedMovieId } = event.detail;
-      
-      
       if (updatedMovieId === movieId) {
         loadRatingStats();
       }
@@ -56,8 +60,6 @@ export function useRealtimeRatings({
 
     const handleStatsUpdate = (event: CustomEvent) => {
       const { movieId: updatedMovieId, averageRating, totalRatings } = event.detail;
-      
-      
       if (updatedMovieId === movieId) {
         setRatingStats(prevStats => {
           if (!prevStats) return null;

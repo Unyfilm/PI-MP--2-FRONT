@@ -1,3 +1,9 @@
+/**
+ * Login component
+ * Renders the email/password form, client-side validation and calls auth context.
+ * UI copy remains in Spanish by requirement; code and docs in English.
+ * @returns JSX.Element
+ */
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
