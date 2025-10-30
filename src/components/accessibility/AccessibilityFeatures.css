@@ -137,7 +137,7 @@
   position: absolute;
   top: -100px;
   left: 0;
-  z-index: 1001;
+  z-index: 10000; /* elevar por encima del header */
 }
 
 .skip-link {
@@ -151,14 +151,15 @@
   border-radius: 8px;
   font-weight: 700;
   font-size: 16px;
-  transition: all 0.3s ease;
-  z-index: 1001;
+  transition: all 0.2s ease;
+  z-index: 10001; /* por encima del header y overlays comunes */
   box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
   border: 3px solid #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   min-width: 200px;
   text-align: center;
+  pointer-events: auto;
 }
 
 .skip-link:hover {
@@ -168,11 +169,13 @@
 }
 
 .skip-link:focus {
-  top: 8px;
+  position: fixed; /* aseguramos que no lo tape el header ni overflow */
+  top: 12px;
+  left: 12px;
   outline: 4px solid #ffffff;
   outline-offset: 3px;
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
-  transform: translateY(0);
+  transform: none;
 }
 
 .skip-link:focus:not(:hover) {

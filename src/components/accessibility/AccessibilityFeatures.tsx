@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Keyboard, Mouse, Sun } from 'lucide-react';
 import './AccessibilityFeatures.css';
+import { useLocation } from 'react-router-dom';
 
 /**
  * AccessibilityFeatures
@@ -63,11 +64,14 @@ import './AccessibilityFeatures.css';
  * an ARIA live region for announcements.
  */
 export default function AccessibilityFeatures() {
+  const location = useLocation();
+  const isPlayerRoute = location.pathname.startsWith('/player');
+
   const [highContrast, setHighContrast] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [fontSize, setFontSize] = useState('normal');
   const [focusVisible, setFocusVisible] = useState(true);
-  const [skipLinks, setSkipLinks] = useState(true);
+  const [skipLinks, setSkipLinks] = useState(false); // default: desactivado
   const [showFontChangeNotification, setShowFontChangeNotification] = useState(false);
 
   useEffect(() => {
@@ -78,7 +82,7 @@ export default function AccessibilityFeatures() {
       setReducedMotion(prefs.reducedMotion || false);
       setFontSize(prefs.fontSize || 'normal');
       setFocusVisible(prefs.focusVisible !== false);
-      setSkipLinks(prefs.skipLinks !== false);
+      setSkipLinks(prefs.skipLinks === true); // solo true si fue guardado explícitamente
     }
   }, []);
 
@@ -132,7 +136,10 @@ export default function AccessibilityFeatures() {
   };
 
  
+  // Desactivar atajos cuando estamos en el reproductor
   useEffect(() => {
+    if (isPlayerRoute) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       // No interceptar si Ctrl está presionado (para permitir caracteres especiales como @ con Ctrl+Alt+2)
       // o si el usuario está en un input/textarea (para permitir pegado, copiado, etc.)
@@ -255,7 +262,7 @@ export default function AccessibilityFeatures() {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isPlayerRoute]);
 
   
   const toggleAccessibilityPanel = () => {
@@ -265,10 +272,13 @@ export default function AccessibilityFeatures() {
     }
   };
 
+  // En la ruta del reproductor no renderizamos el botón ni los skip links para evitar tabulación externa
+  const shouldRenderUi = !isPlayerRoute;
+
   return (
     <>
       
-      {skipLinks && (
+      {shouldRenderUi && skipLinks && (
         <div className="skip-links">
           <a 
             href="#main-content" 
@@ -315,101 +325,103 @@ export default function AccessibilityFeatures() {
         </div>
       )}
 
-      <div className="accessibility-panel">
-        <button 
-          className="accessibility-toggle"
-          onClick={toggleAccessibilityPanel}
-          aria-label="Abrir panel de accesibilidad"
-          title="Opciones de accesibilidad"
-        >
-          <Eye size={20} aria-hidden="true" />
-          <span className="sr-only">Panel de accesibilidad</span>
-        </button>
+      {shouldRenderUi && (
+        <div className="accessibility-panel">
+          <button 
+            className="accessibility-toggle"
+            onClick={toggleAccessibilityPanel}
+            aria-label="Abrir panel de accesibilidad"
+            title="Opciones de accesibilidad"
+          >
+            <Eye size={20} aria-hidden="true" />
+            <span className="sr-only">Panel de accesibilidad</span>
+          </button>
 
-        <div className="accessibility-controls">
-          <h3>Opciones de Accesibilidad</h3>
-          
-          <div className="accessibility-control">
-            <label>
-              <input
-                type="checkbox"
-                checked={highContrast}
-                onChange={(e) => setHighContrast(e.target.checked)}
-              />
-              <span className="control-label">
-                <Eye className="control-icon" />
-                Alto contraste
-              </span>
-            </label>
-          </div>
+          <div className="accessibility-controls">
+            <h3>Opciones de Accesibilidad</h3>
+            
+            <div className="accessibility-control">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={highContrast}
+                  onChange={(e) => setHighContrast(e.target.checked)}
+                />
+                <span className="control-label">
+                  <Eye className="control-icon" />
+                  Alto contraste
+                </span>
+              </label>
+            </div>
 
-          <div className="accessibility-control">
-            <label>
-              <input
-                type="checkbox"
-                checked={reducedMotion}
-                onChange={(e) => setReducedMotion(e.target.checked)}
-              />
-              <span className="control-label">
-                <Mouse className="control-icon" />
-                Reducir animaciones
-              </span>
-            </label>
-          </div>
+            <div className="accessibility-control">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={reducedMotion}
+                  onChange={(e) => setReducedMotion(e.target.checked)}
+                />
+                <span className="control-label">
+                  <Mouse className="control-icon" />
+                  Reducir animaciones
+                </span>
+              </label>
+            </div>
 
-          <div className="accessibility-control">
-            <label>
-              <span className="control-label">
-                <Keyboard className="control-icon" />
-                Tamaño de fuente
-              </span>
-              <select
-                value={fontSize}
-                onChange={(e) => setFontSize(e.target.value)}
-                style={{
-                  fontSize: fontSize === 'small' ? '10px' : fontSize === 'normal' ? '14px' : fontSize === 'large' ? '18px' : '22px',
-                  padding: fontSize === 'small' ? '4px 8px' : fontSize === 'normal' ? '6px 10px' : fontSize === 'large' ? '8px 12px' : '10px 14px'
-                }}
-              >
-                <option value="small">🔍 Pequeña (10px)</option>
-                <option value="normal">📝 Normal (14px)</option>
-                <option value="large">📖 Grande (20px)</option>
-                <option value="extra-large">📚 Extra Grande (28px)</option>
-              </select>
-            </label>
-          </div>
+            <div className="accessibility-control">
+              <label>
+                <span className="control-label">
+                  <Keyboard className="control-icon" />
+                  Tamaño de fuente
+                </span>
+                <select
+                  value={fontSize}
+                  onChange={(e) => setFontSize(e.target.value)}
+                  style={{
+                    fontSize: fontSize === 'small' ? '10px' : fontSize === 'normal' ? '14px' : fontSize === 'large' ? '18px' : '22px',
+                    padding: fontSize === 'small' ? '4px 8px' : fontSize === 'normal' ? '6px 10px' : fontSize === 'large' ? '8px 12px' : '10px 14px'
+                  }}
+                >
+                  <option value="small">🔍 Pequeña (10px)</option>
+                  <option value="normal">📝 Normal (14px)</option>
+                  <option value="large">📖 Grande (20px)</option>
+                  <option value="extra-large">📚 Extra Grande (28px)</option>
+                </select>
+              </label>
+            </div>
 
-          <div className="accessibility-control">
-            <label>
-              <input
-                type="checkbox"
-                checked={focusVisible}
-                onChange={(e) => setFocusVisible(e.target.checked)}
-              />
-              <span className="control-label">
-                <Sun className="control-icon" />
-                Mostrar foco
-              </span>
-            </label>
-          </div>
+            <div className="accessibility-control">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={focusVisible}
+                  onChange={(e) => setFocusVisible(e.target.checked)}
+                />
+                <span className="control-label">
+                  <Sun className="control-icon" />
+                  Mostrar foco
+                </span>
+              </label>
+            </div>
 
-          <div className="accessibility-control">
-            <label>
-              <input
-                type="checkbox"
-                checked={skipLinks}
-                onChange={(e) => setSkipLinks(e.target.checked)}
-              />
-              <span className="control-label">
-                <EyeOff className="control-icon" />
-                Enlaces de salto
-              </span>
-            </label>
+            <div className="accessibility-control">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={skipLinks}
+                  onChange={(e) => setSkipLinks(e.target.checked)}
+                />
+                <span className="control-label">
+                  <EyeOff className="control-icon" />
+                  Enlaces de salto
+                </span>
+              </label>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {showFontChangeNotification && (
+      {showFontChangeNotification && shouldRenderUi && (
         <div className="font-change-notification">
           <div className="notification-content">
             <span className="notification-icon">📏</span>
