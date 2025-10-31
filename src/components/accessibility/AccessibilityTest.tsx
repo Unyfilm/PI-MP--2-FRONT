@@ -55,3 +55,4 @@ export const AccessibilityTest: React.FC = () => {
 };
 
 export default AccessibilityTest;
+
