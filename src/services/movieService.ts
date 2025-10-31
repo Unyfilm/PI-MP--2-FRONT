@@ -1,10 +1,6 @@
 
 import { API_CONFIG } from '../config/environment';
 
-/**
- * Interface representing a movie
- * @interface Movie
- */
 export interface Movie {
   _id: string;
   title: string;
@@ -37,10 +33,7 @@ export interface Movie {
   defaultSubtitleLanguage?: string;
 }
 
-/**
- * Interface for movie video information
- * @interface MovieVideoInfo
- */
+
 export interface MovieVideoInfo {
   movieId: string;
   title: string;
@@ -51,10 +44,7 @@ export interface MovieVideoInfo {
   format: string;
 }
 
-/**
- * Interface for movie video response
- * @interface MovieVideoResponse
- */
+
 export interface MovieVideoResponse {
   videoUrl: string;
   expiresIn: number;
@@ -63,11 +53,6 @@ export interface MovieVideoResponse {
   duration: number;
 }
 
-/**
- * Service class for managing movie operations
- * Handles all movie-related API requests
- * @class MovieService
- */
 class MovieService {
   private baseUrl: string;
 
@@ -76,12 +61,7 @@ class MovieService {
     this.baseUrl = API_CONFIG.BASE_URL.replace('/api', '');
   }
 
-  /**
-   * Get a complete movie by ID
-   * @param {string} movieId - The movie ID to retrieve
-   * @returns {Promise<Movie>} Complete movie information
-   * @throws {Error} When movie is not found or API request fails
-   */
+  
   async getMovie(movieId: string): Promise<Movie> {
     try {
       const response = await fetch(`${this.baseUrl}/api/movies/${movieId}`);
@@ -107,12 +87,7 @@ class MovieService {
     }
   }
 
-  /**
-   * Get movie video (signed URL) by ID
-   * @param {string} movieId - The movie ID to get video for
-   * @returns {Promise<MovieVideoResponse>} Video response with signed URL
-   * @throws {Error} When API request fails
-   */
+ 
   async getMovieVideo(movieId: string): Promise<MovieVideoResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/api/movies/${movieId}/video`);
@@ -133,12 +108,7 @@ class MovieService {
     }
   }
 
-  /**
-   * Get movie video information by ID
-   * @param {string} movieId - The movie ID to get video info for
-   * @returns {Promise<MovieVideoInfo>} Video information
-   * @throws {Error} When API request fails
-   */
+  
   async getMovieVideoInfo(movieId: string): Promise<MovieVideoInfo> {
     try {
       const response = await fetch(`${this.baseUrl}/api/movies/${movieId}/video/info`);
@@ -159,12 +129,6 @@ class MovieService {
     }
   }
 
-  /**
-   * Get multiple movies by IDs with individual error handling
-   * @param {string[]} movieIds - Array of movie IDs to retrieve
-   * @returns {Promise<Movie[]>} Array of movies (null results are filtered out)
-   * @throws {Error} When API request fails
-   */
   async getMovies(movieIds: string[]): Promise<Movie[]> {
     try {
       const promises = movieIds.map(id => this.getMovieSafe(id));
@@ -181,11 +145,7 @@ class MovieService {
     }
   }
 
-  /**
-   * Get movie with error handling and fallback
-   * @param {string} movieId - The movie ID to retrieve
-   * @returns {Promise<Movie | null>} Movie data or null if not found
-   */
+ 
   async getMovieSafe(movieId: string): Promise<Movie | null> {
     try {
       return await this.getMovie(movieId);
@@ -197,11 +157,7 @@ class MovieService {
     }
   }
 
-  /**
-   * Get all available movies
-   * @returns {Promise<Movie[]>} Array of all movies
-   * @throws {Error} When API request fails
-   */
+  
   async getAllMovies(): Promise<Movie[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/movies`);
@@ -222,10 +178,6 @@ class MovieService {
     }
   }
 
-  /**
-   * Get available movies with fallback
-   * @returns {Promise<Movie[]>} Array of available movies or empty array on error
-   */
   async getAvailableMovies(): Promise<Movie[]> {
     try {
       return await this.getAllMovies();
@@ -234,11 +186,7 @@ class MovieService {
     }
   }
 
-  /**
-   * Get trending movies
-   * @returns {Promise<Movie[]>} Array of trending movies
-   * @throws {Error} When API request fails
-   */
+  
   async getTrendingMovies(): Promise<Movie[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/movies/trending`);
@@ -259,12 +207,6 @@ class MovieService {
     }
   }
 
-  /**
-   * Search movies by query
-   * @param {string} query - Search query string
-   * @returns {Promise<Movie[]>} Array of matching movies
-   * @throws {Error} When API request fails
-   */
   async searchMovies(query: string): Promise<Movie[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/movies/search?q=${encodeURIComponent(query)}`);
@@ -286,14 +228,8 @@ class MovieService {
   }
 }
 
-/**
- * Singleton instance of MovieService
- * @type {MovieService}
- */
+
 export const movieService = new MovieService();
 
-/**
- * Default export of MovieService instance
- * @type {MovieService}
- */
+
 export default movieService;

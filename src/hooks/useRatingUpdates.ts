@@ -10,13 +10,7 @@ interface RatingUpdateEvent {
   action: 'create' | 'update' | 'delete';
 }
 
-/**
- * Custom hook for real-time rating updates
- * @param movieId - The movie ID to listen for updates
- * @param onRatingUpdate - Callback function when rating is updated
- * @param enablePolling - Whether to enable polling for updates
- * @param pollInterval - Polling interval in milliseconds
- */
+
 export const useRatingUpdates = (
   movieId: string,
   onRatingUpdate: (stats: RatingStats) => void,
@@ -88,24 +82,19 @@ export const useRatingUpdates = (
   }, [movieId, onRatingUpdate, enablePolling, pollInterval]);
 };
 
-/**
- * Broadcast rating update to all components
- * @param movieId - The movie ID that was updated
- * @param rating - The new rating value
- * @param action - The action performed (create, update, delete)
- */
+
 export const broadcastRatingUpdate = (
   movieId: string,
   rating: number,
   action: 'create' | 'update' | 'delete'
 ) => {
-  // Emitir evento de rating actualizado
+  
   const ratingEvent = new CustomEvent('rating-updated', {
     detail: { movieId, rating, action, source: 'interactive-rating' }
   });
   window.dispatchEvent(ratingEvent);
   
-  // También emitir evento de estadísticas actualizadas (se cargarán automáticamente)
+  
   const statsEvent = new CustomEvent('rating-stats-updated', {
     detail: { movieId, source: 'interactive-rating' }
   });

@@ -13,10 +13,7 @@ const authHeaders = (): HeadersInit => ({
   ...defaultHeaders,
   Authorization: `Bearer ${localStorage.getItem('token') || ''}`
 });
-/**
- * Interface for backend user data
- * @interface BackendUser
- */
+
 export interface BackendUser {
   _id: string;
   username: string;
@@ -58,14 +55,7 @@ export interface RegisterInput {
 
 export interface AuthData { user: BackendUser; token: string; }
 
-/**
- * Parse a fetch Response into JSON when possible, otherwise
- * return a generic error wrapper preserving the HTTP message.
- *
- * @template T - Expected success payload type
- * @param {Response} res - Fetch response
- * @returns {Promise<BackendResponse<T>>} Parsed backend response
- */
+
 const handleJson = async <T>(res: Response): Promise<BackendResponse<T>> => {
   const contentType = res.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
@@ -75,15 +65,7 @@ const handleJson = async <T>(res: Response): Promise<BackendResponse<T>> => {
   return { success: false, message: text || `HTTP ${res.status}`, error: text } as BackendErrorResponse;
 };
 
-/**
- * Perform a typed HTTP request against the backend with timeout and
- * unified error handling.
- *
- * @template T - Expected success payload type
- * @param {string} path - API path beginning with /api
- * @param {RequestInit} [init] - Fetch init options
- * @returns {Promise<BackendResponse<T>>} Backend response wrapper
- */
+
 const request = async <T>(path: string, init?: RequestInit): Promise<BackendResponse<T>> => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), Number(import.meta.env.VITE_API_TIMEOUT) || 30000);
@@ -99,11 +81,7 @@ const request = async <T>(path: string, init?: RequestInit): Promise<BackendResp
 };
 
 export const authService = {
-  /**
-   * Login with email and password
-   * @param {LoginInput} input - Credentials { email, password }
-   * @returns {Promise<BackendResponse<AuthData>>} Auth payload on success
-   */
+  
   async login(input: LoginInput) {
     const res = await request<AuthData>('/api/auth/login', {
       method: 'POST',
@@ -120,11 +98,7 @@ export const authService = {
     return res;
   },
 
-  /**
-   * Register a new user
-   * @param {RegisterInput} input - Registration input from UI
-   * @returns {Promise<BackendResponse<AuthData>>} Auth payload on success
-   */
+ 
   async register(input: RegisterInput) {
     const age = parseInt(input.edad || '0', 10);
     
@@ -161,10 +135,7 @@ export const authService = {
     return res;
   },
 
-  /**
-   * Logout current user and invalidate token server-side
-   * @returns {Promise<BackendResponse<void>>} Result of the logout request
-   */
+  
   async logout() {
     const res = await request<void>('/api/auth/logout', {
       method: 'POST',

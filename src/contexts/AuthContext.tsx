@@ -33,14 +33,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-/**
- * useAuth
- *
- * Hook to consume the AuthContext. It enforces usage within an AuthProvider.
- *
- * @throws {Error} If used outside AuthProvider
- * @returns {AuthContextType} The auth context value
- */
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -53,16 +46,7 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-/**
- * AuthProvider
- *
- * Provides authentication state (user, token) and actions (login, logout, register)
- * to all descendant components. It initializes the session by reading persisted
- * values from localStorage and performs minimal validation.
- *
- * @param {AuthProviderProps} props - React children wrapper
- * @returns {JSX.Element} Provider for authentication context
- */
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<BackendUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -131,16 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
-  /**
-   * login
-   *
-   * Performs a login request through the auth service and updates
-   * the in-memory auth state.
-   *
-   * @param {string} email - User email in lowercase format
-   * @param {string} password - User password
-   * @returns {Promise<{success: boolean; message?: string}>} Operation result
-   */
+  
   const login = async (email: string, password: string) => {
     try {
       const response = await authService.login({ email, password });
@@ -156,15 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  /**
-   * register
-   *
-   * Performs a user registration through the auth service and establishes
-   * the session on success.
-   *
-   * @param {{nombres: string; apellidos: string; email: string; password: string; edad: string}} userData - Registration input
-   * @returns {Promise<{success: boolean; message?: string}>} Operation result
-   */
+ 
   const register = async (userData: {
     nombres: string;
     apellidos: string;
@@ -186,15 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  /**
-   * updateProfile
-   *
-   * Updates user profile information using the backend API
-   * and updates the local user state if successful.
-   *
-   * @param {Object} profileData - Profile data to update
-   * @returns {Promise<Object>} Update result with success status
-   */
+
   const updateProfile = async (profileData: {
     firstName: string;
     lastName: string;
@@ -249,13 +208,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  /**
-   * refreshProfile
-   *
-   * Loads the user profile from the backend to ensure we have the latest data
-   *
-   * @returns {Promise<{success: boolean, message?: string, user?: BackendUser}>}
-   */
+
   const refreshProfile = async () => {
     try {
       if (!token) {
@@ -301,14 +254,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  /**
-   * logout
-   *
-   * Clears in-memory auth state, removes persisted tokens, and
-   * invokes the backend to invalidate the session token.
-   *
-   * @returns {void}
-   */
+ 
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -321,15 +267,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     authService.logout().catch(() => {});
   };
 
-  /**
-   * deleteAccount
-   *
-   * Deletes the user account from the backend and clears all local state.
-   * Requires the user's password for confirmation.
-   *
-   * @param {string} password - User's current password for confirmation
-   * @returns {Promise<Object>} Delete result with success status
-   */
   const deleteAccount = async (password: string) => {
     try {
       const response = await apiService.deleteAccount(password);
@@ -362,16 +299,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  /**
-   * changePassword
-   *
-   * Changes the user's password using their current password for verification.
-   * 
-   * @param {string} currentPassword - User's current password
-   * @param {string} newPassword - New password to set
-   * @param {string} confirmPassword - Confirmation of new password
-   * @returns {Promise<Object>} Change password result with success status
-   */
+
   const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
     try {
       if (!token) {

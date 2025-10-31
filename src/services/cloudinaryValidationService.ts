@@ -1,14 +1,7 @@
-/**
- * Servicio para validar y manejar URLs de Cloudinary
- * @class CloudinaryValidationService
- */
+
 class CloudinaryValidationService {
   
-  /**
-   * Valida si una URL de Cloudinary es válida
-   * @param {string} url - URL a validar
-   * @returns {boolean} True si la URL es válida
-   */
+ 
   isValidCloudinaryUrl(url: string): boolean {
     if (!url || typeof url !== 'string') {
       return false;
@@ -18,11 +11,6 @@ class CloudinaryValidationService {
     return cloudinaryPattern.test(url);
   }
 
-  /**
-   * Valida si una URL existe haciendo una petición HEAD
-   * @param {string} url - URL a validar
-   * @returns {Promise<boolean>} True si la URL existe
-   */
   async validateUrlExists(url: string): Promise<boolean> {
     if (!this.isValidCloudinaryUrl(url)) {
       return false;
@@ -40,11 +28,6 @@ class CloudinaryValidationService {
     }
   }
 
-  /**
-   * Obtiene una URL de fallback para imágenes
-   * @param {string} type - Tipo de imagen (poster, port, etc.)
-   * @returns {string} URL de fallback
-   */
   getFallbackImageUrl(type: 'poster' | 'port' | 'hero' = 'poster'): string {
     const fallbackImages = {
       poster: '/images/default-movie.jpg',
@@ -55,20 +38,11 @@ class CloudinaryValidationService {
     return fallbackImages[type];
   }
 
-  /**
-   * Obtiene una URL de fallback para videos
-   * @returns {string} URL de fallback
-   */
   getFallbackVideoUrl(): string {
     return '/videos/default-trailer.mp4';
   }
 
-  /**
-   * Procesa una URL de imagen con fallback
-   * @param {string} url - URL original
-   * @param {string} type - Tipo de imagen
-   * @returns {Promise<string>} URL válida o fallback
-   */
+ 
   async processImageUrl(url: string, type: 'poster' | 'port' | 'hero' = 'poster'): Promise<string> {
     if (!url) {
       return this.getFallbackImageUrl(type);
@@ -83,11 +57,6 @@ class CloudinaryValidationService {
     return url;
   }
 
-  /**
-   * Procesa una URL de video con fallback
-   * @param {string} url - URL original
-   * @returns {Promise<string>} URL válida o fallback
-   */
   async processVideoUrl(url: string): Promise<string> {
     if (!url) {
       return this.getFallbackVideoUrl();
@@ -101,11 +70,6 @@ class CloudinaryValidationService {
     return url;
   }
 
-  /**
-   * Obtiene información de una película con URLs validadas
-   * @param {any} movie - Objeto de película
-   * @returns {Promise<any>} Película con URLs procesadas
-   */
   async processMovieUrls(movie: any): Promise<any> {
     if (!movie) {
       return movie;
@@ -137,11 +101,6 @@ class CloudinaryValidationService {
     }
   }
 
-  /**
-   * Procesa un array de películas con URLs validadas
-   * @param {any[]} movies - Array de películas
-   * @returns {Promise<any[]>} Array de películas con URLs procesadas
-   */
   async processMoviesUrls(movies: any[]): Promise<any[]> {
     if (!Array.isArray(movies)) {
       return [];

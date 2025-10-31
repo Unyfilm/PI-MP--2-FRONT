@@ -1,28 +1,18 @@
 
-/**
- * Interface for API configuration
- * @interface ApiConfig
- */
 export interface ApiConfig {
   BASE_URL: string;
   TIMEOUT: number;
   RETRY_ATTEMPTS: number;
   RETRY_DELAY: number;
 }
-/**
- * Interface for application configuration
- * @interface AppConfig
- */
+
 export interface AppConfig {
   NAME: string;
   VERSION: string;
   DESCRIPTION: string;
   AUTHOR: string;
 }
-/**
- * Interface for video player configuration
- * @interface VideoConfig
- */
+
 export interface VideoConfig {
   QUALITY: string;
   AUTOPLAY: boolean;
@@ -30,10 +20,7 @@ export interface VideoConfig {
   DEFAULT_VOLUME: number;
   SEEK_STEP: number;
 }
-/**
- * Interface for UI configuration
- * @interface UiConfig
- */
+
 export interface UiConfig {
   THEME: string;
   LANGUAGE: string;
@@ -41,30 +28,21 @@ export interface UiConfig {
   ANIMATIONS: boolean;
   TRANSITIONS: boolean;
 }
-/**
- * Interface for security configuration
- * @interface SecurityConfig
- */
+
 export interface SecurityConfig {
   JWT_SECRET: string;
   ENCRYPTION_KEY: string;
   SESSION_TIMEOUT: number;
   MAX_LOGIN_ATTEMPTS: number;
 }
-/**
- * Interface for external services configuration
- * @interface ExternalServices
- */
+
 export interface ExternalServices {
   GOOGLE_ANALYTICS_ID: string;
   SENTRY_DSN: string;
   GOOGLE_MAPS_API_KEY: string;
 }
 
-/**
- * Interface for Cloudinary configuration
- * @interface CloudinaryConfig
- */
+
 export interface CloudinaryConfig {
   CLOUD_NAME: string;
   API_KEY: string;
@@ -72,19 +50,13 @@ export interface CloudinaryConfig {
   UPLOAD_PRESET: string;
   BASE_URL: string;
 }
-/**
- * Interface for development configuration
- * @interface DevConfig
- */
+
 export interface DevConfig {
   DEBUG_MODE: boolean;
   LOG_LEVEL: string;
   MOCK_API: boolean;
 }
-/**
- * Interface for movie URLs mapping
- * @interface MovieUrls
- */
+
 export interface MovieUrls {
   [key: string]: string;
 }

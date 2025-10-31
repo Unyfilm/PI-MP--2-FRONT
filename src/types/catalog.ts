@@ -1,7 +1,4 @@
-/**
- * Interface for movie click data in catalog
- * @interface MovieClickData
- */
+
 export interface MovieClickData {
   _id?: string;
   title: string;
@@ -24,10 +21,7 @@ export interface MovieClickData {
   }>;
 }
 
-/**
- * Interface for UnyFilm catalog component props
- * @interface UnyFilmCatalogProps
- */
+
 export interface UnyFilmCatalogProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;

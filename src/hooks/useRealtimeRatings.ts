@@ -7,10 +7,7 @@ interface UseRealtimeRatingsOptions {
   enableRealtime?: boolean;
 }
 
-/**
- * Hook to handle real-time ratings
- * Listens to update events and keeps the state synchronized
- */
+
 export function useRealtimeRatings({ 
   movieId, 
   autoLoad = true, 

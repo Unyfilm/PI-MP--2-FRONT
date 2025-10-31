@@ -181,7 +181,7 @@ export default function UnyFilmPlayer({
 
   return (
     <div className="unyfilm-player-page">
-      {/* Close Button */}
+     
       <button 
         onClick={onClose}
         className="unyfilm-player-close-btn"
@@ -190,7 +190,6 @@ export default function UnyFilmPlayer({
         <X size={24} />
       </button>
 
-      {/* Video Container */}
       <div 
         ref={containerRef}
         onMouseMove={handleMouseMove}
@@ -209,9 +208,9 @@ export default function UnyFilmPlayer({
           />
         </video>
 
-        {/* Video Controls */}
+        
         <div className={`unyfilm-video-controls ${showControls ? 'show' : ''}`}>
-          {/* Progress Bar */}
+          
           <div onClick={handleSeek} className="unyfilm-progress-container">
             <div className="unyfilm-progress-bar">
               <div 
@@ -221,7 +220,7 @@ export default function UnyFilmPlayer({
             </div>
           </div>
 
-          {/* Control Buttons */}
+          
           <div className="unyfilm-controls-bottom">
             <div className="unyfilm-controls-left">
               <button onClick={togglePlay} className="unyfilm-control-btn">
@@ -257,7 +256,7 @@ export default function UnyFilmPlayer({
             </div>
 
             <div className="unyfilm-controls-right">
-              {/* Quality Selector */}
+              
               <select 
                 value={currentQuality} 
                 onChange={(e) => handleQualityChange(e.target.value)}
@@ -270,7 +269,7 @@ export default function UnyFilmPlayer({
                 <option value="low">Baja (480p)</option>
               </select>
 
-              {/* Subtitle Toggle */}
+              
               <button 
                 onClick={handleSubtitleToggle}
                 className={`unyfilm-control-btn ${subtitlesEnabled ? 'active' : ''}`}
@@ -295,7 +294,7 @@ export default function UnyFilmPlayer({
         </div>
       </div>
 
-      {/* Movie Info Section */}
+      
       <div className="unyfilm-movie-info-section">
         <div className="unyfilm-movie-header">
           <h1 className="unyfilm-movie-title-main">{movie?.title || 'Película'}</h1>
@@ -319,7 +318,7 @@ export default function UnyFilmPlayer({
           </p>
         </div>
 
-        {/* Sinopsis Section */}
+        
         {(movie as any)?.synopsis && (
           <div className="unyfilm-movie-synopsis">
             <h3>Sinopsis</h3>
@@ -329,7 +328,7 @@ export default function UnyFilmPlayer({
           </div>
         )}
 
-        {/* Géneros Section */}
+        
         {(movie as any)?.genres && (
           <div className="unyfilm-movie-genres">
             <h3>Géneros</h3>
@@ -361,7 +360,7 @@ export default function UnyFilmPlayer({
           <button className="unyfilm-submit-review-btn">Publicar reseña</button>
         </div>
 
-        {/* Comments (simulados) */}
+       
         <div className="unyfilm-comments-section">
           <h3>Comentarios</h3>
           <ul className="unyfilm-comments-list">

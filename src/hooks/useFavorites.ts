@@ -3,10 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { favoriteService, type Favorite } from '../services/favoriteService';
 
-/**
- * Interface for useFavorites hook return value
- * @interface UseFavoritesReturn
- */
+
 interface UseFavoritesReturn {
   
   favorites: Favorite[];
@@ -34,10 +31,7 @@ interface UseFavoritesReturn {
   getStats: () => { total: number; byGenre: Record<string, number> };
 }
 
-/**
- * Custom hook for managing user favorites
- * @returns {UseFavoritesReturn} Object with favorites state and methods
- */
+
 export const useFavorites = (): UseFavoritesReturn => {
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(false);

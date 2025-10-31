@@ -1,7 +1,3 @@
-/**
- * Cloudinary Service for UnyFilm
- * @fileoverview Service for handling video uploads and transformations with Cloudinary
- */
 
 import { Cloudinary } from '@cloudinary/url-gen';
 import { CLOUDINARY_CONFIG } from '../config/environment';
@@ -71,12 +67,6 @@ class CloudinaryService {
     });
   }
 
-  /**
-   * Upload a video file to Cloudinary
-   * @param file - Video file to upload
-   * @param options - Upload options
-   * @returns Promise with upload response
-   */
   async uploadVideo(
     file: File, 
     options: CloudinaryUploadOptions = {}
@@ -129,11 +119,7 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Get video information from Cloudinary
-   * @param publicId - Public ID of the video
-   * @returns Promise with video information
-   */
+ 
   async getVideoInfo(publicId: string): Promise<CloudinaryVideoInfo> {
     try {
       const response = await fetch(
@@ -153,36 +139,20 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Generate optimized video URL with transformations
-   * @param publicId - Public ID of the video
-   * @param transformations - Cloudinary transformation parameters
-   * @returns Optimized video URL
-   */
+  
   generateVideoUrl(publicId: string, transformations: string = ''): string {
     const baseUrl = `https://res.cloudinary.com/${this.cloudName}/video/upload`;
     const transformationString = transformations ? `/${transformations}` : '';
     return `${baseUrl}${transformationString}/${publicId}`;
   }
 
-  /**
-   * Generate thumbnail URL for video
-   * @param publicId - Public ID of the video
-   * @param time - Time in seconds for thumbnail (default: 1)
-   * @param width - Thumbnail width (default: 300)
-   * @returns Thumbnail URL
-   */
+ 
   generateThumbnailUrl(publicId: string, time: number = 1, width: number = 300): string {
     const transformations = `w_${width},h_auto,c_fill,so_${time}`;
     return this.generateVideoUrl(publicId, transformations);
   }
 
-  /**
-   * Generate streaming URL with adaptive bitrate
-   * @param publicId - Public ID of the video
-   * @param quality - Video quality ('auto', 'high', 'medium', 'low')
-   * @returns Streaming URL
-   */
+
   generateStreamingUrl(publicId: string, quality: string = 'auto'): string {
     let transformations = '';
     
@@ -203,11 +173,7 @@ class CloudinaryService {
     return this.generateVideoUrl(publicId, transformations);
   }
 
-  /**
-   * Delete video from Cloudinary
-   * @param publicId - Public ID of the video to delete
-   * @returns Promise with deletion result
-   */
+ 
   async deleteVideo(publicId: string): Promise<{ result: string }> {
     if (!this.apiKey || !CLOUDINARY_CONFIG.API_SECRET) {
       throw new Error('API credentials are required for deletion');
@@ -243,12 +209,7 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Generate signature for authenticated requests
-   * @param publicId - Public ID
-   * @param timestamp - Timestamp
-   * @returns Generated signature
-   */
+  
   private async generateSignature(publicId: string, timestamp: number): Promise<string> {
     const message = `public_id=${publicId}&timestamp=${timestamp}${CLOUDINARY_CONFIG.API_SECRET}`;
     
@@ -262,18 +223,11 @@ class CloudinaryService {
     return Math.abs(hash).toString(16);
   }
 
-  /**
-   * Check if Cloudinary is properly configured
-   * @returns True if configuration is valid
-   */
   isConfigured(): boolean {
     return !!(this.cloudName && this.uploadPreset);
   }
 
-  /**
-   * Get configuration status
-   * @returns Configuration status object
-   */
+ 
   getConfigStatus(): {
     cloudName: boolean;
     uploadPreset: boolean;
@@ -288,12 +242,7 @@ class CloudinaryService {
     };
   }
 
-  /**
-   * Generate subtitle URL for a video
-   * @param videoPublicId - Public ID of the video
-   * @param language - Language code (e.g., 'es', 'en')
-   * @returns Subtitle URL
-   */
+ 
   generateSubtitleUrl(videoPublicId: string, language: string = 'es'): string {
     const basePublicId = videoPublicId.replace('movies/videos/', '');
     const subtitlePublicId = `subtitles/${basePublicId}_${language}`;
@@ -303,12 +252,6 @@ class CloudinaryService {
     return url;
   }
 
-  /**
-   * Check if subtitles exist for a video
-   * @param videoPublicId - Public ID of the video
-   * @param language - Language code (e.g., 'es', 'en')
-   * @returns Promise<boolean> - True if subtitles exist
-   */
   async checkSubtitlesExist(videoPublicId: string, language: string = 'es'): Promise<boolean> {
     try {
       const subtitleUrl = this.generateSubtitleUrl(videoPublicId, language);
@@ -320,11 +263,7 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Get available subtitle languages for a video
-   * @param videoPublicId - Public ID of the video
-   * @returns Promise<string[]> - Array of available language codes
-   */
+
   async getAvailableSubtitles(videoPublicId: string): Promise<string[]> {
     const languages = ['es', 'en']; 
     const availableLanguages: string[] = [];
@@ -339,12 +278,6 @@ class CloudinaryService {
     return availableLanguages;
   }
 
-  /**
-   * Load subtitle content from Cloudinary
-   * @param videoPublicId - Public ID of the video
-   * @param language - Language code
-   * @returns Promise<string> - Subtitle content in VTT format
-   */
   async loadSubtitleContent(videoPublicId: string, language: string = 'es'): Promise<string> {
     try {
       const subtitleUrl = this.generateSubtitleUrl(videoPublicId, language);
@@ -360,11 +293,7 @@ class CloudinaryService {
     }
   }
 
-  /**
-   * Load subtitle content from a direct URL
-   * @param subtitleUrl - Direct URL to subtitle file
-   * @returns Promise<string> - Subtitle content in VTT format
-   */
+  
   async loadSubtitleFromUrl(subtitleUrl: string): Promise<string> {
     try {
       const response = await fetch(subtitleUrl);

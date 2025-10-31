@@ -225,7 +225,7 @@ export default function UserAuth() {
         </div>
       )}
 
-      {/* Login Modal */}
+      
       {showLogin && (
         <div className="user-auth__modal" ref={loginModalRef}>
           <div className="user-auth__modal-content">
@@ -288,7 +288,7 @@ export default function UserAuth() {
         </div>
       )}
 
-      {/* Register Modal */}
+      
       {showRegister && (
         <div className="user-auth__modal" ref={registerModalRef}>
           <div className="user-auth__modal-content">
@@ -380,7 +380,7 @@ export default function UserAuth() {
         </div>
       )}
 
-      {/* Profile Modal */}
+      
       {showProfile && (
         <div className="user-auth__modal" ref={profileModalRef}>
           <div className="user-auth__modal-content">
@@ -480,7 +480,7 @@ export default function UserAuth() {
         </div>
       )}
 
-      {/* Password Recovery Modal */}
+      
       {showPasswordRecovery && (
         <div className="user-auth__modal" ref={recoveryModalRef}>
           <div className="user-auth__modal-content">

@@ -9,16 +9,7 @@ import ProfileEdit from '../components/profile/ProfileEdit';
 import LandingPage from '../components/landing/LandingPage';
 import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
 
-/**
- * AppRoutes
- *
- * Main application routes configuration.
- * - Public routes: login, register, recover (only accessible when unauthenticated)
- * - Protected routes: home, catalog, about, sitemap, profile, profile edit
- * - Root path redirects to /home (ProtectedRoute will handle auth)
- *
- * @returns {JSX.Element} Application routes tree wrapped with guards
- */
+
 export default function AppRoutes() {
   return (
     <Routes>

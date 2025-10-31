@@ -1,16 +1,3 @@
-/**
- * ApiService (frontend)
- *
- * Centralized HTTP client for UnyFilm that integrates with the real backend
- * for movies and users. Authentication is delegated to authService.
- *
- * Conventions:
- * - camelCase for functions and variables
- * - PascalCase for exported interfaces and types
- * - Descriptive names for readability
- *
- * @fileoverview Centralized API service with HTTP methods and TypeScript types
- */
 
 import type { 
   ApiConfig, 
@@ -35,17 +22,6 @@ const API_CONFIG: ApiConfig = {
   RETRY_ATTEMPTS: ENV_API_CONFIG.RETRY_ATTEMPTS || 3
 };
 
-/**
- * makeRequest
- *
- * Generic HTTP request handler adding JSON headers, authorization token,
- * timeout via AbortController and unified JSON parsing.
- *
- * @template T - Expected payload type
- * @param {string} url - Request URL
- * @param {RequestOptions} [options] - Fetch options
- * @returns {Promise<ApiResponse<T>>} Typed API response
- */
 const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
@@ -88,36 +64,9 @@ const makeRequest = async <T = any>(url: string, options: RequestOptions = {}): 
 };
 
 
-/**
- * Handle movies API requests
- * @param method - HTTP method
- * @param options - Request options
- * @returns Movies data
- */
 
-/**
- * Handle users API requests
- * @param method - HTTP method
- * @param options - Request options
- * @returns Users data
- */
 
-/**
- * Handle login request
- * @param options - Request options
- * @returns Login response
- */
 
-/**
- * Handle register request
- * @param options - Request options
- * @returns Register response
- */
-
-/**
- * Handle logout request
- * @returns Logout response
- */
 
 export const apiService: ApiService = {
   getMovies: (): Promise<ApiResponse<Movie[]>> => 

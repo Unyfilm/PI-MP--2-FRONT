@@ -1,19 +1,9 @@
-/**
- * RatingService
- *
- * Service for handling movie ratings and statistics from the backend API.
- * Provides methods to fetch rating statistics and user ratings.
- *
- * @fileoverview Service for movie rating operations
- */
+
 
 import { API_CONFIG } from '../config/environment';
 import { ratingCache } from './ratingCache';
 
-/**
- * Interface for movie rating statistics
- * @interface RatingStats
- */
+
 export interface RatingStats {
 
   movieId: string;
@@ -27,10 +17,7 @@ export interface RatingStats {
   };
 }
 
-/**
- * Interface for user rating
- * @interface UserRating
- */
+
 export interface UserRating {
 
   id: string;
@@ -54,11 +41,7 @@ export interface RatingResponse {
   data?: RatingStats | UserRating;
 }
 
-/**
- * Get movie rating statistics (average, total ratings, distribution)
- * @param movieId - The movie ID to get statistics for
- * @returns Promise<RatingStats> - Rating statistics for the movie
- */
+
 export const getMovieRatingStats = async (movieId: string): Promise<RatingStats> => {
   try {
     const cached = ratingCache.get(movieId);
@@ -120,11 +103,6 @@ export const getMovieRatingStats = async (movieId: string): Promise<RatingStats>
   }
 };
 
-/**
- * Get user's rating for a specific movie
- * @param movieId - The movie ID to get user rating for
- * @returns Promise<UserRating | null> - User's rating or null if not rated
- */
 export const getUserRating = async (movieId: string): Promise<UserRating | null> => {
   try {
     const token = localStorage.getItem('token');
@@ -162,12 +140,6 @@ export const getUserRating = async (movieId: string): Promise<UserRating | null>
   }
 };
 
-/**
- * Rate a movie (create or update rating)
- * @param movieId - The movie ID to rate
- * @param rating - Rating value (1-5)
- * @returns Promise<boolean> - Success status
- */
 export const rateMovie = async (movieId: string, rating: number): Promise<boolean> => {
   try {
     const token = localStorage.getItem('token');
@@ -204,13 +176,7 @@ export const rateMovie = async (movieId: string, rating: number): Promise<boolea
   }
 };
 
-/**
- * Update existing rating
- * @param ratingId - The rating ID to update
- * @param rating - New rating value (1-5)
- * @param movieId - The movie ID for cache invalidation
- * @returns Promise<boolean> - Success status
- */
+
 export const updateRating = async (ratingId: string, rating: number, movieId?: string): Promise<boolean> => {
   try {
     const token = localStorage.getItem('token');
@@ -246,11 +212,7 @@ export const updateRating = async (ratingId: string, rating: number, movieId?: s
   }
 };
 
-/**
- * Delete user's rating for a movie
- * @param movieId - The movie ID to delete rating for
- * @returns Promise<boolean> - Success status
- */
+
 export const deleteRating = async (movieId: string): Promise<boolean> => {
   try {
     const token = localStorage.getItem('token');
