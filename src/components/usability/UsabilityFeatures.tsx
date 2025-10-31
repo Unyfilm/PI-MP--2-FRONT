@@ -15,11 +15,16 @@ type Shortcut = { key: string; description: string; action: () => void };
 export default function UsabilityFeatures() {
   const location = useLocation();
   const isPlayerRoute = location.pathname.startsWith('/player');
+  const isPublicRoute = location.pathname === '/'
+    || location.pathname.startsWith('/login')
+    || location.pathname.startsWith('/register')
+    || location.pathname.startsWith('/recover')
+    || location.pathname.startsWith('/reset-password');
 
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   
-  const helpModalRef = useClickOutside(() => setShowHelp(false));
+  const helpModalRef = useClickOutside<HTMLDivElement>(() => setShowHelp(false));
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   
   const focusSidebar = () => {
@@ -142,7 +147,7 @@ export default function UsabilityFeatures() {
   };
 
   useEffect(() => {
-    if (isPlayerRoute) return; // no inicializar atajos en el reproductor
+    if (isPlayerRoute || isPublicRoute) return; // avoid initializing on these routes
 
     const cleanupKeyboard = initializeKeyboardShortcuts();
     initializeHelpSystem();
@@ -153,7 +158,7 @@ export default function UsabilityFeatures() {
         cleanupKeyboard();
       }
     };
-  }, [isPlayerRoute]);
+  }, [isPlayerRoute, isPublicRoute]);
 
   
   const initializeKeyboardShortcuts = () => {
@@ -426,9 +431,11 @@ export default function UsabilityFeatures() {
     
   }, []);
 
+  const shouldRenderUi = !(isPlayerRoute || isPublicRoute);
+
   return (
     <div className="usability-features">
-      {!isPlayerRoute && (
+      {shouldRenderUi && (
         <button 
           className="usability-help-btn"
           onClick={() => {
@@ -444,7 +451,7 @@ export default function UsabilityFeatures() {
         </button>
       )}
 
-      {!isPlayerRoute && showHelp && (
+      {shouldRenderUi && showHelp && (
         <div className="usability-help-modal" role="dialog" aria-modal="true" aria-labelledby="usability-help-title">
           <div className="usability-help-backdrop" onClick={() => setShowHelp(false)}></div>
           <div className="usability-help-content" ref={helpModalRef}>

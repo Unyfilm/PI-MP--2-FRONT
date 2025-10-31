@@ -318,21 +318,26 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
    * Get user info from cache/context/object for a given userId
    */
   const getUserInfo = (userId: any) => {
-    let actualUserId: string;
+    // Handle null/undefined or unexpected shapes gracefully
+    if (!userId) {
+      return { _id: 'unknown', firstName: 'Usuario', lastName: '', username: 'Usuario' };
+    }
+
+    let actualUserId: string = '';
     let userData: any = {};
     
-    if (typeof userId === 'object') {
+    if (userId && typeof userId === 'object') {
       actualUserId = (userId as any)._id || (userId as any).id || '';
       userData = userId;
     } else {
-      actualUserId = userId;
+      actualUserId = String(userId);
     }
     
-    if (userCache[actualUserId]) {
+    if (actualUserId && userCache[actualUserId]) {
       return userCache[actualUserId];
     }
     
-    if (user && String(user._id) === String(actualUserId)) {
+    if (user && actualUserId && String(user._id) === String(actualUserId)) {
       const userInfo = {
         _id: user._id,
         firstName: user.firstName,
@@ -343,22 +348,24 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       return userInfo;
     }
     
-    if (userData && Object.keys(userData).length > 0) {
+    if (userData && typeof userData === 'object' && Object.keys(userData).length > 0) {
       const userInfo = {
-        _id: actualUserId,
-        firstName: userData.firstName || '',
+        _id: actualUserId || 'unknown',
+        firstName: userData.firstName || 'Usuario',
         lastName: userData.lastName || '',
-        username: userData.username || (userData.firstName + (userData.lastName || '')) || 'Error'
+        username: userData.username || (userData.firstName ? (userData.firstName + (userData.lastName || '')) : 'Usuario')
       };
-      setUserCache(prev => ({ ...prev, [actualUserId]: userInfo }));
+      if (actualUserId) {
+        setUserCache(prev => ({ ...prev, [actualUserId]: userInfo }));
+      }
       return userInfo;
     }
     
     return {
-      _id: actualUserId,
-      firstName: 'Error',
+      _id: actualUserId || 'unknown',
+      firstName: 'Usuario',
       lastName: '',
-      username: 'Error'
+      username: 'Usuario'
     };
   };
 
@@ -391,27 +398,35 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   const canEditComment = (comment: Comment) => {
     if (!isAuthenticated || !user) return false;
     
-    
-    let currentUserId = user._id;
-    
+    // Extract current user id safely
+    let currentUserId: string | null = user._id ? String(user._id) : null;
     
     if (!currentUserId) {
       const token = localStorage.getItem('token') || localStorage.getItem('unyfilm-token');
       if (token) {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
-          currentUserId = payload.userId || payload.id || payload._id;
+          currentUserId = payload?.userId || payload?.id || payload?._id || null;
+          currentUserId = currentUserId ? String(currentUserId) : null;
         } catch (error) {
-          
+          currentUserId = null;
         }
       }
     }
     
-    
     if (!currentUserId) return false;
     
-    const actualUserId = typeof comment.userId === 'object' ? (comment.userId as any)._id || (comment.userId as any).id : comment.userId;
-    return String(actualUserId) === String(currentUserId);
+    // Extract comment author id safely (may be null or object without _id)
+    const rawUserId: any = (comment as any)?.userId ?? null;
+    let authorId: string | null = null;
+    if (rawUserId && typeof rawUserId === 'object') {
+      authorId = rawUserId._id || rawUserId.id || null;
+    } else if (rawUserId) {
+      authorId = String(rawUserId);
+    }
+    if (!authorId) return false;
+    
+    return String(authorId) === String(currentUserId);
   };
 
   return (
@@ -495,7 +510,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
         ) : (
           <>
             {(comments || []).map((comment, index) => {
-              const userInfo = getUserInfo(comment.userId);
+              const userInfo = getUserInfo((comment as any)?.userId ?? null);
               const commentId = (comment as any)?._id || (comment as any)?.id;
               const stableKey = commentId || `${index}-${userInfo?._id || 'comment'}`;
               
