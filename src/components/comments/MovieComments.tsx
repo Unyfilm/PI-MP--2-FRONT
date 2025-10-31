@@ -318,7 +318,6 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
    * Get user info from cache/context/object for a given userId
    */
   const getUserInfo = (userId: any) => {
-    // Handle null/undefined or unexpected shapes gracefully
     if (!userId) {
       return { _id: 'unknown', firstName: 'Usuario', lastName: '', username: 'Usuario' };
     }
@@ -392,13 +391,11 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
     }
   };
 
-  /**
-   * Whether the current user can edit the given comment
-   */
+  
   const canEditComment = (comment: Comment) => {
     if (!isAuthenticated || !user) return false;
     
-    // Extract current user id safely
+
     let currentUserId: string | null = user._id ? String(user._id) : null;
     
     if (!currentUserId) {
@@ -416,7 +413,6 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
     
     if (!currentUserId) return false;
     
-    // Extract comment author id safely (may be null or object without _id)
     const rawUserId: any = (comment as any)?.userId ?? null;
     let authorId: string | null = null;
     if (rawUserId && typeof rawUserId === 'object') {
