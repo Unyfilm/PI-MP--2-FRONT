@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Eye, EyeOff, Keyboard, Mouse, Sun } from 'lucide-react';
 import './AccessibilityFeatures.css';
 import { useLocation } from 'react-router-dom';
@@ -78,6 +78,7 @@ export default function AccessibilityFeatures() {
   const [focusVisible, setFocusVisible] = useState(true);
   const [skipLinks, setSkipLinks] = useState(false); // default: disabled
   const [showFontChangeNotification, setShowFontChangeNotification] = useState(false);
+  const fontNotifTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const savedPrefs = localStorage.getItem('unyfilm-accessibility');
@@ -96,16 +97,34 @@ export default function AccessibilityFeatures() {
   }, [highContrast, reducedMotion, fontSize, focusVisible, skipLinks]);
 
   useEffect(() => {
+    if (fontNotifTimerRef.current) {
+      clearTimeout(fontNotifTimerRef.current);
+      fontNotifTimerRef.current = null;
+    }
+
     if (fontSize !== 'normal') {
       setShowFontChangeNotification(true);
-      const timer = setTimeout(() => {
+      fontNotifTimerRef.current = window.setTimeout(() => {
         setShowFontChangeNotification(false);
-      }, 3000);
-      return () => clearTimeout(timer);
+        fontNotifTimerRef.current = null;
+      }, 2000);
+    } else {
+      setShowFontChangeNotification(false);
     }
+
+    return () => {
+      if (fontNotifTimerRef.current) {
+        clearTimeout(fontNotifTimerRef.current);
+        fontNotifTimerRef.current = null;
+      }
+    };
   }, [fontSize]);
 
   const applyAccessibilityFeatures = () => {
+    // Preserve scroll position to avoid layout jump when toggling classes
+    const x = window.scrollX;
+    const y = window.scrollY;
+
     const root = document.documentElement;
     if (highContrast) root.classList.add('high-contrast'); else root.classList.remove('high-contrast');
     if (reducedMotion) root.classList.add('reduced-motion'); else root.classList.remove('reduced-motion');
@@ -115,6 +134,11 @@ export default function AccessibilityFeatures() {
 
     const prefs = { highContrast, reducedMotion, fontSize, focusVisible, skipLinks };
     localStorage.setItem('unyfilm-accessibility', JSON.stringify(prefs));
+
+    // Restore scroll position on next frame
+    requestAnimationFrame(() => {
+      window.scrollTo(x, y);
+    });
   };
 
   // Disable shortcuts on player and public routes
