@@ -1,3 +1,8 @@
+/**
+ * UnyFilmHeader component
+ * Persistent top navigation with search input and profile dropdown.
+ * Receives search handlers via props and exposes accessible controls.
+ */
 import { useState, useEffect, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, User, LogOut } from 'lucide-react';
@@ -28,6 +33,7 @@ export default function UnyFilmHeader({
   onSearchSubmit
 }: UnyFilmHeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  
   useEffect(() => {
     if (!searchQuery || searchQuery.trim() === '') return;
     
@@ -47,13 +53,9 @@ export default function UnyFilmHeader({
     }
   };
 
-  
-
   const handleProfileClick = () => {
     setShowProfileMenu(!showProfileMenu);
   };
-
- 
 
   return (
     <header className="unyfilm-header">
@@ -69,6 +71,8 @@ export default function UnyFilmHeader({
               onChange={handleSearchChange}
               className="unyfilm-header__search-input"
               id="search-input"
+              tabIndex={0}
+              aria-label="Buscar películas"
             />
           </div>
         </div>
@@ -80,11 +84,15 @@ export default function UnyFilmHeader({
             <button
               onClick={handleProfileClick}
               className={`unyfilm-header__profile-btn ${showProfileMenu ? 'unyfilm-header__profile-btn--active' : ''}`}
-              aria-label="User profile"
+              aria-label="Menú de perfil de usuario"
               aria-expanded={showProfileMenu}
+              aria-haspopup="menu"
+              aria-controls={showProfileMenu ? 'profile-menu' : undefined}
+              tabIndex={0}
             >
               <div className="unyfilm-header__profile-avatar">
-                <User size={20} />
+                <User size={20} aria-hidden="true" />
+                <span className="sr-only">Abrir menú de perfil</span>
               </div>
               
             </button>
@@ -159,6 +167,9 @@ function UnyFilmDropdown({ onClose }: DropdownProps) {
   return (
     <div 
       className={`unyfilm-dropdown ${isVisible ? 'unyfilm-dropdown--visible' : ''}`}
+      role="menu"
+      aria-label="Menú de perfil"
+      id="profile-menu"
       style={{
         position: 'absolute',
         zIndex: 9999,
@@ -203,12 +214,23 @@ interface MenuItemProps {
 function MenuItem({ icon, text, danger = false, onClick }: MenuItemProps) {
   const [isHover, setIsHover] = useState(false);
   
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick();
+    }
+  };
+  
   return (
     <div
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       className={`unyfilm-dropdown__menu-item ${isHover ? 'unyfilm-dropdown__menu-item--hover' : ''} ${danger ? 'unyfilm-dropdown__menu-item--danger' : ''}`}
+      role="menuitem"
+      tabIndex={0}
+      aria-label={text}
     >
       {icon}
       <span>{text}</span>

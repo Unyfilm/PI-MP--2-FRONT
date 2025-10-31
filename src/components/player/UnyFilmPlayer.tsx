@@ -1,7 +1,14 @@
+/**
+ * UnyFilmPlayer component
+ * Custom HTML5 video player with Cloudinary transformations, subtitles (VTT),
+ * accessibility labels and integration with favorites and ratings.
+ * Props typed via EnhancedPlayerProps.
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X, Heart } from 'lucide-react';
 import { Cloudinary } from '@cloudinary/url-gen';
 import InteractiveRating from '../rating/InteractiveRating';
+import MovieComments from '../comments/MovieComments';
 import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import { cloudinaryService } from '../../services/cloudinaryService';
@@ -105,7 +112,7 @@ export default function UnyFilmPlayer({
           }
         }
       } catch (error) {
-        console.error('Error cargando subtítulos:', error);
+        console.error('Error loading subtitles:', error);
         setAvailableSubtitles([]);
       }
     };
@@ -178,7 +185,7 @@ export default function UnyFilmPlayer({
           track.mode = subtitlesEnabled ? 'showing' : 'hidden';
           setSubtitleTrack(track);
         } catch (error) {
-          console.error('❌ Error cargando subtítulos:', error);
+          console.error('Error loading subtitles:', error);
         }
       }
     };
@@ -289,7 +296,7 @@ export default function UnyFilmPlayer({
           track.mode = subtitlesEnabled ? 'showing' : 'hidden';
           setSubtitleTrack(track);
         } catch (error) {
-          console.error('❌ Error cargando subtítulos:', error);
+          console.error('Error loading subtitles:', error);
         }
       }
     };
@@ -568,7 +575,7 @@ export default function UnyFilmPlayer({
         track.mode = subtitlesEnabled ? 'showing' : 'hidden';
         setSubtitleTrack(track);
       } catch (error) {
-        console.error('❌ Error cambiando idioma de subtítulos:', error);
+        console.error('Error changing subtitle language:', error);
       }
     }
   };
@@ -592,7 +599,13 @@ export default function UnyFilmPlayer({
 
   return (
     <div className="unyfilm-player-wrapper">
-      <div className="unyfilm-player-page">
+      <div 
+        className="unyfilm-player-page"
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="movie-title"
+      >
         
         <div className="unyfilm-player-mosaic" aria-hidden="true">
           {Array.from({ length: 200 }).map((_, i) => (
@@ -604,13 +617,14 @@ export default function UnyFilmPlayer({
           onClick={onClose}
           className="unyfilm-player-close-btn"
           aria-label="Cerrar reproductor"
+          tabIndex={0}
         >
           <X size={24} />
         </button>
         
         <div className="unyfilm-movie-info-section" style={{paddingBottom: 10}}>
           <div className="unyfilm-movie-header">
-            <h1 className="unyfilm-movie-title-main">{movie?.title || 'Película'}</h1>
+            <h1 id="movie-title" className="unyfilm-movie-title-main">{movie?.title || 'Película'}</h1>
             <div className="unyfilm-movie-controls">
               <div className="unyfilm-movie-rating">
                 <span className="star">★</span> {hasRealRatings ? averageRating.toFixed(1) : '0'}/5
@@ -638,9 +652,32 @@ export default function UnyFilmPlayer({
                     console.error('Error toggling favorite:', error);
                   }
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!movie?._id) return;
+                    
+                    try {
+                      if (isMovieInFavorites(movie._id)) {
+                        const favorite = getFavoriteById(movie._id);
+                        if (favorite) {
+                          removeFromFavorites(favorite._id);
+                        }
+                      } else {
+                        addToFavorites(movie._id);
+                      }
+                    } catch (error) {
+                      console.error('Error toggling favorite:', error);
+                    }
+                  }
+                }}
                 title={movie?._id && isMovieInFavorites(movie._id) ? 'Eliminar de favoritos' : 'Agregar a favoritos'}
+                tabIndex={0}
+                aria-label={movie?._id && isMovieInFavorites(movie._id) ? 'Eliminar de favoritos' : 'Agregar a favoritos'}
               >
-                <Heart size={20} />
+                <Heart size={20} aria-hidden="true" />
+                <span className="sr-only">{movie?._id && isMovieInFavorites(movie._id) ? 'Eliminar de favoritos' : 'Agregar a favoritos'}</span>
               </button>
             </div>
           </div>
@@ -651,6 +688,8 @@ export default function UnyFilmPlayer({
           onMouseMove={handleMouseMove}
           onMouseLeave={() => isPlaying && setShowControls(false)}
           className={`unyfilm-video-container ${isFullscreen ? 'fullscreen' : ''}`}
+          role="application"
+          aria-label="Reproductor de video"
         >
           <video
             ref={videoRef}
@@ -660,8 +699,11 @@ export default function UnyFilmPlayer({
               movie.image ||
               "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%2334495e'/%3E%3C/svg%3E"
             }
+            aria-label={`Reproducir ${movie?.title || 'película'}`}
+            role="img"
           >
             <source src={movie?.videoUrl || ''} type="video/mp4" />
+            Tu navegador no soporta el elemento de video.
           </video>
 
           {!isPlaying && (
@@ -670,8 +712,10 @@ export default function UnyFilmPlayer({
               className="unyfilm-center-play"
               aria-label="Reproducir"
               onClick={togglePlay}
+              tabIndex={0}
             >
-              <Play size={56} />
+              <Play size={56} aria-hidden="true" />
+              <span className="sr-only">Reproducir</span>
             </button>
           )}
 
@@ -690,21 +734,45 @@ export default function UnyFilmPlayer({
             
             <div className="unyfilm-controls-bottom">
               <div className="unyfilm-controls-left">
-                <button onClick={togglePlay} className="unyfilm-control-btn">
-                  {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                <button 
+                  onClick={togglePlay} 
+                  className="unyfilm-control-btn" 
+                  tabIndex={0}
+                  aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
+                >
+                  {isPlaying ? <Pause size={24} aria-hidden="true" /> : <Play size={24} aria-hidden="true" />}
+                  <span className="sr-only">{isPlaying ? 'Pausar' : 'Reproducir'}</span>
                 </button>
 
-                <button onClick={() => skipTime(-10)} className="unyfilm-control-btn">
-                  <SkipBack size={20} />
+                <button 
+                  onClick={() => skipTime(-10)} 
+                  className="unyfilm-control-btn" 
+                  tabIndex={0}
+                  aria-label="Retroceder 10 segundos"
+                >
+                  <SkipBack size={20} aria-hidden="true" />
+                  <span className="sr-only">Retroceder 10 segundos</span>
                 </button>
 
-                <button onClick={() => skipTime(10)} className="unyfilm-control-btn">
-                  <SkipForward size={20} />
+                <button 
+                  onClick={() => skipTime(10)} 
+                  className="unyfilm-control-btn" 
+                  tabIndex={0}
+                  aria-label="Avanzar 10 segundos"
+                >
+                  <SkipForward size={20} aria-hidden="true" />
+                  <span className="sr-only">Avanzar 10 segundos</span>
                 </button>
 
                 <div className="unyfilm-volume-control">
-                  <button onClick={toggleMute} className="unyfilm-control-btn">
-                    {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  <button 
+                    onClick={toggleMute} 
+                    className="unyfilm-control-btn" 
+                    tabIndex={0}
+                    aria-label={isMuted || volume === 0 ? 'Activar sonido' : 'Silenciar'}
+                  >
+                    {isMuted || volume === 0 ? <VolumeX size={20} aria-hidden="true" /> : <Volume2 size={20} aria-hidden="true" />}
+                    <span className="sr-only">{isMuted || volume === 0 ? 'Activar sonido' : 'Silenciar'}</span>
                   </button>
                   <input
                     type="range"
@@ -714,6 +782,8 @@ export default function UnyFilmPlayer({
                     value={isMuted ? 0 : volume}
                     onChange={handleVolumeChange}
                     className="unyfilm-volume-slider"
+                    tabIndex={0}
+                    aria-label="Control de volumen"
                   />
                 </div>
 
@@ -728,6 +798,8 @@ export default function UnyFilmPlayer({
                   onChange={(e) => handleQualityChange(e.target.value)}
                   className="unyfilm-quality-selector"
                   disabled={!cloudinaryPublicId}
+                  tabIndex={0}
+                  aria-label="Seleccionar calidad de video"
                   style={{
                     backgroundColor: cloudinaryPublicId ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
                     border: cloudinaryPublicId ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)'
@@ -744,6 +816,8 @@ export default function UnyFilmPlayer({
                     value={selectedSubtitleLanguage}
                     onChange={(e) => handleSubtitleLanguageChange(e.target.value)}
                     className="unyfilm-subtitle-selector"
+                    tabIndex={0}
+                    aria-label="Seleccionar idioma de subtítulos"
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.1)',
                       border: '1px solid rgba(255, 255, 255, 0.3)',
@@ -767,6 +841,7 @@ export default function UnyFilmPlayer({
                   className={`unyfilm-control-btn ${subtitlesEnabled ? 'active' : ''}`}
                   aria-label={subtitlesEnabled ? 'Ocultar subtítulos' : 'Mostrar subtítulos'}
                   disabled={availableSubtitles.length === 0}
+                  tabIndex={0}
                   style={{
                     backgroundColor: subtitlesEnabled ? '#6366f1' : 'transparent',
                     color: subtitlesEnabled ? 'white' : availableSubtitles.length === 0 ? '#666' : 'white',
@@ -775,6 +850,7 @@ export default function UnyFilmPlayer({
                   }}
                 >
                   CC{subtitlesEnabled ? ' ✓' : ''}
+                  <span className="sr-only">{subtitlesEnabled ? 'Ocultar subtítulos' : 'Mostrar subtítulos'}</span>
                 </button>
 
 
@@ -782,8 +858,10 @@ export default function UnyFilmPlayer({
                   onClick={toggleFullscreen}
                   className="unyfilm-control-btn"
                   aria-label="Pantalla completa"
+                  tabIndex={0}
                 >
-                  <Maximize size={20} />
+                  <Maximize size={20} aria-hidden="true" />
+                  <span className="sr-only">Pantalla completa</span>
                 </button>
               </div>
             </div>
@@ -852,6 +930,13 @@ export default function UnyFilmPlayer({
               movieId={movie._id}
               movieTitle={movie.title || 'Película'}
               onRatingUpdate={handleRatingUpdate}
+            />
+          )}
+
+          {movie && movie._id && (
+            <MovieComments
+              movieId={movie._id}
+              movieTitle={movie.title || 'Película'}
             />
           )}
 

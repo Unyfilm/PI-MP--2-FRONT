@@ -1,4 +1,7 @@
-
+/**
+ * FavoriteButton component
+ * Toggles a movie as favorite using FavoritesContext with loading/animation states.
+ */
 
 import React, { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
@@ -45,12 +48,11 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   }, [movieId, favorites, isMovieInFavorites, getFavoriteById, loading]); 
 
  
-  const handleToggle = async (e: React.MouseEvent) => {
+  const handleToggle = async (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (isToggling || loading) {
-      console.log('⏳ Already toggling or loading, ignoring click');
       return;
     }
     
@@ -60,34 +62,27 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     try {
       if (isMovieFavorite && favoriteId) {
         
-        console.log('🗑️ Removing from favorites:', movieId);
         const result = await removeFromFavorites(favoriteId);
         
         if (result.success) {
-          console.log('✅ Successfully removed from favorites');
           setIsMovieFavorite(false);
           setFavoriteId(null);
           onToggle?.(false, movieId);
         } else {
-          console.error('❌ Failed to remove from favorites:', result.message);
         }
       } else {
-        console.log('➕ Adding to favorites:', movieId);
         const result = await addToFavorites(movieId);
         
         if (result.success) {
-          console.log('✅ Successfully added to favorites');
           setIsMovieFavorite(true);
           if (result && typeof result === 'object' && '_id' in result) {
             setFavoriteId((result as any)._id);
           }
           onToggle?.(true, movieId);
         } else {
-          console.error('❌ Failed to add to favorites:', result.message);
         }
       }
     } catch (error) {
-      console.error('❌ Error toggling favorite:', error);
     } finally {
       setIsToggling(false);
       setTimeout(() => setIsAnimating(false), 600);
@@ -122,12 +117,21 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     return `Agregar ${movieTitle || 'película'} a favoritos`;
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      handleToggle(e);
+    }
+  };
+
   return (
     <button
       className={`favorite-button ${getSizeClasses()} ${
         isMovieFavorite ? 'favorite-button--active' : ''
       } ${isAnimating ? 'favorite-button--animating' : ''} ${className}`}
       onClick={handleToggle}
+      onKeyDown={handleKeyDown}
       disabled={isToggling || loading}
       aria-label={getAriaLabel()}
       title={isMovieFavorite ? 'Eliminar de favoritos' : 'Agregar a favoritos'}

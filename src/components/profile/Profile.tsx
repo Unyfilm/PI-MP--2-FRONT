@@ -72,14 +72,15 @@ export default function Profile() {
   };
 
   return (
-    <div className="profile-page">
+    <main className="profile-page" role="main" aria-labelledby="profile-title">
       <div className="profile-mosaic" aria-hidden="true">
         {Array.from({ length: 200 }).map((_, i) => (
           <span key={i} className="profile-mosaic__tile" />
         ))}
       </div>
-      <div className="profile-card">
-        <h1 className="profile-card__title">Mi perfil</h1>
+      <div className="profile-card" aria-describedby="profile-summary">
+        <h1 id="profile-title" className="profile-card__title">Mi perfil</h1>
+        <p id="profile-summary" className="sr-only">Resumen de información de perfil</p>
         <div className="profile-card__row">
           <span className="profile-card__label">Nombre</span>
           <span className="profile-card__value">{user.firstName || 'No especificado'}</span>
@@ -98,33 +99,36 @@ export default function Profile() {
         </div>
 
         <div className="profile-card__actions">
-          <Link to="/home" className="profile-card__button" style={{ background: 'rgba(255,255,255,0.1)' }}>Volver al inicio</Link>
-          <Link to="/profile/edit" className="profile-card__button">Editar perfil</Link>
-          <button className="profile-card__button profile-card__button--danger" onClick={() => setShowDelete(true)}>Eliminar cuenta</button>
+          <Link to="/home" className="profile-card__button" style={{ background: 'rgba(255,255,255,0.1)' }} aria-label="Volver al inicio">Volver al inicio</Link>
+          <Link to="/profile/edit" className="profile-card__button" aria-label="Editar perfil">Editar perfil</Link>
+          <button className="profile-card__button profile-card__button--danger" onClick={() => setShowDelete(true)} aria-haspopup="dialog" aria-controls={showDelete ? 'delete-account-modal' : undefined} aria-label="Eliminar cuenta">Eliminar cuenta</button>
         </div>
       </div>
 
       {showDelete && (
-        <div className={`profile-modal profile-modal--dropdown`} role="dialog" aria-modal="true">
+        <div className={`profile-modal profile-modal--dropdown`} role="dialog" aria-modal="true" aria-labelledby="delete-title" aria-describedby="delete-desc" id="delete-account-modal">
           <div className="profile-modal__backdrop" onClick={handleCloseModal} />
           <div className="profile-modal__content">
-            <h2 className="profile-modal__title">Eliminar cuenta</h2>
-            <p className="profile-modal__text">Ingresa tu contraseña para confirmar la eliminación. Esta acción no puede deshacerse.</p>
-            <form onSubmit={handleConfirmDelete} className="profile-modal__form">
+            <h2 id="delete-title" className="profile-modal__title">Eliminar cuenta</h2>
+            <p id="delete-desc" className="profile-modal__text">Ingresa tu contraseña para confirmar la eliminación. Esta acción no puede deshacerse.</p>
+            <form onSubmit={handleConfirmDelete} className="profile-modal__form" aria-labelledby="delete-title" aria-describedby="delete-desc">
               <div className="form-field">
-                <label className="form-field__label">Contraseña</label>
+                <label className="form-field__label" htmlFor="delete-password">Contraseña</label>
                 <div className="form-field__input-wrapper">
                   <Lock size={20} color="#ffffff" className="form-field__icon" />
                   <input 
+                    id="delete-password"
                     type="password" 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                     placeholder="••••••••" 
                     className={`form-field__input form-field__input--password ${error ? 'form-field__input--error' : ''}`}
                     disabled={isDeleting}
+                    aria-invalid={error ? 'true' : 'false'}
+                    aria-describedby={error ? 'delete-error' : undefined}
                   />
                 </div>
-                {error && <p className="form-field__error">{error}</p>}
+                {error && <p id="delete-error" className="form-field__error" role="alert" aria-live="assertive">{error}</p>}
               </div>
               <div className="profile-modal__actions">
                 <button 
@@ -152,6 +156,6 @@ export default function Profile() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

@@ -1,3 +1,8 @@
+/**
+ * UnyFilmSidebar component
+ * Fixed navigation sidebar with quick links, accessibility options and logout.
+ * Uses Favorites and Auth contexts indirectly via navigation and actions.
+ */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Home, Film, Heart, LogOut, Eye } from 'lucide-react';
@@ -40,14 +45,31 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
 
   return (
     <div className="unyfilm-sidebar">
-      <div className="unyfilm-sidebar__logo" onClick={() => {
-        const container = document.querySelector('.movie-app-container') as HTMLElement | null;
-        if (container && container.classList.contains('movie-app-container--sidebar-open')) {
-          container.classList.remove('movie-app-container--sidebar-open');
-          const toggleBtn = document.querySelector('.sidebar-toggle') as HTMLElement | null;
-          if (toggleBtn) toggleBtn.style.display = 'block';
-        }
-      }} role="button" aria-label="Cerrar menú">
+      <div 
+        className="unyfilm-sidebar__logo" 
+        onClick={() => {
+          const container = document.querySelector('.movie-app-container') as HTMLElement | null;
+          if (container && container.classList.contains('movie-app-container--sidebar-open')) {
+            container.classList.remove('movie-app-container--sidebar-open');
+            const toggleBtn = document.querySelector('.sidebar-toggle') as HTMLElement | null;
+            if (toggleBtn) toggleBtn.style.display = 'block';
+          }
+        }} 
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const container = document.querySelector('.movie-app-container') as HTMLElement | null;
+            if (container && container.classList.contains('movie-app-container--sidebar-open')) {
+              container.classList.remove('movie-app-container--sidebar-open');
+              const toggleBtn = document.querySelector('.sidebar-toggle') as HTMLElement | null;
+              if (toggleBtn) toggleBtn.style.display = 'block';
+            }
+          }
+        }}
+        role="button" 
+        aria-label="Cerrar menú"
+        tabIndex={0}
+      >
         <img 
           src={logoImage} 
           alt="UnyFilm Logo" 
@@ -93,15 +115,15 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
                 <h4>Opciones de Accesibilidad</h4>
                 <div className="unyfilm-sidebar__accessibility-controls">
                   <label>
-                    <input type="checkbox" />
+                    <input type="checkbox" tabIndex={0} aria-label="Activar alto contraste" />
                     <span>Alto contraste</span>
                   </label>
                   <label>
-                    <input type="checkbox" />
+                    <input type="checkbox" tabIndex={0} aria-label="Reducir animaciones" />
                     <span>Reducir animaciones</span>
                   </label>
                   <label>
-                    <input type="checkbox" />
+                    <input type="checkbox" tabIndex={0} aria-label="Mostrar indicadores de foco" />
                     <span>Mostrar foco</span>
                   </label>
                 </div>
@@ -139,17 +161,28 @@ interface SidebarItemProps {
 function NavIcon({ active = false, icon, label, onClick }: SidebarItemProps) {
   const [isHover, setIsHover] = React.useState(false);
   
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+  
   return (
     <div 
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       className={`unyfilm-sidebar__nav-icon ${active ? 'unyfilm-sidebar__nav-icon--active' : ''} ${isHover ? 'unyfilm-sidebar__nav-icon--hover' : ''}`}
       title={label}
       aria-label={label}
+      tabIndex={onClick ? 0 : -1}
+      role={onClick ? "button" : "img"}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
-      {icon}
+      {React.cloneElement(icon as any, { 'aria-hidden': true })}
+      <span className="sr-only">{label}</span>
     </div>
   );
 }

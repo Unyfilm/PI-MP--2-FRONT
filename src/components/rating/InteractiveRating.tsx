@@ -1,3 +1,8 @@
+/**
+ * InteractiveRating component
+ * Displays and submits user star ratings, updates aggregate stats,
+ * and broadcasts rating changes for real-time listeners.
+ */
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { getMovieRatingStats, getUserRating, rateMovie, updateRating, deleteRating } from '../../services/ratingService';
@@ -37,7 +42,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
       setIsLoading(true);
       
       if (!movieId || movieId.trim() === '') {
-        console.warn('MovieId inválido en InteractiveRating');
         return;
       }
       
@@ -56,7 +60,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
           });
       }
     } catch (error) {
-      console.error('Error al cargar estadísticas de calificación:', error);
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +87,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
         onRatingUpdate(ratingStats);
       }
     } catch (error) {
-      console.error('Error al calificar:', error);
       alert('Error al calificar la película');
     } finally {
       setIsSubmitting(false);
@@ -104,7 +106,6 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
         onRatingUpdate(ratingStats);
       }
     } catch (error) {
-      console.error('Error al eliminar calificación:', error);
       alert('Error al eliminar calificación');
     } finally {
       setIsSubmitting(false);
@@ -128,6 +129,7 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
           onMouseLeave={() => setHoverRating(0)}
           disabled={isSubmitting}
           aria-label={`Calificar con ${i} estrella${i > 1 ? 's' : ''}`}
+          tabIndex={0}
         >
           <Star 
             size={24} 
@@ -185,6 +187,8 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
               className="delete-rating-btn"
               onClick={handleDeleteRating}
               disabled={isSubmitting}
+              tabIndex={0}
+              aria-label="Eliminar calificación"
             >
               Eliminar
             </button>

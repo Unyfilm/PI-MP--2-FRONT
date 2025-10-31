@@ -8,6 +8,7 @@ import Profile from '../components/profile/Profile';
 import ProfileEdit from '../components/profile/ProfileEdit';
 import LandingPage from '../components/landing/LandingPage';
 import { ProtectedRoute, PublicRoute } from '../components/ProtectedRoute';
+import PlayerPage from '../pages/player/PlayerPage';
 
 
 export default function AppRoutes() {
@@ -92,7 +93,7 @@ export default function AppRoutes() {
         path="/player/*" 
         element={
           <ProtectedRoute>
-            <MovieApp />
+            <PlayerPage />
           </ProtectedRoute>
         } 
       />
