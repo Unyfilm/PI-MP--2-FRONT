@@ -1,12 +1,45 @@
 import React from 'react';
 
 /**
- * Componente de prueba para verificar la accesibilidad
- * Solo para desarrollo - NO incluir en producción
+ * @file AccessibilityTest.tsx
+ * @description
+ * Development-only component used to verify screen reader and accessibility features
+ * in the application. It provides a simple interface for testing ARIA live regions and
+ * ensuring that interactive elements (e.g., buttons, links) are announced properly
+ * by assistive technologies.
+ *
+ * @module AccessibilityTest
+ */
+
+/**
+ * @function AccessibilityTest
+ * @description
+ * React functional component that renders an accessibility testing panel.
+ * It allows developers to verify that screen readers announce button labels correctly.
+ *
+ * The component creates an ARIA live region dynamically and removes it after
+ * a short timeout to simulate an announcement for accessibility validation.
+ *
+ * @example
+ * ```tsx
+ * <AccessibilityTest />
+ * ```
+ *
+ * @returns {JSX.Element} A floating accessibility test panel with a "Probar Lector" button.
  */
 export const AccessibilityTest: React.FC = () => {
+  /**
+   * @function testScreenReader
+   * @description
+   * Simulates an ARIA live region announcement to test screen reader behavior.
+   * Creates a hidden element with `aria-live="polite"` and removes it after 3 seconds.
+   *
+   * This helps verify that assistive technologies (NVDA, VoiceOver, TalkBack, etc.)
+   * correctly read dynamic updates and button labels.
+   *
+   * @returns {void}
+   */
   const testScreenReader = () => {
-
     const announcement = document.createElement('div');
     announcement.setAttribute('aria-live', 'polite');
     announcement.setAttribute('aria-atomic', 'true');

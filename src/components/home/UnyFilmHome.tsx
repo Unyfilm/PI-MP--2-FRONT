@@ -1,3 +1,18 @@
+/**
+ * @file UnyFilmHome.tsx
+ * @description Home page component for the UnyFilm platform.
+ * Displays a featured movie carousel (hero) and multiple curated sections such as Trending, Popular, Kids, Action, Comedy, Sci-Fi, Horror, and Drama.
+ * Includes real-time ratings, dynamic transitions, asynchronous movie loading, and accessibility support.
+ * 
+ * @version 3.0.0
+ * @author
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
+ */
+
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Play, Star, Flame, TrendingUp, Baby, Zap, Smile, Drama, Rocket, Skull } from 'lucide-react';
 import UnyFilmCard from '../card/UnyFilmCard';
@@ -7,6 +22,23 @@ import { useRealtimeRatings } from '../../hooks/useRealtimeRatings';
 import { getMovieRatingStats } from '../../services/ratingService';
 import './UnyFilmHome.css';
 
+/**
+ * @typedef {Object} MovieClickData
+ * @property {string} [_id] - Unique identifier of the movie.
+ * @property {string} title - Title of the movie.
+ * @property {number} index - Index position in the carousel or list.
+ * @property {string} videoUrl - URL of the movie's video file.
+ * @property {number} rating - Average rating.
+ * @property {number} year - Release year.
+ * @property {string} genre - Primary genre of the movie.
+ * @property {string} description - Short description of the movie.
+ * @property {string} [synopsis] - Full synopsis of the movie.
+ * @property {string[]} [genres] - Array of genres.
+ * @property {string} [cloudinaryPublicId] - Cloudinary public video ID.
+ * @property {string} [cloudinaryUrl] - Cloudinary video URL.
+ * @property {number} [duration] - Duration in minutes.
+ * @property {Array<{language: string, languageCode: string, url: string, isDefault: boolean}>} [subtitles] - Available subtitles metadata.
+ */
 type MovieClickData = {
   _id?: string;
   title: string;
@@ -29,7 +61,12 @@ type MovieClickData = {
   }>;
 };
 
-
+/**
+ * @interface HomeProps
+ * @property {number[]} favorites - List of user's favorite movie IDs.
+ * @property {(index: number) => void} toggleFavorite - Function to toggle favorite state.
+ * @property {(movie: MovieClickData) => void} onMovieClick - Function triggered when a movie card is clicked.
+ */
 interface HomeProps {
   favorites: number[];
   toggleFavorite: (index: number) => void;
@@ -43,8 +80,9 @@ interface HomeProps {
  * (trending, popular, kids, action, comedy, drama). Handles image fallbacks
  * and delegates movie click events via props.
  *
- * @param {HomeProps} props - Home props
- * @returns {JSX.Element} Home UI
+ * @component
+ * @param {Omit<HomeProps, 'favorites' | 'toggleFavorite'>} props - Component props excluding favorites and toggleFavorite.
+ * @returns {JSX.Element} Rendered UnyFilm Home user interface.
  */
 export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites' | 'toggleFavorite'>) {
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null);
@@ -63,8 +101,14 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     enableRealtime: true
   });
 
-
+  /** Local hero rating state used for immediate UI response */
   const [heroRating, setHeroRating] = useState<{ avg: number; total: number; loading: boolean }>({ avg: 0, total: 0, loading: true });
+  
+  /**
+   * Selects the best available hero image source for the featured movie.
+   * @param {Movie} movie - Movie object.
+   * @returns {string} - Valid image URL or default fallback.
+   */
   const getHeroImage = (movie: Movie): string => {
     if (movie.port) return movie.port;
     
@@ -77,6 +121,10 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     return '/images/default-hero.jpg';
   };
 
+  /**
+   * Changes the featured hero movie to the next item in the carousel.
+   * @function changeToNextMovie
+   */
   const changeToNextMovie = useCallback(async () => {
     if (!featuredMovies.length || featuredMovies.length <= 1 || isTransitioning) {
       return;
@@ -98,6 +146,10 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     }
   }, [featuredIndex, featuredMovies, isTransitioning]);
 
+  /**
+   * Initializes the carousel autoplay feature with a 5-second interval.
+   * @function startCarousel
+   */
   const startCarousel = useCallback(() => {
     if (carouselIntervalRef.current) {
       clearInterval(carouselIntervalRef.current);
@@ -109,7 +161,11 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     
     carouselIntervalRef.current = interval as any;
   }, [changeToNextMovie]);
-
+  
+  /**
+   * Loads available movies for the carousel and categorized sections.
+   * Handles errors gracefully and ensures fallback content.
+   */
   useEffect(() => {
     const loadMovies = async () => {
       try {
@@ -188,14 +244,17 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     }
   }, []);
 
-
+  /** Loads real-time rating stats whenever the featured movie changes */
   useEffect(() => {
     if (featuredMovie?._id) {
       loadRatingStats();
     }
   }, [featuredMovie?._id, loadRatingStats]);
 
-
+  /**
+   * Fetches hero rating stats safely with timeout control.
+   * Prevents UI freeze when network delays occur.
+   */
   useEffect(() => {
     let cancelled = false;
     let safetyTimer: number | null = null;
@@ -205,7 +264,7 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
         return;
       }
       setHeroRating(prev => ({ ...prev, loading: true }));
-
+      
       safetyTimer = window.setTimeout(() => {
         if (!cancelled) {
           setHeroRating(prev => ({ ...prev, loading: false }));
@@ -235,7 +294,10 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
       }
     };
   }, [featuredMovie?._id]);
-
+  
+  /**
+   * Manages the autoplay lifecycle for the hero carousel and cleanup.
+   */
   useEffect(() => {
     if (featuredMovie && !isLoading && featuredMovies.length > 1) {
       if (!carouselIntervalRef.current) {
@@ -257,7 +319,11 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
       }
     };
   }, [featuredMovie, isLoading, featuredMovies.length, startCarousel]);
-
+  
+  /**
+   * Handles movie card click events and triggers the external onMovieClick callback.
+   * @param {MovieClickData} movie - Selected movie details.
+   */
   const handleMovieClick = useCallback((movie: MovieClickData) => {
     if (onMovieClick) {
       onMovieClick(movie);

@@ -1,5 +1,23 @@
 
+/**
+ * Cross-Browser Synchronization Service
+ * @fileoverview
+ * Provides a mechanism to synchronize real-time events between multiple
+ * browser tabs using localStorage. This service is primarily used to
+ * broadcast updates such as rating changes or statistics across tabs.
+ * 
+ * @author
+ *  - Hernan Garcia  
+ *  - Juan Camilo Jimenez  
+ *  - Julieta Arteta  
+ *  - Jerson Otero  
+ *  - Julian Mosquera
+ */
 
+/**
+ * Represents a cross-browser synchronization event
+ * @interface CrossBrowserEvent
+ */
 interface CrossBrowserEvent {
   type: 'rating-updated' | 'rating-stats-updated';
   movieId: string;
@@ -8,6 +26,13 @@ interface CrossBrowserEvent {
   browserId: string;
 }
 
+/**
+ * Service responsible for managing event synchronization between browser tabs.
+ * It uses localStorage polling to share events such as movie rating updates.
+ * 
+ * @class CrossBrowserService
+ * @singleton
+ */
 class CrossBrowserService {
   private static instance: CrossBrowserService;
   private browserId: string;

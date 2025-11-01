@@ -73,7 +73,6 @@ export default function UnyFilmCard({
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
   
-
   const { ratingStats } = useRealtimeRatings({ 
     movieId: movieId || '', 
     autoLoad: true, 

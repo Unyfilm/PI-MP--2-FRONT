@@ -1,3 +1,26 @@
+/**
+ * @file ProfileEdit.tsx
+ * @description
+ * User profile editing page for the UnyFilm platform.
+ * Provides a complete editable form for updating user details
+ * (name, age, email) and changing password securely.
+ * Integrates with the authentication context (AuthContext)
+ * for backend updates and applies WCAG accessibility standards.
+ *
+ * Includes password validation (uppercase, lowercase, numeric, special)
+ * and real-time visual feedback checklist.
+ *
+ * @module ProfileEdit
+ *
+ * @version 3.0.0
+ *
+ * @authors
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
+ */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User as UserIcon, Mail, Calendar, Lock, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
@@ -6,13 +29,27 @@ import './Profile.scss';
 import './Notification.scss';
 
 /**
- * ProfileEdit
+ * @component
+ * @name ProfileEdit
+ * @description
+ * Allows the authenticated user to edit personal information (name, last name, age, email)
+ * and optionally update their password with security validations.
+ * Interacts directly with the backend via `updateProfile` and `changePassword`
+ * from the global `AuthContext`.
  *
- * Edit profile form with real backend integration. On save it updates
- * the user profile via API and navigates back to the Profile page.
- * On cancel it navigates back without saving changes.
+ * Includes client-side validation, accessibility attributes, and success/error
+ * notification banners that auto-dismiss after a few seconds.
  *
- * @returns {JSX.Element} Profile edit UI
+ * @returns {JSX.Element} A form-based, accessible profile editing interface.
+ *
+ * @example
+ * ```tsx
+ * import ProfileEdit from './pages/profile/ProfileEdit';
+ * 
+ * function App() {
+ *   return <ProfileEdit />;
+ * }
+ * ```
  */
 export default function ProfileEdit() {
   const navigate = useNavigate();
@@ -65,8 +102,14 @@ export default function ProfileEdit() {
       setEmail(user.email || '');
     }
   }, [user]);
-
   
+  /**
+   * Displays an on-screen notification that auto-hides after 4 seconds.
+   *
+   * @param {'success' | 'error'} type - Notification type.
+   * @param {string} message - Message to display to the user.
+   * @returns {void}
+   */
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({
       type,
@@ -80,6 +123,14 @@ export default function ProfileEdit() {
     }, 4000);
   };
 
+  /**
+   * Saves edited user profile data to the backend.
+   * Performs client-side validation before submitting.
+   *
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   const handleSave = async () => {
     setIsSaving(true);
     setError('');
@@ -134,6 +185,13 @@ export default function ProfileEdit() {
     navigate('/profile');
   };
 
+  /**
+   * Handles password change submission with multi-level validation.
+   *
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   const handleChangePassword = async () => {
     setIsChangingPassword(true);
     setPasswordError('');
@@ -216,6 +274,7 @@ export default function ProfileEdit() {
     }
   };
 
+  /** Toggles password field visibility between text and password types. */
   const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
     setShowPasswords(prev => ({
       ...prev,
@@ -223,6 +282,7 @@ export default function ProfileEdit() {
     }));
   };
 
+  /** Resets password inputs and hides the change password section. */
   const cancelPasswordChange = () => {
     setCurrentPassword('');
     setNewPassword('');

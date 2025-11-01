@@ -1,6 +1,35 @@
+/**
+ * @file RealtimeStatus.tsx
+ * @description
+ * Developer-only diagnostic component that displays the real-time
+ * connection status (connected, reconnecting, or failed) using color codes and icons.
+ * 
+ * It uses the custom hook {@link useRealtimeConnection} to monitor the application's
+ * WebSocket or event-stream connection state and provides visual feedback for debugging.
+ * 
+ * The component is visible **only in development mode** and automatically hidden in production.
+ *
+ * @module RealtimeStatus
+ * @version 1.0.0
+ *
+ * @authors
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
+ */
 import React from 'react';
 import { useRealtimeConnection } from '../../hooks/useRealtimeConnection';
 
+/**
+ * @component
+ * @name RealtimeStatus
+ * @description
+ * A fixed-position overlay that displays the current real-time connection status.
+ * Useful for debugging socket or live-data connectivity during development.
+ * @returns {JSX.Element | null} A floating diagnostic UI for real-time status, or null in production mode.
+ */
 
 const RealtimeStatus: React.FC = () => {
   const { isConnected, isReconnecting, hasFailed, reconnectAttempts, maxAttempts } = useRealtimeConnection();

@@ -1,3 +1,16 @@
+/**
+ * @file Register.tsx
+ * @description Allows users to create an account by entering their personal information,
+ * validating fields in real time, and displaying password requirements.
+ * Includes format, length, and password match validations, as well as visual feedback and integration with the authentication context.
+ * @component
+ * @author
+ * Hernan Garcia
+ * Juan Camilo Jimenez
+ * Julieta Arteta
+ * Jerson Otero
+ * Julian Mosquera
+ */
 import { useState } from 'react';
 import '../login/Login.scss';
 import '../recover/ResetPassword.scss';

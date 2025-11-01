@@ -1,8 +1,21 @@
 /**
- * UnyFilmPlayer component
- * Custom HTML5 video player with Cloudinary transformations, subtitles (VTT),
- * accessibility labels and integration with favorites and ratings.
- * Props typed via EnhancedPlayerProps.
+ * @file UnyFilmPlayer.tsx
+ * @description
+ * Custom HTML5 video player component for UnyFilm platform with advanced Cloudinary integration.  
+ * Includes support for adaptive quality (auto, high, medium, low), subtitles (VTT),  
+ * real-time ratings, and favorite system. Also provides custom playback,  
+ * volume, seeking, and fullscreen controls with accessibility support.
+ *
+ * @module UnyFilmPlayer
+ *
+ * @version 3.0.0
+ *
+ * @authors
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, X, Heart } from 'lucide-react';
@@ -16,6 +29,40 @@ import type { EnhancedPlayerProps } from '../../types';
 import type { RatingStats } from '../../services/ratingService';
 import './UnyFilmPlayer.css';
 
+/**
+ * @typedef {Object} EnhancedPlayerProps
+ * @property {Object} movie - Movie object containing title, description, videoUrl, and metadata.
+ * @property {() => void} onClose - Function to close the player overlay.
+ * @property {string} [cloudinaryPublicId] - Cloudinary public ID for adaptive streaming.
+ * @property {string} [quality='auto'] - Selected video quality level.
+ * @property {boolean} [showSubtitles=false] - Whether subtitles are displayed by default.
+ * @property {(quality: string) => void} [onQualityChange] - Callback for when video quality changes.
+ * @property {(enabled: boolean) => void} [onSubtitleToggle] - Callback for when subtitles are toggled.
+ */
+
+/**
+ * @component
+ * @name UnyFilmPlayer
+ * @description
+ * Advanced video player component built with React and Cloudinary.  
+ * Provides playback control, dynamic quality switching,  
+ * custom subtitle parsing, favorite toggling, and rating integration.  
+ * Implements accessibility with ARIA roles and keyboard navigation.
+ *
+ * @param {EnhancedPlayerProps} props - The component props.
+ * @returns {JSX.Element} A complete responsive player interface with movie info, controls, and interactions.
+ *
+ * @example
+ * ```tsx
+ * <UnyFilmPlayer
+ *   movie={selectedMovie}
+ *   onClose={() => setShowPlayer(false)}
+ *   cloudinaryPublicId={selectedMovie.cloudinaryVideoId}
+ *   quality="auto"
+ *   showSubtitles={true}
+ * />
+ * ```
+ */
 export default function UnyFilmPlayer({ 
   movie, 
   onClose, 
@@ -70,6 +117,9 @@ export default function UnyFilmPlayer({
     }
   }, [movie?._id, loadRatingStats]);
 
+  /**
+   * Synchronizes real-time rating updates via custom window events.
+   */
   useEffect(() => {
     if (!movie?._id) return;
 
@@ -90,6 +140,9 @@ export default function UnyFilmPlayer({
     };
   }, [movie?._id, loadRatingStats]);
 
+  /**
+   * Loads available subtitles from the movie object or Cloudinary.
+   */
   useEffect(() => {
     const loadAvailableSubtitles = async () => {
       if (!movie?.cloudinaryVideoId) {
@@ -312,8 +365,12 @@ export default function UnyFilmPlayer({
       video.removeEventListener('ended', handleEnded);
     };
   }, [subtitlesEnabled, subtitleTrack, availableSubtitles, selectedSubtitleLanguage, movie?.cloudinaryVideoId, movie?.subtitles]);
-
   
+  /**
+   * Parses VTT timestamp (e.g., "00:01:23.500") to seconds.
+   * @param {string} timeStr - VTT time string.
+   * @returns {number} Equivalent time in seconds.
+   */
   const parseVTTTime = (timeStr: string): number => {
     if (!timeStr || typeof timeStr !== 'string') {
       console.warn('⚠️ Tiempo VTT inválido:', timeStr);
@@ -363,6 +420,7 @@ export default function UnyFilmPlayer({
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  /** Toggles between play and pause. */
   const togglePlay = (): void => {
     if (videoRef.current) {
       if (isPlaying) {
@@ -384,6 +442,7 @@ export default function UnyFilmPlayer({
     }
   };
 
+  /** Adjusts video volume and mute state. */
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
@@ -397,6 +456,7 @@ export default function UnyFilmPlayer({
     }
   };
 
+  /** Toggles mute state. */
   const toggleMute = (): void => {
     if (videoRef.current) {
       videoRef.current.muted = !isMuted;
@@ -404,6 +464,7 @@ export default function UnyFilmPlayer({
     }
   };
 
+  /** Toggles fullscreen mode. */
   const toggleFullscreen = async (): Promise<void> => {
     if (!document.fullscreenElement) {
       await containerRef.current?.requestFullscreen();
@@ -412,12 +473,17 @@ export default function UnyFilmPlayer({
     }
   };
 
+  /**
+   * Skips forward or backward in playback.
+   * @param {number} seconds - Amount of time to skip.
+   */
   const skipTime = (seconds: number): void => {
     if (videoRef.current) {
       videoRef.current.currentTime = Math.max(0, Math.min(duration, currentTime + seconds));
     }
   };
 
+  /** Formats time in seconds to mm:ss format. */
   const formatTime = (time: number): string => {
     if (isNaN(time)) return '0:00';
     const minutes = Math.floor(time / 60);
@@ -580,7 +646,7 @@ export default function UnyFilmPlayer({
     }
   };
 
-
+  /** Auto-hides controls after 3 seconds of inactivity. */
   const handleMouseMove = (): void => {
     setShowControls(true);
     if (controlsTimeoutRef.current) {

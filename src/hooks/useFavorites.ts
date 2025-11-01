@@ -1,5 +1,23 @@
 
-
+/**
+ * @file useFavorites.ts
+ * @description Custom React Hook for managing the user's favorite movies.
+ * It provides methods for loading, adding, updating, and removing favorites,
+ * along with helper utilities for checking if a movie is a favorite and
+ * retrieving statistics by genre.
+ *
+ * The hook integrates with the backend via `favoriteService`, maintains
+ * reactive state synchronization, and supports resilience features such as:
+ * - Auto-reload on token/user changes
+ * - Multi-tab synchronization through the Storage API
+ * - Real-time in-memory updates for better UX
+ * 
+ * @module Hooks/useFavorites
+ * 
+ * @author
+ * Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta,
+ * Jerson Otero, Julian Mosquera
+ */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { favoriteService, type Favorite } from '../services/favoriteService';
 

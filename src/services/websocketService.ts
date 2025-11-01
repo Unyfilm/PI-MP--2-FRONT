@@ -1,4 +1,12 @@
-
+/**
+ * Represents a WebSocket event related to movie ratings.
+ *
+ * @interface WebSocketEvent
+ * @property {'rating-updated' | 'rating-stats-updated'} type - Type of event.
+ * @property {string} movieId - Unique identifier of the movie related to the event.
+ * @property {any} data - Event data payload (e.g., rating info or stats).
+ * @property {number} timestamp - Timestamp when the event occurred.
+ */
 interface WebSocketEvent {
   type: 'rating-updated' | 'rating-stats-updated';
   movieId: string;
@@ -6,6 +14,25 @@ interface WebSocketEvent {
   timestamp: number;
 }
 
+/**
+ * Service that manages real-time communication using **WebSocket**.
+ * Provides automatic reconnection, event handling, and broadcasting through the browser’s `CustomEvent` API.
+ *
+ * @class WebSocketService
+ * @example
+ * ```ts
+ * import { connectWebSocket, sendWebSocketEvent } from './websocketService';
+ *
+ * connectWebSocket();
+ *
+ * sendWebSocketEvent({
+ *   type: 'rating-updated',
+ *   movieId: '12345',
+ *   data: { rating: 4 },
+ *   timestamp: Date.now()
+ * });
+ * ```
+ */
 class WebSocketService {
   private static instance: WebSocketService;
   private ws: WebSocket | null = null;
@@ -15,6 +42,11 @@ class WebSocketService {
   private reconnectDelay = 1000;
   private serverUrl = 'wss://echo.websocket.org';
 
+  /**
+   * Returns the singleton instance of the WebSocketService.
+   *
+   * @returns {WebSocketService} The singleton instance.
+   */
   static getInstance(): WebSocketService {
     if (!WebSocketService.instance) {
       WebSocketService.instance = new WebSocketService();
@@ -22,12 +54,22 @@ class WebSocketService {
     return WebSocketService.instance;
   }
 
+  /**
+   * Establishes a WebSocket connection to the configured server.
+   * Handles reconnection, event parsing, and browser event dispatching.
+   *
+   * @example
+   * ```ts
+   * websocketService.connect();
+   * ```
+   */
   connect() {
     if (this.isConnected || this.ws) {
       return;
     }
 
     try {
+      
       this.ws = new WebSocket(this.serverUrl);
       
       this.ws.onopen = () => {
