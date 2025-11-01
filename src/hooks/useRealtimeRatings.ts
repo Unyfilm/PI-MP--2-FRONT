@@ -8,8 +8,14 @@ interface UseRealtimeRatingsOptions {
 }
 
 /**
- * Hook to handle real-time ratings
- * Listens to update events and keeps the state synchronized
+ * useRealtimeRatings
+ * Fetches and keeps movie rating stats up to date. When enabled, listens to
+ * custom window events (rating-updated, rating-stats-updated, cache-invalidated)
+ * to refresh or partially update the local state.
+ * @param options.movieId - Target movie id
+ * @param options.autoLoad - Immediately load stats on mount
+ * @param options.enableRealtime - Attach window listeners for live updates
+ * @returns {object} ratingStats, loading/error flags, and loader/setter helpers
  */
 export function useRealtimeRatings({ 
   movieId, 
@@ -46,23 +52,15 @@ export function useRealtimeRatings({
     if (!enableRealtime || !movieId) return;
 
     const handleRatingUpdate = (event: CustomEvent) => {
-      const { movieId: updatedMovieId, rating, action, source } = event.detail;
-      
-      console.log('🔄 [HOOK] Recibido evento rating-updated:', { updatedMovieId, movieId, rating, action, source });
-      
+      const { movieId: updatedMovieId } = event.detail;
       if (updatedMovieId === movieId) {
-        console.log('🔄 [HOOK] Rating actualizado, recargando estadísticas para:', movieId);
         loadRatingStats();
       }
     };
 
     const handleStatsUpdate = (event: CustomEvent) => {
-      const { movieId: updatedMovieId, averageRating, totalRatings, source } = event.detail;
-      
-      console.log('📊 [HOOK] Recibido evento rating-stats-updated:', { updatedMovieId, movieId, averageRating, totalRatings, source });
-      
+      const { movieId: updatedMovieId, averageRating, totalRatings } = event.detail;
       if (updatedMovieId === movieId) {
-        console.log('📊 [HOOK] Actualizando estadísticas en tiempo real para:', movieId, '→', averageRating);
         setRatingStats(prevStats => {
           if (!prevStats) return null;
           return {
@@ -77,7 +75,6 @@ export function useRealtimeRatings({
     const handleCacheInvalidation = (event: CustomEvent) => {
       const { invalidatedKeys } = event.detail;
       if (invalidatedKeys.includes(`rating-${movieId}`)) {
-        console.log('🗑️ Cache invalidado, recargando estadísticas:', movieId);
         loadRatingStats();
       }
     };

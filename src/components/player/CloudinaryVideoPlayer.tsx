@@ -1,9 +1,33 @@
+/**
+ * @file CloudinaryVideoPlayer.tsx
+ * @description
+ * Video player component that integrates Cloudinary-hosted movie content with custom controls.  
+ * Handles playback, volume, progress, fullscreen mode, and accessibility-friendly controls.
+ * Built with React hooks and designed for responsive and accessible media playback.
+ * 
+ * @version 3.0.0
+ * @module CloudinaryVideoPlayer
+ * 
+ * @author
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
+ */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, X } from 'lucide-react';
 import type { MovieData } from '../../types';
 import './CloudinaryVideoPlayer.css';
 
+/**
+ * @typedef {Object} CloudinaryVideoPlayerProps
+ * @property {MovieData} movie - The movie object containing video URL, title, and description.
+ * @property {() => void} onClose - Callback function triggered when the close button or overlay is clicked.
+ * @property {string} [quality] - Optional video quality setting.
+ * @property {boolean} [showSubtitles] - Whether to display subtitles if available.
+ */
 interface CloudinaryVideoPlayerProps {
   movie: MovieData;
   onClose: () => void;
@@ -11,6 +35,30 @@ interface CloudinaryVideoPlayerProps {
   showSubtitles?: boolean;
 }
 
+/**
+ * @component
+ * @name CloudinaryVideoPlayer
+ * @description
+ * A fully responsive video player that supports:
+ * - Play / pause control
+ * - Volume adjustment and mute toggle
+ * - Seek bar and progress tracking
+ * - Fullscreen mode
+ * - Movie info display
+ * 
+ * Uses the Cloudinary-hosted `movie.videoUrl` as the source.
+ *
+ * @param {CloudinaryVideoPlayerProps} props - Component properties.
+ * @returns {JSX.Element} A custom video player overlay with Cloudinary content.
+ *
+ * @example
+ * ```tsx
+ * <CloudinaryVideoPlayer 
+ *    movie={selectedMovie}
+ *    onClose={() => setShowPlayer(false)}
+ * />
+ * ```
+ */
 const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
   movie,
   onClose
@@ -26,6 +74,10 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  /**
+   * Initializes event listeners for video playback updates (time, metadata, pause, play, etc.).
+   * Cleans up listeners when the component unmounts.
+   */
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -51,6 +103,9 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     };
   }, []);
 
+  /**
+   * Toggles between play and pause states.
+   */
   const togglePlay = (): void => {
     if (videoRef.current) {
       if (isPlaying) {
@@ -61,6 +116,10 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     }
   };
 
+  /**
+   * Allows the user to seek to a specific position by clicking on the progress bar.
+   * @param {React.MouseEvent<HTMLDivElement>} e - Mouse event from the progress bar.
+   */
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>): void => {
     const rect = e.currentTarget.getBoundingClientRect();
     const pos = (e.clientX - rect.left) / rect.width;
@@ -70,6 +129,9 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     }
   };
 
+  /**
+   * Toggles audio mute on/off.
+   */
   const toggleMute = (): void => {
     if (videoRef.current) {
       videoRef.current.muted = !isMuted;
@@ -77,6 +139,10 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     }
   };
 
+  /**
+   * Handles user volume slider input.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event for volume control.
+   */
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
@@ -85,6 +151,9 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     }
   };
 
+  /**
+   * Toggles fullscreen mode for the video container.
+   */
   const toggleFullscreen = (): void => {
     if (!containerRef.current) return;
     
@@ -96,6 +165,10 @@ const CloudinaryVideoPlayer: React.FC<CloudinaryVideoPlayerProps> = ({
     setIsFullscreen(!isFullscreen);
   };
 
+  /**
+   * Calculates video progress percentage.
+   * @type {number}
+   */
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (

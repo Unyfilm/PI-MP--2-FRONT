@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Heart, Star, Tag } from 'lucide-react';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
@@ -6,10 +5,45 @@ import { movieService } from '../../services/movieService';
 import UnyFilmCard from '../card/UnyFilmCard';
 import './FavoritesPage.css';
 
+/**
+ * @file FavoritesPage.tsx
+ * @description
+ * Displays the user's list of favorite movies with quick statistics such as
+ * total favorites and most frequently favorited genre.  
+ * 
+ * The component retrieves data from `FavoritesContext`, displays statistics,
+ * and allows users to open movies directly in the player by clicking a card.
+ * 
+ * @module FavoritesPage
+ */
+
+/**
+ * @interface FavoritesPageProps
+ * @description
+ * Props interface for the `FavoritesPage` component.
+ *
+ * @property {(movie: any) => void} onMovieClick - Callback triggered when a movie card is clicked.  
+ * Receives the full movie data as an argument.
+ */
 interface FavoritesPageProps {
   onMovieClick: (movie: any) => void;
 }
 
+/**
+ * @function FavoritesPage
+ * @description
+ * React component that lists the user's favorite movies with summary stats.  
+ * It loads the user's favorites from context, computes the most favorited genre,
+ * and provides movie cards that can open the player view.
+ *
+ * @param {FavoritesPageProps} props - Component properties.
+ * @returns {JSX.Element} Rendered favorites page with header, stats, and movie cards.
+ *
+ * @example
+ * ```tsx
+ * <FavoritesPage onMovieClick={(movie) => console.log('Selected movie:', movie)} />
+ * ```
+ */
 const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
   const { 
     favorites, 
@@ -24,15 +58,20 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     mostFavoritedGenre: 'N/A'
   });
 
-  
+  /**
+   * Loads favorites when the component mounts if not already loaded.
+   * This ensures the user's favorites are fetched from the context.
+   */
   useEffect(() => {
     if (!isLoaded && favorites.length === 0 && !loading) {
-      console.log('📋 FavoritesPage: Cargando favoritos...');
       loadFavorites();
     }
   }, [isLoaded, favorites.length, loading, loadFavorites]);
 
-
+  /**
+   * Updates local stats when the favorites list changes.
+   * Uses context-provided `getStats()` and helper function to calculate the most favorited genre.
+   */
   useEffect(() => {
     const currentStats = getStats();
     setStats({
@@ -41,8 +80,14 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
     });
   }, [favorites, getStats]);
 
-
-  
+  /**
+   * @function getMostFavoritedGenre
+   * @description
+   * Determines the genre with the highest number of favorites.
+   *
+   * @param {Record<string, number>} byGenre - Object mapping genres to their favorite count.
+   * @returns {string} The genre with the most favorites or 'N/A' if none exist.
+   */
   const getMostFavoritedGenre = (byGenre: Record<string, number>): string => {
     const entries = Object.entries(byGenre);
     if (entries.length === 0) return 'N/A';
@@ -142,16 +187,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
               movieId={favorite.movieId._id}
               onMovieClick={async () => {
                 try {
-                  console.log('🎬 FavoritesPage - Obteniendo datos completos de la película:', favorite.movieId._id);
-                  
                   const fullMovieData = await movieService.getMovie(favorite.movieId._id);
-                  
-                  console.log('🎬 FavoritesPage - Datos completos obtenidos:', {
-                    movieId: fullMovieData._id,
-                    hasVideoUrl: !!fullMovieData.videoUrl,
-                    hasCloudinaryId: !!fullMovieData.cloudinaryVideoId,
-                    hasSynopsis: !!fullMovieData.synopsis
-                  });
                   
                   onMovieClick({
                     _id: fullMovieData._id,

@@ -2,8 +2,30 @@
 import { API_CONFIG } from '../config/environment';
 
 /**
- * Interface representing a movie
+ * Represents a movie object returned from the backend.
+ * 
  * @interface Movie
+ * @property {string} _id - Unique movie identifier.
+ * @property {string} title - Movie title.
+ * @property {string} description - Movie description text.
+ * @property {string} [synopsis] - Optional short synopsis.
+ * @property {string} poster - URL of the movie poster image.
+ * @property {string} port - URL of the movie port or banner image.
+ * @property {string} trailer - URL of the movie trailer.
+ * @property {string} videoUrl - URL to stream the movie video.
+ * @property {string} cloudinaryVideoId - Cloudinary video asset identifier.
+ * @property {number} duration - Movie duration in minutes.
+ * @property {string[]} genre - List of genres associated with the movie.
+ * @property {string} director - Movie director name.
+ * @property {string[]} cast - Array of actor names.
+ * @property {string} language - Movie language.
+ * @property {string[]} tags - Additional tags or keywords.
+ * @property {number} views - Total number of views.
+ * @property {{ average: number; count: number }} rating - Rating summary (average and count).
+ * @property {string} [releaseDate] - Movie release date in ISO format.
+ * @property {boolean} isActive - Indicates whether the movie is available.
+ * @property {Array<{ language: string; languageCode: string; url: string; isDefault: boolean }>} [subtitles] - List of available subtitle files.
+ * @property {string} [defaultSubtitleLanguage] - Default subtitle language code.
  */
 export interface Movie {
   _id: string;
@@ -38,8 +60,16 @@ export interface Movie {
 }
 
 /**
- * Interface for movie video information
+ * Represents metadata of a movie video file.
+ * 
  * @interface MovieVideoInfo
+ * @property {string} movieId - ID of the associated movie.
+ * @property {string} title - Video title.
+ * @property {string} cloudinaryVideoId - Cloudinary public ID of the video.
+ * @property {number} duration - Video duration in seconds.
+ * @property {number} width - Video width in pixels.
+ * @property {number} height - Video height in pixels.
+ * @property {string} format - File format (e.g., "mp4").
  */
 export interface MovieVideoInfo {
   movieId: string;
@@ -52,8 +82,14 @@ export interface MovieVideoInfo {
 }
 
 /**
- * Interface for movie video response
+ * Represents a signed video URL response from the backend.
+ * 
  * @interface MovieVideoResponse
+ * @property {string} videoUrl - Temporary signed video URL.
+ * @property {number} expiresIn - Expiration time of the URL in seconds.
+ * @property {string} movieId - Associated movie ID.
+ * @property {string} title - Movie title.
+ * @property {number} duration - Video duration.
  */
 export interface MovieVideoResponse {
   videoUrl: string;
@@ -64,23 +100,28 @@ export interface MovieVideoResponse {
 }
 
 /**
- * Service class for managing movie operations
- * Handles all movie-related API requests
+ * Service class for managing all movie-related API operations.
+ * Provides methods to fetch, search, and retrieve movie data and videos.
+ * 
  * @class MovieService
  */
 class MovieService {
   private baseUrl: string;
 
-  
+  /**
+   * Creates an instance of MovieService and sets the base URL.
+   */
   constructor() {
     this.baseUrl = API_CONFIG.BASE_URL.replace('/api', '');
   }
 
   /**
-   * Get a complete movie by ID
-   * @param {string} movieId - The movie ID to retrieve
-   * @returns {Promise<Movie>} Complete movie information
-   * @throws {Error} When movie is not found or API request fails
+   * Retrieves full movie data by ID.
+   * 
+   * @async
+   * @param {string} movieId - The ID of the movie to fetch.
+   * @returns {Promise<Movie>} A Promise resolving with the complete movie object.
+   * @throws {Error} If the movie is not found or the API request fails.
    */
   async getMovie(movieId: string): Promise<Movie> {
     try {
@@ -108,10 +149,12 @@ class MovieService {
   }
 
   /**
-   * Get movie video (signed URL) by ID
-   * @param {string} movieId - The movie ID to get video for
-   * @returns {Promise<MovieVideoResponse>} Video response with signed URL
-   * @throws {Error} When API request fails
+   * Retrieves a signed video URL for the specified movie.
+   * 
+   * @async
+   * @param {string} movieId - The ID of the movie.
+   * @returns {Promise<MovieVideoResponse>} A Promise resolving with video URL data.
+   * @throws {Error} If the API request fails.
    */
   async getMovieVideo(movieId: string): Promise<MovieVideoResponse> {
     try {
@@ -134,10 +177,12 @@ class MovieService {
   }
 
   /**
-   * Get movie video information by ID
-   * @param {string} movieId - The movie ID to get video info for
-   * @returns {Promise<MovieVideoInfo>} Video information
-   * @throws {Error} When API request fails
+   * Retrieves detailed video metadata for a given movie.
+   * 
+   * @async
+   * @param {string} movieId - The ID of the movie.
+   * @returns {Promise<MovieVideoInfo>} A Promise resolving with video metadata.
+   * @throws {Error} If the API request fails.
    */
   async getMovieVideoInfo(movieId: string): Promise<MovieVideoInfo> {
     try {
@@ -160,10 +205,12 @@ class MovieService {
   }
 
   /**
-   * Get multiple movies by IDs with individual error handling
-   * @param {string[]} movieIds - Array of movie IDs to retrieve
-   * @returns {Promise<Movie[]>} Array of movies (null results are filtered out)
-   * @throws {Error} When API request fails
+   * Fetches multiple movies by their IDs.
+   * Invalid or missing movies are filtered out.
+   * 
+   * @async
+   * @param {string[]} movieIds - Array of movie IDs.
+   * @returns {Promise<Movie[]>} A Promise resolving with an array of valid movies.
    */
   async getMovies(movieIds: string[]): Promise<Movie[]> {
     try {
@@ -182,9 +229,11 @@ class MovieService {
   }
 
   /**
-   * Get movie with error handling and fallback
-   * @param {string} movieId - The movie ID to retrieve
-   * @returns {Promise<Movie | null>} Movie data or null if not found
+   * Fetches a movie safely, returning `null` if not found or on error.
+   * 
+   * @async
+   * @param {string} movieId - The ID of the movie.
+   * @returns {Promise<Movie | null>} The movie or null if unavailable.
    */
   async getMovieSafe(movieId: string): Promise<Movie | null> {
     try {
@@ -198,9 +247,11 @@ class MovieService {
   }
 
   /**
-   * Get all available movies
-   * @returns {Promise<Movie[]>} Array of all movies
-   * @throws {Error} When API request fails
+   * Retrieves all movies from the API.
+   * 
+   * @async
+   * @returns {Promise<Movie[]>} Array of all movies.
+   * @throws {Error} If the API request fails.
    */
   async getAllMovies(): Promise<Movie[]> {
     try {
@@ -223,8 +274,10 @@ class MovieService {
   }
 
   /**
-   * Get available movies with fallback
-   * @returns {Promise<Movie[]>} Array of available movies or empty array on error
+   * Retrieves all available movies, returning an empty array if unavailable.
+   * 
+   * @async
+   * @returns {Promise<Movie[]>} Array of available movies or empty array on error.
    */
   async getAvailableMovies(): Promise<Movie[]> {
     try {
@@ -235,9 +288,11 @@ class MovieService {
   }
 
   /**
-   * Get trending movies
-   * @returns {Promise<Movie[]>} Array of trending movies
-   * @throws {Error} When API request fails
+   * Retrieves trending movies from the backend.
+   * 
+   * @async
+   * @returns {Promise<Movie[]>} Array of trending movies.
+   * @throws {Error} If the API request fails.
    */
   async getTrendingMovies(): Promise<Movie[]> {
     try {

@@ -120,40 +120,27 @@ class FavoriteService {
       const user = JSON.parse(userData);
       const userId = user.id;
       
-      console.log('🔍 Debug getUserId:', {
-        user,
-        userId,
-        userIdType: typeof userId,
-        userIdValue: userId,
-        hasToken: !!token
-      });
       
       const tokenObjectId = this.extractObjectIdFromToken();
       if (tokenObjectId) {
-        console.log('✅ ObjectId extraído del JWT token:', tokenObjectId);
         return tokenObjectId;
       }
       
       if (typeof userId === 'number' || (typeof userId === 'string' && /^\d+$/.test(userId))) {
-        console.log('🔍 UserId es un número, obteniendo ObjectId del backend...');
         try {
           return await this.getUserObjectId();
         } catch (backendError) {
-          console.warn('⚠️ Error obteniendo ObjectId del backend, usando temporal:', backendError);
           return this.generateTemporaryObjectId();
         }
       }
       
       if (typeof userId === 'string' && /^[0-9a-fA-F]{24}$/.test(userId)) {
-        console.log('✅ UserId es un ObjectId válido');
         return userId;
       }
       
-      console.log('⚠️ UserId no es ni número ni ObjectId válido, obteniendo del backend...');
       try {
         return await this.getUserObjectId();
       } catch (backendError) {
-        console.warn('⚠️ Error obteniendo ObjectId del backend, usando temporal:', backendError);
         return this.generateTemporaryObjectId();
       }
       
@@ -173,22 +160,14 @@ class FavoriteService {
       if (!payload) return null;
       
       const decodedPayload = JSON.parse(atob(payload));
-      console.log('🔍 JWT payload:', decodedPayload);
       
       if (decodedPayload.exp) {
         const currentTime = Math.floor(Date.now() / 1000);
         const expirationTime = decodedPayload.exp;
         const isExpired = currentTime > expirationTime;
         
-        console.log('🔍 JWT Token Status:', {
-          currentTime,
-          expirationTime,
-          isExpired,
-          timeUntilExpiry: expirationTime - currentTime
-        });
         
         if (isExpired) {
-          console.warn('⚠️ JWT token expirado');
           return null;
         }
       }
@@ -196,14 +175,12 @@ class FavoriteService {
       const possibleFields = ['_id', 'id', 'userId', 'user_id', 'sub'];
       for (const field of possibleFields) {
         if (decodedPayload[field] && /^[0-9a-fA-F]{24}$/.test(decodedPayload[field])) {
-          console.log(`✅ ObjectId encontrado en JWT campo '${field}':`, decodedPayload[field]);
           return decodedPayload[field];
         }
       }
       
       return null;
     } catch (error) {
-      console.log('⚠️ Error decodificando JWT token:', error);
       return null;
     }
   }
@@ -211,22 +188,15 @@ class FavoriteService {
   
   private async getUserObjectId(): Promise<string> {
     try {
-      console.log('🌐 Obteniendo ObjectId del usuario desde /users/profile...');
       
       const response = await fetch(`${this.baseUrl}/users/profile`, {
         method: 'GET',
         headers: this.getAuthHeaders()
       });
 
-      console.log('📥 Respuesta del endpoint /users/profile:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok
-      });
 
       if (response.ok) {
         const data = await response.json();
-        console.log('📋 Datos del perfil:', data);
         
         if (data.success && data.data) {
           const possibleIdFields = ['_id', 'id', 'userId', 'user_id'];
@@ -234,15 +204,12 @@ class FavoriteService {
           for (const field of possibleIdFields) {
             if (data.data[field]) {
               const userId = data.data[field];
-              console.log(`✅ ID encontrado en campo '${field}':`, userId);
               
               if (/^[0-9a-fA-F]{24}$/.test(userId)) {
-                console.log('✅ ObjectId válido encontrado:', userId);
                 return userId;
               }
               
               if (typeof userId === 'number' || /^\d+$/.test(userId)) {
-                console.log('⚠️ ID es un número, generando ObjectId temporal...');
                 return this.generateTemporaryObjectId();
               }
             }
@@ -259,7 +226,6 @@ class FavoriteService {
       
     } catch (error) {
       console.error('Error obteniendo ObjectId del usuario:', error);
-      console.log('⚠️ Generando ObjectId temporal como fallback...');
       return this.generateTemporaryObjectId();
     }
   }
@@ -277,7 +243,6 @@ class FavoriteService {
     const userIdHex = userId.toString(16).padStart(8, '0');
     const consistentObjectId = '000000000000000000000000'.substring(0, 16) + userIdHex;
     
-    console.log('🔧 ObjectId temporal CONSISTENTE generado:', consistentObjectId, 'para userId:', userId);
     return consistentObjectId;
   }
 
@@ -356,15 +321,6 @@ class FavoriteService {
     try {
       const userId = await this.getUserId();
       
-      console.log('🔍 Debug addToFavorites:', {
-        movieId,
-        movieIdLength: movieId.length,
-        movieIdType: typeof movieId,
-        userId,
-        userIdType: typeof userId,
-        notes,
-        rating
-      });
       if (!movieId || typeof movieId !== 'string' || movieId.trim() === '') {
         throw new Error('ID de película requerido');
       }
@@ -380,15 +336,11 @@ class FavoriteService {
         ...(rating !== null && rating !== undefined && rating >= 1 && rating <= 5 && { rating })
       };
       if (!/^[0-9a-fA-F]{24}$/.test(movieId)) {
-        console.warn('⚠️ MovieId no parece ser un ObjectId válido:', movieId);
       }
       
       if (!/^[0-9a-fA-F]{24}$/.test(userId) && !/^\d+$/.test(userId)) {
-        console.warn('⚠️ UserId no parece ser un ObjectId o número válido:', userId);
       }
 
-      console.log('📤 Enviando datos a favoritos:', requestBody);
-      console.log('📤 Headers enviados:', this.getAuthHeaders());
 
       const response = await fetch(`${this.baseUrl}/favorites`, {
         method: 'POST',
@@ -396,24 +348,14 @@ class FavoriteService {
         body: JSON.stringify(requestBody)
       });
       
-      console.log('📥 Respuesta del servidor:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      });
 
       if (response.status === 400) {
         const errorData = await response.json();
-        console.error('🚨 Error 400 - Datos enviados:', requestBody);
-        console.error('🚨 Error 400 - Respuesta del backend:', errorData);
         throw new Error(`Error de validación: ${errorData.message || 'Datos inválidos'}`);
       }
 
       if (response.status === 403) {
         const errorData = await response.json();
-        console.error('🚨 Error 403 - Datos enviados:', requestBody);
-        console.error('🚨 Error 403 - Respuesta del backend:', errorData);
-        console.error('🚨 Error 403 - Headers de respuesta:', Object.fromEntries(response.headers.entries()));
         throw new Error(`Error de permisos: ${errorData.message || 'No tienes permisos para realizar esta acción'}`);
       }
 
@@ -432,7 +374,6 @@ class FavoriteService {
       const data = await response.json();
       
       if (data.success) {
-        console.log('✅ Película agregada a favoritos:', data.data);
         this.invalidateCache();
         return data;
       } else {
@@ -460,7 +401,6 @@ class FavoriteService {
       const data = await response.json();
       
       if (data.success) {
-        console.log('Favorito eliminado:', data.data);
         this.invalidateCache();
         return data;
       } else {
@@ -516,7 +456,6 @@ class FavoriteService {
       const data = await response.json();
       
       if (data.success) {
-        console.log('Favorito actualizado:', data.data);
         this.invalidateCache();
         return data;
       } else {
@@ -578,7 +517,6 @@ class FavoriteService {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        console.log('No hay token de autenticación, retornando false');
         return false;
       }
 
@@ -586,12 +524,10 @@ class FavoriteService {
       if (this.cacheTimestamp > 0 && (now - this.cacheTimestamp) < this.CACHE_DURATION) {
         const cachedResult = this.favoritesCache[movieId];
         if (cachedResult !== undefined) {
-          console.log(`📋 Cache hit para película ${movieId}: ${cachedResult.isFavorite}`);
           return cachedResult.isFavorite;
         }
       }
 
-      console.log(`🌐 Petición al backend para verificar ${movieId}`);
       const myFavorites = await this.getMyFavorites(1, 100);
       const isFavorite = myFavorites.data?.favorites.some(fav => fav.movieId._id === movieId) || false;
       this.favoritesCache[movieId] = { isFavorite, favoriteId: isFavorite ? 'cached' : undefined };

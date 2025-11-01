@@ -1,4 +1,8 @@
-
+/**
+ * FavoritesContext
+ * Provides favorites state and actions across the app, backed by useFavorites hook.
+ * It reacts to auth user changes and reloads favorites accordingly.
+ */
 
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { useFavorites } from '../hooks/useFavorites';
@@ -29,17 +33,15 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
   const { user } = useAuth();
   const lastUserIdRef = useRef<string | null>(null);
   
-  
+
   useEffect(() => {
     const currentUserId = user?._id?.toString() || null;
     
     if (currentUserId !== lastUserIdRef.current) {
       favoritesHook.clearFavorites();
       
-      
       lastUserIdRef.current = currentUserId;
       
-     
       if (currentUserId && user) {
         setTimeout(() => {
           favoritesHook.loadFavorites();
@@ -48,48 +50,56 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
     }
   }, [user?._id, favoritesHook]);
   
-  
+  /**
+   * Check whether a movie is already in favorites
+   */
   const isMovieInFavorites = (movieId: string): boolean => {
-    
     if (!user) {
-      console.warn('⚠️ Usuario no autenticado, no se puede verificar favoritos');
+      console.warn('Unauthenticated user, cannot check favorites');
       return false;
     }
     return favoritesHook.favorites.some(fav => fav.movieId._id === movieId);
   };
 
-  
+  /**
+   * Get a favorite record by its movieId
+   */
   const getFavoriteById = (movieId: string): Favorite | null => {
-    
     if (!user) {
-      console.warn('⚠️ Usuario no autenticado, no se puede obtener favorito');
+      console.warn('Unauthenticated user, cannot get favorite');
       return null;
     }
     return favoritesHook.favorites.find(fav => fav.movieId._id === movieId) || null;
   };
 
-  
+  /**
+   * Add a movie to favorites
+   */
   const addToFavorites = async (movieId: string, notes?: string, rating?: number) => {
     if (!user) {
-      console.warn('⚠️ Usuario no autenticado, no se puede agregar a favoritos');
+      console.warn('Unauthenticated user, cannot add to favorites');
       return { success: false, message: 'Usuario no autenticado' };
     }
     return favoritesHook.addToFavorites(movieId, notes, rating);
   };
 
-  
+  /**
+   * Remove a favorite record
+   */
   const removeFromFavorites = async (favoriteId: string) => {
     if (!user) {
-      console.warn('⚠️ Usuario no autenticado, no se puede eliminar de favoritos');
+      console.warn('Unauthenticated user, cannot remove from favorites');
       return { success: false, message: 'Usuario no autenticado' };
     }
     return favoritesHook.removeFromFavorites(favoriteId);
   };
 
-  
+  /**
+   * Load current user favorites
+   */
   const loadFavorites = async () => {
     if (!user) {
-      console.warn('⚠️ Usuario no autenticado, no se pueden cargar favoritos');
+      console.warn('Unauthenticated user, cannot load favorites');
       return;
     }
     return favoritesHook.loadFavorites();
@@ -115,6 +125,9 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
   );
 };
 
+/**
+ * Hook to use FavoritesContext safely
+ */
 export const useFavoritesContext = (): FavoritesContextType => {
   const context = useContext(FavoritesContext);
   if (context === undefined) {

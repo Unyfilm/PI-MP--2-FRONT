@@ -1,3 +1,8 @@
+/**
+ * MovieApp root component
+ * Coordinates main layout (sidebar, header, footer) and view routing inside the app.
+ * Handles player overlay route state and search navigation.
+ */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import UnyFilmSidebar from './sidebar/UnyFilmSidebar';
@@ -8,8 +13,6 @@ import UnyFilmAbout from './about/UnyFilmAbout';
 import UnyFilmSitemap from './sitemap/UnyFilmSitemap';
 import FavoritesPage from './favorites/FavoritesPage';
 import UnyFilmPlayer from './player/UnyFilmPlayer';
-import UsabilityFeatures from './usability/UsabilityFeatures';
-import AccessibilityFeatures from './accessibility/AccessibilityFeatures';
 import Footer from './footer/Footer';
 import './MovieApp.css';
 import type { MovieData, MovieClickData, ViewType } from '../types';
@@ -184,7 +187,12 @@ export default function MovieApp() {
         onSearchSubmit={handleSearchSubmit}
       />
       {!sidebarOpen && (
-        <button className="sidebar-toggle" aria-label="Abrir menú" onClick={() => setSidebarOpen(true)}></button>
+        <button 
+          className="sidebar-toggle" 
+          aria-label="Abrir menú" 
+          onClick={() => setSidebarOpen(true)}
+          tabIndex={0}
+        ></button>
       )}
       {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden="true"></div>}
 
@@ -222,10 +230,6 @@ export default function MovieApp() {
           onClose={handleClosePlayer}
         />
       )}
-
-      <UsabilityFeatures />
-
-      <AccessibilityFeatures />
 
       <Footer />
 

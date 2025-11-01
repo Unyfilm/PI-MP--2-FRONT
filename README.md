@@ -5,7 +5,7 @@
 
 Este repositorio contiene el **frontend** del proyecto académico **“Unyfilm”**, desarrollado como parte del curso **Proyecto Integrador I (2025-2)**.
 
-El objetivo es construir una plataforma web de streaming donde los usuarios puedan **explorar, reproducir, valorar y comentar películas**, disfrutando de una experiencia **accesible, moderna y responsiva**, en conexión con un **backend desplegado en Render** y una **base de datos en MongoDB Atlas**.
+El objetivo es construir una plataforma web de streaming donde los usuarios puedan **explorar, reproducir, valorar y comentar películas**, disfrutando de una experiencia **accesible, moderna y responsiva**, en conexión con un **backend** y una **base de datos** en la nube.
 
 ---
 
@@ -17,12 +17,11 @@ El objetivo es construir una plataforma web de streaming donde los usuarios pued
 | 💻 **Librería principal**   | React                                    |
 | 🧩 **Lenguaje tipado**      | TypeScript                               |
 | 🧭 **Enrutamiento SPA**     | React Router                             |
-| 🎨 **Estilos**              | SASS (SCSS) + Tailwind CSS               |
+| 🎨 **Estilos**              | SASS (SCSS)                              |
 | 🔗 **Consumo de API**       | Fetch API                                |
 | ♿ **Accesibilidad**         | WCAG 2.1 + Heurísticas de Nielsen        |
 | 🧰 **Documentación**        | JSDoc                                    |
-| ⚙️ **Configuración**        | Variables de entorno con prefijo `VITE_` |
-| 🧾 **Gestión del proyecto** | Metodología SCRUM con Taiga              |
+| ⚙️ **Configuración**        | Variables de entorno `VITE_`             |
 
 ---
 
@@ -31,16 +30,11 @@ El objetivo es construir una plataforma web de streaming donde los usuarios pued
 ```bash
 src/
 ├── components/         # Componentes reutilizables
-│   ├── footer/
-│   └── navbar/
-├── layout/             # Layouts generales
 ├── pages/              # Vistas principales
-│   ├── home/
-│   ├── about/
-│   ├── movie/
-│   └── site-map/
 ├── routes/             # Definición central de rutas
-├── index.scss          # Estilos globales (Tailwind + SASS)
+├── services/           # Consumo de API (fetch)
+├── contexts/           # Contextos (auth, favoritos)
+├── styles/             # SCSS global y parciales
 └── main.tsx            # Punto de entrada
 ```
 
@@ -63,7 +57,7 @@ npm install
 
 ### 3️⃣ Configurar variables de entorno
 
-Crea un archivo `.env` en la raíz del proyecto con las variables requeridas por el frontend (prefijo `VITE_`).
+Crea un archivo `.env.local` con variables `VITE_` (ver `env.example`).
 
 ### 4️⃣ Ejecutar en modo desarrollo
 
@@ -75,85 +69,50 @@ npm run dev
 
 ## 🌐 Despliegues
 
-| Entorno           | Servicio                                                | URL                          |
-| ----------------- | ------------------------------------------------------- | ---------------------------- |
-| **Frontend**      | [Vercel](https://vercel.com/)                           | 🔗 *Pendiente de despliegue* |
-| **Backend**       | [Render](https://render.com/)                           | 🔗 *URL del backend (API)*   |
-| **Base de datos** | [MongoDB Atlas](https://www.mongodb.com/atlas/database) | —                            |
+| Entorno      | Servicio  | URL                                      |
+| ------------ | --------- | ---------------------------------------- |
+| Frontend     | Vercel    | https://pi-mp-2-front.vercel.app/        |
 
 ---
 
-## 🧩 Funcionalidades por Sprint
+## ✅ Checklist de requisitos (Sprint 1–3)
 
-### 🎯 **Sprint 1: Gestión de usuarios + exploración**
+- [x] Menú, Home, About, Footer y Site Map
+- [x] Reproductor: reproducir/pausar/seek/volumen/fullscreen
+- [x] Favoritos: añadir/ver/eliminar
+- [x] Calificaciones: interactivo y estadísticas
+- [x] Comentarios: CRUD con validaciones
+- [x] Subtítulos activables ES/EN
+- [x] Autenticación: registro, login, logout, recuperación por email
+- [x] Perfil: editar datos y cambiar contraseña
+- [x] Eliminar cuenta (confirmación por contraseña)
+- [x] Fetch API puro para GET/POST/PUT/DELETE
+- [x] Variables de entorno `VITE_`
+- [x] Responsivo
+- [x] Heurísticas de usabilidad (10) y WCAG 2.1 (4) explicadas en “Mostrar ayuda”
 
-* Registro, login, logout y recuperación de contraseña.
-* Edición y eliminación de cuenta.
-* Exploración del catálogo y reproducción de películas.
-* Implementación de **2 heurísticas** y **1 pauta WCAG**.
-
-### ⭐ **Sprint 2: Favoritos y calificaciones**
-
-* CRUD de favoritos y calificaciones (1–5 estrellas).
-* Mapa del sitio y mejoras de navegación.
-* Aplicación de **4 heurísticas adicionales**.
-
-### 💬 **Sprint 3: Comentarios y subtítulos**
-
-* CRUD de comentarios por película.
-* Activar/desactivar subtítulos en español e inglés.
-* Cumplimiento de **7 heurísticas** y **3 pautas WCAG**.
-
----
-
-## 🌈 Buenas prácticas implementadas
-
-* Código **modular, documentado y tipado** (JSDoc + TypeScript).
-* Diseño **responsivo y accesible**.
-* Uso de **variables de entorno** y prácticas seguras.
-* Estilos organizados con **SASS parciales** y utilidades de **Tailwind CSS**.
-* Cumplimiento progresivo de **heurísticas de Nielsen** y **pautas WCAG 2.1**.
-
----
-
-## 🧠 Gestión y control de versiones
-
-* Metodología **SCRUM**, gestionada con **Taiga**.
-* Control de versiones con **GitHub** (una rama por integrante).
-* **Pull Requests** con etiquetas de versión: `sprint-x-release`.
-* Revisión y aprobación de código por el equipo antes del merge.
-
----
-
-## 🔌 Integraciones
-
-* **Backend:** Node.js + Express (Render).
-* **Base de datos:** MongoDB Atlas.
-* **Proveedores de video:** Cloudinary o Pexels API.
-* **Despliegue CI/CD:** GitHub Actions + Vercel.
+> Nota: el botón “Mostrar ayuda” documenta las 10 heurísticas y 4 pautas WCAG implementadas.
 
 ---
 
 ## ♿ Accesibilidad (WCAG)
 
-Cumplimiento progresivo de las pautas:
-
-* **Perceptible:** contraste, etiquetas y subtítulos.
-* **Operable:** navegación por teclado, foco visible.
-* **Comprensible:** consistencia visual y mensajes claros.
-* **Robusto:** estructura semántica y compatibilidad con lectores de pantalla.
+Pautas cubiertas en la UI y documentadas en el modal de ayuda:
+- 1.4.3 Contraste (mínimo)
+- 2.1.1 Teclado
+- 2.4.7 Focus visible
+- 3.3.1 Identificación de errores
 
 ---
 
-## 👥 Equipo de desarrollo
+## 🧠 Gestión y control de versiones
 
-Proyecto desarrollado por un equipo de **5 integrantes**.
+- Metodología SCRUM (sprints)
+- GitHub con PRs y revisiones
 
-| Rol                               | Responsabilidad                                  |
-| --------------------------------- | ------------------------------------------------ |
-| 🧩 **Frontend**                   | Interfaz en React + TypeScript + SASS + Tailwind |
-| ⚙️ **Backend**                    | Lógica en Node.js + Express                      |
-| 🗃️ **Base de datos**             | Modelos y colecciones en MongoDB Atlas           |
-| 🧭 **Gestión de proyectos & VCS** | Taiga + GitHub (SCRUM)                           |
-| 🧪 **Pruebas**                    | Heurísticas, WCAG y experiencia de usuario       |
+---
+
+## 👥 Equipo
+
+Proyecto académico – Frontend en React + TS + SASS.
 

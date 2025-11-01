@@ -1,8 +1,16 @@
-
+/**
+ * @file types.ts
+ * @description
+ * Centralized TypeScript type and interface definitions for the UnyFilm application.  
+ * Defines reusable models for movies, users, authentication, API responses, components,  
+ * and configuration options across the frontend codebase.
+ *
+ * @module Types
+ */
 
 /**
- * Application view types
- * @type {ViewType}
+ * Represents the main view types of the application.
+ * @typedef {'home' | 'catalog' | 'about' | 'sitemap' | 'favorites'} ViewType
  */
 export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap' | 'favorites';
 
@@ -62,13 +70,19 @@ export interface LoginFormData {
 }
 
 /**
- * Interface for registration form data
+ * Interface for registration form data (UI)
+ * Spanish keys kept for backward-compatibility; prefer English keys.
  * @interface RegisterFormData
  */
 export interface RegisterFormData {
-  nombres: string;
-  apellidos: string;
-  edad: string;
+
+  firstName?: string;
+  lastName?: string;
+  age?: string;
+
+  nombres?: string;
+  apellidos?: string;
+  edad?: string;
   email: string;
   password: string;
 }
@@ -165,7 +179,6 @@ export interface AccessibilityFeaturesProps extends BaseComponentProps {
   onToggleScreenReader?: () => void;
 }
 
-
 /**
  * Type for input change events
  * @type {InputChangeEvent}
@@ -200,7 +213,6 @@ export interface AppConfig {
   version: string;
   environment: 'development' | 'production' | 'test';
 }
-
 
 /**
  * Interface for pagination component props
@@ -247,7 +259,7 @@ export interface ApiResponse<T = any> {
 }
 
 /**
- * Interface for user data
+ * Interface for user data (keeps Spanish legacy fields for compatibility)
  * @interface User
  */
 export interface User {
@@ -255,10 +267,11 @@ export interface User {
   username?: string;
   firstName?: string;
   lastName?: string;
-  nombres?: string;     
-  apellidos?: string;   
-  edad?: string;        
-  age?: number;         
+
+  nombres?: string;
+  apellidos?: string;
+  edad?: string;
+  age?: number;
   email: string;
   password?: string;
   profilePicture?: string;
@@ -285,13 +298,17 @@ export interface LoginCredentials {
 }
 
 /**
- * Interface for user registration data
+ * Interface for user registration data (service)
+ * English preferred; Spanish accepted for compatibility.
  * @interface RegisterData
  */
 export interface RegisterData {
-  nombres: string;
-  apellidos: string;
-  edad: string;
+  firstName?: string;
+  lastName?: string;
+  age?: string;
+  nombres?: string;
+  apellidos?: string;
+  edad?: string;
   email: string;
   password: string;
 }
@@ -451,4 +468,67 @@ export interface EnhancedPlayerProps extends PlayerProps {
   subtitleLanguage?: 'es' | 'en';
   onQualityChange?: (quality: string) => void;
   onSubtitleToggle?: (enabled: boolean) => void;
+}
+
+/**
+ * Interface for comment data
+ * @interface Comment
+ */
+export interface Comment {
+  _id: string;
+  content: string;
+  movieId: string;
+  userId: string;
+  user: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    username?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+}
+
+/**
+ * Interface for comment creation data
+ * @interface CreateCommentData
+ */
+export interface CreateCommentData {
+  movieId: string;
+  content: string;
+}
+
+/**
+ * Interface for comment update data
+ * @interface UpdateCommentData
+ */
+export interface UpdateCommentData {
+  content: string;
+}
+
+/**
+ * Interface for comment pagination response
+ * @interface CommentPaginationResponse
+ */
+export interface CommentPaginationResponse {
+  comments: Comment[];
+  totalComments: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+/**
+ * Interface for comment service methods
+ * @interface CommentService
+ */
+export interface CommentService {
+  createComment: (data: CreateCommentData) => Promise<ApiResponse<Comment>>;
+  getCommentsByMovie: (movieId: string, page?: number, limit?: number) => Promise<ApiResponse<CommentPaginationResponse>>;
+  getMyComments: (page?: number, limit?: number) => Promise<ApiResponse<CommentPaginationResponse>>;
+  updateComment: (commentId: string, data: UpdateCommentData) => Promise<ApiResponse<Comment>>;
+  deleteComment: (commentId: string) => Promise<ApiResponse<void>>;
+  getComment: (commentId: string) => Promise<ApiResponse<Comment>>;
 }

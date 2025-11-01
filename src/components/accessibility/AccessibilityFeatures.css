@@ -22,6 +22,12 @@
   transition: all 0.3s ease;
 }
 
+.accessibility-toggle svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0; /* evita colapso con cambios de fuente */
+}
+
 .accessibility-toggle:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
@@ -137,36 +143,49 @@
   position: absolute;
   top: -100px;
   left: 0;
-  z-index: 1001;
+  z-index: 10000; /* elevar por encima del header */
 }
 
 .skip-link {
   position: absolute;
   top: -100px;
   left: 6px;
-  background: #6366f1;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
-  padding: 12px 20px;
+  padding: 14px 24px;
   text-decoration: none;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  z-index: 1001;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-  border: 2px solid #4f46e5;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  z-index: 10001; /* por encima del header y overlays comunes */
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  border: 3px solid #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 200px;
+  text-align: center;
+  pointer-events: auto;
 }
 
 .skip-link:hover {
-  background: #4f46e5;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
 }
 
 .skip-link:focus {
-  top: 6px;
-  outline: 3px solid #ffffff;
-  outline-offset: 2px;
+  position: fixed; /* aseguramos que no lo tape el header ni overflow */
+  top: 12px;
+  left: 12px;
+  outline: 4px solid #ffffff;
+  outline-offset: 3px;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+  transform: none;
+}
+
+.skip-link:focus:not(:hover) {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 }
 
 .sr-only {
@@ -237,9 +256,6 @@
   font-size: 10px !important;
 }
 
-.font-small * {
-  font-size: 10px !important;
-}
 
 .font-small .unyfilm-card__title {
   font-size: 8px !important;
@@ -297,9 +313,6 @@
   font-size: 20px !important;
 }
 
-.font-large * {
-  font-size: 20px !important;
-}
 
 .font-large .unyfilm-card__title {
   font-size: 16px !important;
@@ -313,7 +326,7 @@
 
 .font-large .unyfilm-header__search-input {
   font-size: 20px !important;
-  padding: 6px 10px !important;
+  padding: 8px 12px 8px 56px !important; 
 }
 
 .font-large .unyfilm-catalog__filter-select {
@@ -377,9 +390,6 @@
   font-size: 28px !important;
 }
 
-.font-extra-large * {
-  font-size: 28px !important;
-}
 
 .font-extra-large .unyfilm-card__title {
   font-size: 20px !important;
@@ -394,7 +404,7 @@
 
 .font-extra-large .unyfilm-header__search-input {
   font-size: 28px !important;
-  padding: 8px 12px !important;
+  padding: 10px 14px 10px 64px !important; /* aún más espacio a la izquierda */
 }
 
 .font-extra-large .unyfilm-catalog__filter-select {
@@ -515,22 +525,48 @@
 }
 
 .focus-visible *:focus {
-  outline: 2px solid #6366f1;
-  outline-offset: 2px;
+  outline: 3px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
 }
 
 .focus-visible .unyfilm-card:focus {
-  outline: 3px solid #6366f1;
-  outline-offset: 3px;
+  outline: 4px solid #6366f1 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.4) !important;
 }
 
 .focus-visible button:focus {
-  outline: 2px solid #6366f1;
-  outline-offset: 2px;
+  outline: 3px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+}
+
+.focus-visible input:focus,
+.focus-visible textarea:focus,
+.focus-visible select:focus {
+  outline: 3px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+}
+
+.focus-visible a:focus {
+  outline: 3px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+}
+
+.focus-visible *:focus-visible {
+  outline: 3px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
 }
 
 @media (max-width: 768px) {
   .accessibility-panel {
+    display: block;
+  }
+  .accessibility-controls {
     display: none;
   }
 }

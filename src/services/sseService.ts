@@ -1,7 +1,36 @@
-
-
 import { API_CONFIG } from '../config/environment';
 
+/**
+ * Represents a Server-Sent Event (SSE) received from the backend.
+ *
+ * @interface SSEEvent
+ * @property {'rating-updated' | 'rating-stats-updated'} type - The type of event received.
+ * @property {string} movieId - The unique identifier of the movie.
+ * @property {any} data - The payload containing rating or statistics information.
+ * @property {number} timestamp - The timestamp when the event occurred.
+ */
+interface SSEEvent {
+  type: 'rating-updated' | 'rating-stats-updated';
+  movieId: string;
+  data: any;
+  timestamp: number;
+}
+
+/**
+ * Service that handles real-time updates using **Server-Sent Events (SSE)**.
+ * Provides automatic reconnection, event parsing, and dispatches browser-level events
+ * for `rating-updated` and `rating-stats-updated`.
+ *
+ * @class SSEService
+ * @example
+ * ```ts
+ * import { connectSSE, disconnectSSE, getSSEStatus } from './sseService';
+ *
+ * connectSSE(); // Start listening to real-time rating updates
+ * const status = getSSEStatus();
+ * console.log(status);
+ * ```
+ */
 interface SSEEvent {
   type: 'rating-updated' | 'rating-stats-updated';
   movieId: string;
@@ -27,12 +56,12 @@ class SSEService {
   
   connect() {
     if (this.isConnected || this.eventSource) {
-      console.log('🔄 [SSE] Ya conectado, ignorando nueva conexión');
+      
       return;
     }
 
     try {
-      console.log('🔌 [SSE] Conectando al servidor SSE...');
+      
       
       const sseUrl = `${API_CONFIG.BASE_URL}/api/realtime/events`;
       
@@ -41,7 +70,7 @@ class SSEService {
       });
 
       this.eventSource.onopen = () => {
-        console.log('✅ [SSE] Conectado al servidor SSE');
+        
         this.isConnected = true;
         this.reconnectAttempts = 0;
       };
@@ -49,7 +78,6 @@ class SSEService {
       this.eventSource.onmessage = (event) => {
         try {
           const sseEvent: SSEEvent = JSON.parse(event.data);
-          console.log('📡 [SSE] Evento recibido del servidor:', sseEvent);
           this.handleSSEEvent(sseEvent);
         } catch (error) {
           console.error('❌ [SSE] Error procesando evento:', error);
@@ -57,7 +85,7 @@ class SSEService {
       };
 
       this.eventSource.onerror = (error) => {
-        console.error('❌ [SSE] Error en conexión SSE:', error);
+        
         this.isConnected = false;
         this.handleReconnection();
       };
@@ -65,17 +93,14 @@ class SSEService {
       this.eventSource.addEventListener('rating-updated', (event) => {
         try {
           const data = JSON.parse((event as MessageEvent).data);
-          console.log('📡 [SSE] Rating actualizado:', data);
           this.handleRatingUpdate(data);
         } catch (error) {
-          console.error('❌ [SSE] Error procesando rating-updated:', error);
         }
       });
 
       this.eventSource.addEventListener('rating-stats-updated', (event) => {
         try {
           const data = JSON.parse((event as MessageEvent).data);
-          console.log('📊 [SSE] Estadísticas actualizadas:', data);
           this.handleStatsUpdate(data);
         } catch (error) {
           console.error('❌ [SSE] Error procesando rating-stats-updated:', error);
@@ -130,14 +155,11 @@ class SSEService {
   
   private handleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log('❌ [SSE] Máximo de intentos de reconexión alcanzado');
       return;
     }
 
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    
-    console.log(`🔄 [SSE] Reintentando conexión en ${delay}ms (intento ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
     
     setTimeout(() => {
       this.disconnect();
@@ -148,7 +170,6 @@ class SSEService {
  
   disconnect() {
     if (this.eventSource) {
-      console.log('🔌 [SSE] Desconectando del servidor SSE...');
       this.eventSource.close();
       this.eventSource = null;
       this.isConnected = false;

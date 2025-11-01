@@ -73,7 +73,6 @@ export default function UnyFilmCard({
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(image);
   
-  // Usar el hook de ratings en tiempo real
   const { ratingStats } = useRealtimeRatings({ 
     movieId: movieId || '', 
     autoLoad: true, 
@@ -113,7 +112,7 @@ export default function UnyFilmCard({
   };
 
   return (
-    <div 
+    <article 
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       onClick={handleCardClick}
@@ -155,7 +154,7 @@ export default function UnyFilmCard({
       </div>
       
       <div className="unyfilm-card__content">
-        <h3 className="unyfilm-card__title">{title}</h3>
+        <h3 className="unyfilm-card__title" id={`movie-title-${movieId || title}`}>{title}</h3>
         
        
         {movieId && ratingStats && (
@@ -170,8 +169,8 @@ export default function UnyFilmCard({
         )}
         
         <div className="unyfilm-card__meta">
-          {year && year > 1900 && <span className="unyfilm-card__year">{String(year)}</span>}
-          {genre && <span className="unyfilm-card__genre">{genre}</span>}
+          {year && year > 1900 && <span className="unyfilm-card__year" aria-label={`Año: ${year}`}>{String(year)}</span>}
+          {genre && <span className="unyfilm-card__genre" aria-label={`Género: ${genre}`}>{genre}</span>}
         </div>
       </div>
 
@@ -213,6 +212,6 @@ export default function UnyFilmCard({
           </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

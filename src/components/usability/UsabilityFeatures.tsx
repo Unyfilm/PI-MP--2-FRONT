@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { HelpCircle, AlertTriangle, CheckCircle, Info, Zap, Shield, Eye, Globe, ArrowLeft, Brain, Accessibility } from 'lucide-react';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import './UsabilityFeatures.css';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Usability features component implementing 3 usability heuristics
@@ -12,10 +13,18 @@ type Notification = { id: number; type: 'info' | 'success' | 'error'; message: s
 type Shortcut = { key: string; description: string; action: () => void };
 
 export default function UsabilityFeatures() {
+  const location = useLocation();
+  const isPlayerRoute = location.pathname.startsWith('/player');
+  const isPublicRoute = location.pathname === '/'
+    || location.pathname.startsWith('/login')
+    || location.pathname.startsWith('/register')
+    || location.pathname.startsWith('/recover')
+    || location.pathname.startsWith('/reset-password');
+
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   
-  const helpModalRef = useClickOutside(() => setShowHelp(false));
+  const helpModalRef = useClickOutside<HTMLDivElement>(() => setShowHelp(false));
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   
   const focusSidebar = () => {
@@ -138,7 +147,8 @@ export default function UsabilityFeatures() {
   };
 
   useEffect(() => {
-   
+    if (isPlayerRoute || isPublicRoute) return; // avoid initializing on these routes
+
     const cleanupKeyboard = initializeKeyboardShortcuts();
     initializeHelpSystem();
     
@@ -148,7 +158,7 @@ export default function UsabilityFeatures() {
         cleanupKeyboard();
       }
     };
-  }, []);
+  }, [isPlayerRoute, isPublicRoute]);
 
   
   const initializeKeyboardShortcuts = () => {
@@ -215,8 +225,20 @@ export default function UsabilityFeatures() {
 
     
     const handleKeyDown = (event: KeyboardEvent) => {
+
+
+      if (event.ctrlKey || (event.target && 'matches' in event.target && (event.target as Element).matches('input, textarea, [contenteditable]'))) {
+        return;
+      }
+
+
+      const handledAltKeys = ['n', 's', 'm', '1', '2', '3', '4', '5', '0', 'p', 'f', 'r', 'g', 'o', 'y', 't', 'a', 'h', '/'];
       
-      if (event.altKey || (event.key === ' ' && event.target && 'matches' in event.target && !(event.target as Element).matches('input, textarea'))) {
+      if (event.altKey && handledAltKeys.includes(event.key.toLowerCase())) {
+        event.preventDefault();
+      }
+
+      if (event.key === ' ' && event.target && 'matches' in event.target && !(event.target as Element).matches('input, textarea')) {
         event.preventDefault();
       }
 
@@ -399,19 +421,6 @@ export default function UsabilityFeatures() {
 
   
 
-  
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      const shortcut = shortcuts.find(s => s.key.toLowerCase() === e.key.toLowerCase());
-      if (shortcut) {
-        e.preventDefault();
-        shortcut.action();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [shortcuts]);
 
   
   useEffect(() => {
@@ -422,30 +431,33 @@ export default function UsabilityFeatures() {
     
   }, []);
 
+  const shouldRenderUi = !(isPlayerRoute || isPublicRoute);
+
   return (
     <div className="usability-features">
-      <button 
-        className="usability-help-btn"
-        onClick={() => {
-          console.log('Help button clicked, current state:', showHelp);
-          setShowHelp(!showHelp);
-        }}
-        title="Mostrar ayuda (Alt + H)"
-        aria-pressed={showHelp}
-        aria-label="Mostrar u ocultar ayuda"
-        type="button"
-      >
-        <HelpCircle size={20} />
-      </button>
+      {shouldRenderUi && (
+        <button 
+          className="usability-help-btn"
+          onClick={() => {
+            setShowHelp(!showHelp);
+          }}
+          title="Mostrar ayuda (Alt + H)"
+          aria-pressed={showHelp}
+          aria-label="Mostrar u ocultar ayuda"
+          type="button"
+        >
+          <HelpCircle size={20} aria-hidden="true" />
+          <span className="sr-only">Mostrar ayuda</span>
+        </button>
+      )}
 
-
-      {showHelp && (
+      {shouldRenderUi && showHelp && (
         <div className="usability-help-modal" role="dialog" aria-modal="true" aria-labelledby="usability-help-title">
           <div className="usability-help-backdrop" onClick={() => setShowHelp(false)}></div>
           <div className="usability-help-content" ref={helpModalRef}>
             <div className="usability-help-header">
               <h2 id="usability-help-title">🎯 Guía de Usabilidad - UnyFilm</h2>
-              <p className="help-subtitle">Implementación de 6 Heurísticas de Nielsen y 2 Pautas WCAG 2.1</p>
+              <p className="help-subtitle">Implementación de 10 Heurísticas de Nielsen y 4 Pautas WCAG 2.1</p>
               <button 
                 onClick={() => setShowHelp(false)}
                 className="usability-help-close"
@@ -610,6 +622,139 @@ export default function UsabilityFeatures() {
                 </div>
               </section>
 
+              {/* Atajos de Teclado – movidos al final del modal */}
+
+              <section className="usability-heuristic">
+                <h3>
+                  <Info className="usability-icon" />
+                  7. Ayuda y Documentación
+                </h3>
+                <p>
+                  Proveemos ayuda visible dentro de la app y accesible por teclado.
+                </p>
+                <ul>
+                  <li>Botón “Mostrar ayuda” persistente (Alt+H, F1)</li>
+                  <li>Atajos de teclado documentados por categorías</li>
+                  <li>Guías contextuales y tooltips en controles clave</li>
+                </ul>
+              </section>
+
+              <section className="usability-heuristic">
+                <h3>
+                  <Zap className="usability-icon" />
+                  8. Flexibilidad y Eficiencia de Uso
+                </h3>
+                <p>
+                  Usuarios expertos aceleran con atajos; principiantes usan UI directa.
+                </p>
+                <ul>
+                  <li>Atajos para navegación, reproductor y catálogo</li>
+                  <li>Preferencias persistentes (contraste, foco, fuente)</li>
+                  <li>Controles accesibles por mouse/teclado</li>
+                </ul>
+              </section>
+
+              <section className="usability-heuristic">
+                <h3>
+                  <Shield className="usability-icon" />
+                  9. Prevención vs Recuperación de Errores
+                </h3>
+                <p>
+                  Diseñamos para prevenir; cuando falla, recuperamos con claridad.
+                </p>
+                <ul>
+                  <li>Confirmaciones en acciones destructivas (eliminar cuenta)</li>
+                  <li>Mensajes de error claros en formularios y red</li>
+                  <li>Indicadores de carga y reintentos seguros</li>
+                </ul>
+              </section>
+
+              <section className="usability-heuristic">
+                <h3>
+                  <Eye className="usability-icon" />
+                  10. Estética y Diseño Minimalista
+                </h3>
+                <p>
+                  Interfaz limpia, jerarquía visual clara y foco en tareas.
+                </p>
+                <ul>
+                  <li>Layout consistente y uso moderado de color</li>
+                  <li>Estados de foco visibles sin ruido visual</li>
+                  <li>Contenido relevante primero (principio de prioridad)</li>
+                </ul>
+              </section>
+
+              <section className="usability-wcag">
+                <h3>
+                  <Accessibility className="usability-icon" />
+                  Pautas WCAG 2.1
+                </h3>
+                <p>Implementación de estándares de accesibilidad web:</p>
+                
+                <div className="usability-wcag-guidelines">
+                  <div className="usability-wcag-guideline">
+                    <h4>🎨 1.4.3 - Contraste (Mínimo)</h4>
+                    <p>Relación de contraste de al menos 4.5:1 para texto normal:</p>
+                    <ul>
+                      <li>Texto principal: #FFFFFF sobre #1F2937 (contraste 15.8:1)</li>
+                      <li>Texto secundario: #D1D5DB sobre #1F2937 (contraste 8.2:1)</li>
+                      <li>Enlaces: #6366F1 sobre #1F2937 (contraste 4.8:1)</li>
+                      <li>Botones: Fondo #6366F1 con texto #FFFFFF (contraste 4.5:1)</li>
+                      <li>Validación automática de contraste en tiempo real</li>
+                      <li>Modo de alto contraste disponible</li>
+                    </ul>
+                    <div className="usability-demo">
+                      <div className="contrast-demo">
+                        <div className="contrast-example high">Texto de alto contraste</div>
+                        <div className="contrast-example medium">Texto de contraste medio</div>
+                        <div className="contrast-example low">Texto de bajo contraste</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="usability-wcag-guideline">
+                    <h4>⌨️ 2.1.1 - Navegación por Teclado</h4>
+                    <p>Todas las funcionalidades son accesibles mediante teclado:</p>
+                    <ul>
+                      <li>Navegación completa con Tab y Shift+Tab</li>
+                      <li>Activación con Enter y Espacio</li>
+                      <li>Atajos de teclado para todas las funciones principales</li>
+                      <li>Indicadores de foco visibles y consistentes</li>
+                      <li>Trampa de foco en modales</li>
+                      <li>Orden lógico de tabulación</li>
+                    </ul>
+                    <div className="usability-demo">
+                      <div className="keyboard-demo">
+                        <button className="focusable-btn">Botón 1</button>
+                        <button className="focusable-btn">Botón 2</button>
+                        <button className="focusable-btn">Botón 3</button>
+                      </div>
+                      <div className="keyboard-hint">Usa Tab para navegar</div>
+                    </div>
+                  </div>
+
+                  <div className="usability-wcag-guideline">
+                    <h4>🟣 2.4.7 - Focus Visible</h4>
+                    <p>El foco es siempre perceptible para el usuario al navegar con teclado.</p>
+                    <ul>
+                      <li>Anillos de foco globales con outline y sombra (clase <code>focus-visible</code>)</li>
+                      <li>Evitar <code>outline: none</code> en controles críticos</li>
+                      <li>Estilos reforzados en botones, inputs y enlaces</li>
+                    </ul>
+                  </div>
+
+                  <div className="usability-wcag-guideline">
+                    <h4>⚠️ 3.3.1 - Identificación de Errores</h4>
+                    <p>Los errores se describen claramente, con texto y relación al control.</p>
+                    <ul>
+                      <li>Mensajes de error en formularios con <code>role="alert"</code></li>
+                      <li>Asociación <code>aria-describedby</code> al campo problemático</li>
+                      <li>Estados de validación visibles y consistentes</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
               <section className="usability-shortcuts">
                 <h3>
                   <Zap className="usability-icon" />
@@ -675,57 +820,6 @@ export default function UsabilityFeatures() {
                           <span>{shortcut.description}</span>
                         </div>
                       ))}
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section className="usability-wcag">
-                <h3>
-                  <Accessibility className="usability-icon" />
-                  Pautas WCAG 2.1
-                </h3>
-                <p>Implementación de estándares de accesibilidad web:</p>
-                
-                <div className="usability-wcag-guidelines">
-                  <div className="usability-wcag-guideline">
-                    <h4>🎨 1.4.3 - Contraste (Mínimo)</h4>
-                    <p>Relación de contraste de al menos 4.5:1 para texto normal:</p>
-                    <ul>
-                      <li>Texto principal: #FFFFFF sobre #1F2937 (contraste 15.8:1)</li>
-                      <li>Texto secundario: #D1D5DB sobre #1F2937 (contraste 8.2:1)</li>
-                      <li>Enlaces: #6366F1 sobre #1F2937 (contraste 4.8:1)</li>
-                      <li>Botones: Fondo #6366F1 con texto #FFFFFF (contraste 4.5:1)</li>
-                      <li>Validación automática de contraste en tiempo real</li>
-                      <li>Modo de alto contraste disponible</li>
-                    </ul>
-                    <div className="usability-demo">
-                      <div className="contrast-demo">
-                        <div className="contrast-example high">Texto de alto contraste</div>
-                        <div className="contrast-example medium">Texto de contraste medio</div>
-                        <div className="contrast-example low">Texto de bajo contraste</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="usability-wcag-guideline">
-                    <h4>⌨️ 2.1.1 - Navegación por Teclado</h4>
-                    <p>Todas las funcionalidades son accesibles mediante teclado:</p>
-                    <ul>
-                      <li>Navegación completa con Tab y Shift+Tab</li>
-                      <li>Activación con Enter y Espacio</li>
-                      <li>Atajos de teclado para todas las funciones principales</li>
-                      <li>Indicadores de foco visibles y consistentes</li>
-                      <li>Trampa de foco en modales</li>
-                      <li>Orden lógico de tabulación</li>
-                    </ul>
-                    <div className="usability-demo">
-                      <div className="keyboard-demo">
-                        <button className="focusable-btn">Botón 1</button>
-                        <button className="focusable-btn">Botón 2</button>
-                        <button className="focusable-btn">Botón 3</button>
-                      </div>
-                      <div className="keyboard-hint">Usa Tab para navegar</div>
                     </div>
                   </div>
                 </div>

@@ -1,11 +1,28 @@
 /**
- * Cloudinary Service for UnyFilm
- * @fileoverview Service for handling video uploads and transformations with Cloudinary
+ * @file cloudinaryService.ts
+ * @description Cloudinary Service for UnyFilm.
+ * Provides video and subtitle management via the Cloudinary API — including
+ * uploading, deleting, fetching metadata, generating transformed URLs,
+ * and verifying subtitle availability.
+ *
+ * This service abstracts Cloudinary REST API interactions and can be used
+ * for video content handling, streaming optimization, and subtitle management.
+ *
+ * @module Services/CloudinaryService
+ * @see https://cloudinary.com/documentation
+ *
+ * @author
+ * Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta,
+ * Jerson Otero, Julian Mosquera
  */
 
 import { Cloudinary } from '@cloudinary/url-gen';
 import { CLOUDINARY_CONFIG } from '../config/environment';
 
+/**
+ * Options for uploading videos to Cloudinary.
+ * @interface CloudinaryUploadOptions
+ */
 export interface CloudinaryUploadResponse {
   public_id: string;
   version: number;

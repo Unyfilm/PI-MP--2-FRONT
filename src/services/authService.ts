@@ -1,4 +1,21 @@
 
+/**
+ * @file authService.ts
+ * @description Authentication service that manages user login, registration, and logout.
+ * Provides standardized backend request handling, error parsing, and localStorage session management.
+ * 
+ * This module serves as the primary interface between the frontend authentication logic
+ * and the backend API endpoints under `/api/auth`.
+ *
+ * It supports both English and Spanish input fields for backward compatibility and
+ * ensures consistent token persistence across browser reloads.
+ * 
+ * @module Services/AuthService
+ * 
+ * @author
+ * Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta,
+ * Jerson Otero, Julian Mosquera
+ */
 import { API_CONFIG } from '../config/environment';
 
 const ENV_BASE = (API_CONFIG.BASE_URL || 'http://localhost:5000').replace(/\/$/, '');
@@ -9,13 +26,31 @@ const defaultHeaders: HeadersInit = {
   'Accept': 'application/json'
 };
 
+
+/**
+ * Generates headers for authenticated requests by including
+ * the stored Bearer token from localStorage.
+ *
+ * @function
+ * @returns {HeadersInit} Headers including authorization token
+ */
 const authHeaders = (): HeadersInit => ({
   ...defaultHeaders,
   Authorization: `Bearer ${localStorage.getItem('token') || ''}`
 });
 /**
- * Interface for backend user data
+ * Interface representing a backend user entity.
+ * 
  * @interface BackendUser
+ * @property {string} _id - Unique user identifier from the backend.
+ * @property {string} username - System username.
+ * @property {string} email - User's email address.
+ * @property {string} [firstName] - User's first name.
+ * @property {string} [lastName] - User's last name.
+ * @property {number} [age] - User's age.
+ * @property {string} [profilePicture] - URL of the user’s profile picture.
+ * @property {string} [createdAt] - ISO date of creation.
+ * @property {string} [updatedAt] - ISO date of last update.
  */
 export interface BackendUser {
   _id: string;
@@ -29,14 +64,32 @@ export interface BackendUser {
   
   updatedAt?: string;
 }
-
+/**
+ * Generic success response wrapper for backend API responses.
+ * 
+ * @template T
+ * @interface BackendSuccessResponse
+ * @property {true} success - Indicates success status.
+ * @property {string} message - Human-readable message from backend.
+ * @property {T} data - Payload data.
+ * @property {string} [timestamp] - Optional timestamp of the response.
+ */
 export interface BackendSuccessResponse<T> {
   success: true;
   message: string;
   data: T;
   timestamp?: string;
 }
-
+/**
+ * Generic error response wrapper for backend API responses.
+ * 
+ * @interface BackendErrorResponse
+ * @property {false} success - Indicates error status.
+ * @property {string} message - Error message.
+ * @property {string} [error] - Technical error code or description.
+ * @property {unknown} [details] - Additional error details.
+ * @property {string} [timestamp] - Optional timestamp of the error.
+ */
 export interface BackendErrorResponse {
   success: false;
   message: string;
@@ -45,17 +98,45 @@ export interface BackendErrorResponse {
   timestamp?: string;
 }
 
+/**
+ * Union type representing either a success or an error response from the backend.
+ * 
+ * @template T
+ */
 export type BackendResponse<T> = BackendSuccessResponse<T> | BackendErrorResponse;
 
+/**
+ * Input credentials for login.
+ * 
+ * @interface LoginInput
+ * @property {string} email - User email.
+ * @property {string} password - User password.
+ */
 export interface LoginInput { email: string; password: string; }
+/**
+ * Registration input accepted by the UI layer.
+ * English fields are preferred; Spanish legacy fields are accepted
+ * for backward compatibility and will be normalized.
+ */
 export interface RegisterInput {
-  nombres: string;
-  apellidos: string;
+
+  firstName?: string;
+  lastName?: string;
+  age?: string | number;
+
+  nombres?: string;
+  apellidos?: string;
+  edad?: string;
   email: string;
   password: string;
-  edad?: string;
 }
-
+/**
+ * Authentication payload returned upon successful login or registration.
+ * 
+ * @interface AuthData
+ * @property {BackendUser} user - User profile data.
+ * @property {string} token - JWT authentication token.
+ */
 export interface AuthData { user: BackendUser; token: string; }
 
 /**
@@ -121,14 +202,17 @@ export const authService = {
   },
 
   /**
-   * Register a new user
+   * Register a new user, normalizing both English and Spanish field names.
    * @param {RegisterInput} input - Registration input from UI
    * @returns {Promise<BackendResponse<AuthData>>} Auth payload on success
    */
   async register(input: RegisterInput) {
-    const age = parseInt(input.edad || '0', 10);
-    
-    if (!input.email || !input.password || !input.nombres || !input.apellidos || !age || age < 13 || age > 120) {
+    const firstName = (input.firstName ?? input.nombres ?? '').toString().trim();
+    const lastName = (input.lastName ?? input.apellidos ?? '').toString().trim();
+    const ageRaw = input.age ?? input.edad ?? '';
+    const ageNum = typeof ageRaw === 'number' ? ageRaw : parseInt((ageRaw as string) || '0', 10);
+
+    if (!input.email || !input.password || !firstName || !lastName || !ageNum || ageNum < 13 || ageNum > 120) {
       return {
         success: false,
         message: 'Email, contraseña, nombre, apellido y edad son requeridos',
@@ -139,13 +223,12 @@ export const authService = {
     const payload = {
       email: input.email.trim().toLowerCase(),
       password: input.password,
-      confirmPassword: input.password, 
-      firstName: input.nombres.trim(),
-      lastName: input.apellidos.trim(),
-      age: age  
+      confirmPassword: input.password,
+      firstName,
+      lastName,
+      age: ageNum
     };
 
-    
     const res = await request<AuthData>('/api/auth/register', {
       method: 'POST',
       headers: defaultHeaders,

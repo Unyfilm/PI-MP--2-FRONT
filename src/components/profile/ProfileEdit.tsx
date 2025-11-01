@@ -1,3 +1,26 @@
+/**
+ * @file ProfileEdit.tsx
+ * @description
+ * User profile editing page for the UnyFilm platform.
+ * Provides a complete editable form for updating user details
+ * (name, age, email) and changing password securely.
+ * Integrates with the authentication context (AuthContext)
+ * for backend updates and applies WCAG accessibility standards.
+ *
+ * Includes password validation (uppercase, lowercase, numeric, special)
+ * and real-time visual feedback checklist.
+ *
+ * @module ProfileEdit
+ *
+ * @version 3.0.0
+ *
+ * @authors
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
+ */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User as UserIcon, Mail, Calendar, Lock, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
@@ -6,13 +29,27 @@ import './Profile.scss';
 import './Notification.scss';
 
 /**
- * ProfileEdit
+ * @component
+ * @name ProfileEdit
+ * @description
+ * Allows the authenticated user to edit personal information (name, last name, age, email)
+ * and optionally update their password with security validations.
+ * Interacts directly with the backend via `updateProfile` and `changePassword`
+ * from the global `AuthContext`.
  *
- * Edit profile form with real backend integration. On save it updates
- * the user profile via API and navigates back to the Profile page.
- * On cancel it navigates back without saving changes.
+ * Includes client-side validation, accessibility attributes, and success/error
+ * notification banners that auto-dismiss after a few seconds.
  *
- * @returns {JSX.Element} Profile edit UI
+ * @returns {JSX.Element} A form-based, accessible profile editing interface.
+ *
+ * @example
+ * ```tsx
+ * import ProfileEdit from './pages/profile/ProfileEdit';
+ * 
+ * function App() {
+ *   return <ProfileEdit />;
+ * }
+ * ```
  */
 export default function ProfileEdit() {
   const navigate = useNavigate();
@@ -65,8 +102,14 @@ export default function ProfileEdit() {
       setEmail(user.email || '');
     }
   }, [user]);
-
   
+  /**
+   * Displays an on-screen notification that auto-hides after 4 seconds.
+   *
+   * @param {'success' | 'error'} type - Notification type.
+   * @param {string} message - Message to display to the user.
+   * @returns {void}
+   */
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({
       type,
@@ -80,6 +123,14 @@ export default function ProfileEdit() {
     }, 4000);
   };
 
+  /**
+   * Saves edited user profile data to the backend.
+   * Performs client-side validation before submitting.
+   *
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   const handleSave = async () => {
     setIsSaving(true);
     setError('');
@@ -134,6 +185,13 @@ export default function ProfileEdit() {
     navigate('/profile');
   };
 
+  /**
+   * Handles password change submission with multi-level validation.
+   *
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   const handleChangePassword = async () => {
     setIsChangingPassword(true);
     setPasswordError('');
@@ -216,6 +274,7 @@ export default function ProfileEdit() {
     }
   };
 
+  /** Toggles password field visibility between text and password types. */
   const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
     setShowPasswords(prev => ({
       ...prev,
@@ -223,6 +282,7 @@ export default function ProfileEdit() {
     }));
   };
 
+  /** Resets password inputs and hides the change password section. */
   const cancelPasswordChange = () => {
     setCurrentPassword('');
     setNewPassword('');
@@ -248,54 +308,54 @@ export default function ProfileEdit() {
   }
 
   return (
-    <div className="profile-page">
+    <main className="profile-page" role="main" aria-labelledby="profile-edit-title">
       <div className="profile-mosaic" aria-hidden="true">
         {Array.from({ length: 200 }).map((_, i) => (
           <span key={i} className="profile-mosaic__tile" />
         ))}
       </div>
-      <div className="profile-card">
-        <h1 className="profile-card__title">Editar perfil</h1>
+      <div className="profile-card" role="form" aria-labelledby="profile-edit-title">
+        <h1 id="profile-edit-title" className="profile-card__title">Editar perfil</h1>
         
         {error && (
-          <div className="form-field__error" style={{ marginBottom: 16, padding: 12, backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 8 }}>
+          <div className="form-field__error" role="alert" aria-live="assertive" style={{ marginBottom: 16, padding: 12, backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 8 }}>
             {error}
           </div>
         )}
         
         <div className="form-field">
-          <label className="form-field__label">Nombre</label>
+          <label className="form-field__label" htmlFor="profile-name">Nombre</label>
           <div className="form-field__input-wrapper">
             <UserIcon size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
-            <input className="form-field__input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ejemplo: Ana María" />
+            <input id="profile-name" className="form-field__input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ejemplo: Ana María" aria-label="Nombre" />
           </div>
         </div>
         <div className="form-field" style={{ marginTop: 12 }}>
-          <label className="form-field__label">Apellidos</label>
+          <label className="form-field__label" htmlFor="profile-lastname">Apellidos</label>
           <div className="form-field__input-wrapper">
             <UserIcon size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
-            <input className="form-field__input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Ejemplo: García López" />
+            <input id="profile-lastname" className="form-field__input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Ejemplo: García López" aria-label="Apellidos" />
           </div>
         </div>
         <div className="form-field" style={{ marginTop: 12 }}>
-          <label className="form-field__label">Edad</label>
+          <label className="form-field__label" htmlFor="profile-age">Edad</label>
           <div className="form-field__input-wrapper">
             <Calendar size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
-            <input className="form-field__input" type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Ejemplo: 28" />
+            <input id="profile-age" className="form-field__input" type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Ejemplo: 28" aria-label="Edad" />
           </div>
         </div>
         <div className="form-field" style={{ marginTop: 12 }}>
-          <label className="form-field__label">Correo</label>
+          <label className="form-field__label" htmlFor="profile-email">Correo</label>
           <div className="form-field__input-wrapper">
             <Mail size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
-            <input className="form-field__input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Ejemplo: nombre@correo.com" />
+            <input id="profile-email" className="form-field__input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Ejemplo: nombre@correo.com" aria-label="Correo electrónico" />
           </div>
         </div>
 
      
         <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h3 style={{ color: '#ffffff', fontSize: '18px', fontWeight: '600', margin: 0 }}>Cambiar contraseña</h3>
+            <h3 id="change-password-title" style={{ color: '#ffffff', fontSize: '18px', fontWeight: '600', margin: 0 }}>Cambiar contraseña</h3>
             <button 
               type="button"
               onClick={() => setShowPasswordSection(!showPasswordSection)}
@@ -316,49 +376,55 @@ export default function ProfileEdit() {
           {showPasswordSection && (
             <div>
               {passwordError && (
-                <div className="form-field__error" style={{ marginBottom: 16, padding: 12, backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 8 }}>
+                <div className="form-field__error" role="alert" aria-live="assertive" style={{ marginBottom: 16, padding: 12, backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 8 }}>
                   {passwordError}
                 </div>
               )}
 
               <div className="form-field" style={{ marginTop: 12 }}>
-                <label className="form-field__label">Contraseña actual</label>
+                <label className="form-field__label" htmlFor="current-password">Contraseña actual</label>
                 <div className="form-field__input-wrapper">
                   <Lock size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
                   <input 
+                    id="current-password"
                     type={showPasswords.current ? 'text' : 'password'}
                     className="form-field__input" 
                     value={currentPassword} 
                     onChange={(e) => setCurrentPassword(e.target.value)} 
                     placeholder="••••••••" 
+                    aria-label="Contraseña actual"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('current')}
                     style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
+                    aria-label={showPasswords.current ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
-                    {showPasswords.current ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showPasswords.current ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
                   </button>
                 </div>
               </div>
 
               <div className="form-field" style={{ marginTop: 12 }}>
-                <label className="form-field__label">Nueva contraseña</label>
+                <label className="form-field__label" htmlFor="new-password">Nueva contraseña</label>
                 <div className="form-field__input-wrapper">
                   <Lock size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
                   <input 
+                    id="new-password"
                     type={showPasswords.new ? 'text' : 'password'}
                     className="form-field__input" 
                     value={newPassword} 
                     onChange={(e) => setNewPassword(e.target.value)} 
                     placeholder="••••••••" 
+                    aria-label="Nueva contraseña"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('new')}
                     style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
+                    aria-label={showPasswords.new ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
-                    {showPasswords.new ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showPasswords.new ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
                   </button>
                 </div>
               </div>
@@ -390,22 +456,25 @@ export default function ProfileEdit() {
               )}
 
               <div className="form-field" style={{ marginTop: 12 }}>
-                <label className="form-field__label">Confirmar nueva contraseña</label>
+                <label className="form-field__label" htmlFor="confirm-password">Confirmar nueva contraseña</label>
                 <div className="form-field__input-wrapper">
                   <Lock size={22} strokeWidth={2.5} color="#ffffff" className="form-field__icon" />
                   <input 
+                    id="confirm-password"
                     type={showPasswords.confirm ? 'text' : 'password'}
                     className="form-field__input" 
                     value={confirmPassword} 
                     onChange={(e) => setConfirmPassword(e.target.value)} 
                     placeholder="••••••••" 
+                    aria-label="Confirmar nueva contraseña"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('confirm')}
                     style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
+                    aria-label={showPasswords.confirm ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
-                    {showPasswords.confirm ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showPasswords.confirm ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
                   </button>
                 </div>
               </div>
@@ -496,7 +565,7 @@ export default function ProfileEdit() {
           </button>
         </div>
       )}
-    </div>
+    </main>
   );
 }
 

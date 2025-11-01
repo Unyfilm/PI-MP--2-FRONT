@@ -1,10 +1,36 @@
-
+/**
+ * Mock Rating Service
+ * @fileoverview
+ * Provides simulated rating data for movies when the backend is unavailable
+ * or for development/testing purposes. This mock service generates and updates
+ * fake rating statistics stored in memory using a Map-based cache.
+ * 
+ * @author
+ *  - Hernan Garcia  
+ *  - Juan Camilo Jimenez  
+ *  - Julieta Arteta  
+ *  - Jerson Otero  
+ *  - Julian Mosquera
+ * @version 3.0.0
+ */
 
 import type { RatingStats } from './ratingService';
 
+/**
+ * In-memory cache for storing mock rating statistics.
+ * Uses the movie ID as the key and `RatingStats` as the value.
+ */
 const mockDataCache = new Map<string, RatingStats>();
 
 
+/**
+ * Generates random mock rating statistics for a given movie.
+ * Used when no existing data is found in the cache.
+ * 
+ * @function generateMockRatingStats
+ * @param {string} movieId - The unique movie identifier
+ * @returns {RatingStats} Randomly generated rating statistics
+ */
 const generateMockRatingStats = (movieId: string): RatingStats => {
   const averageRating = Math.random() * 2 + 3;
   const totalRatings = Math.floor(Math.random() * 100) + 5;
@@ -24,6 +50,14 @@ const generateMockRatingStats = (movieId: string): RatingStats => {
 };
 
 
+/**
+ * Retrieves mock rating statistics for a movie from cache or generates new data if missing.
+ * 
+ * @async
+ * @function getMockRatingStats
+ * @param {string} movieId - The unique movie identifier
+ * @returns {Promise<RatingStats>} A promise that resolves with the movie's rating stats
+ */
 export const getMockRatingStats = async (movieId: string): Promise<RatingStats> => {
   if (mockDataCache.has(movieId)) {
     return mockDataCache.get(movieId)!;
@@ -31,11 +65,18 @@ export const getMockRatingStats = async (movieId: string): Promise<RatingStats> 
   const mockStats = generateMockRatingStats(movieId);
   mockDataCache.set(movieId, mockStats);
   
-  console.log('🎭 [MOCK RATING] Generando estadísticas mock:', mockStats);
   return mockStats;
 };
 
-
+/**
+ * Updates the mock rating statistics for a specific movie.
+ * Handles create, update, and delete actions for simulated ratings.
+ * 
+ * @function updateMockRatingStats
+ * @param {string} movieId - The movie identifier
+ * @param {number} newRating - The new rating value
+ * @param {'create' | 'update' | 'delete'} action - The action performed on the rating
+ */
 export const updateMockRatingStats = (movieId: string, newRating: number, action: 'create' | 'update' | 'delete') => {
   const currentStats = mockDataCache.get(movieId);
   
@@ -45,7 +86,7 @@ export const updateMockRatingStats = (movieId: string, newRating: number, action
     newStats.averageRating = newRating;
     newStats.totalRatings = 1;
     mockDataCache.set(movieId, newStats);
-    console.log('🎭 [MOCK RATING] Creando nuevas estadísticas:', newStats);
+
     return;
   }
 
@@ -79,11 +120,9 @@ export const updateMockRatingStats = (movieId: string, newRating: number, action
   };
 
   mockDataCache.set(movieId, updatedStats);
-  console.log('🎭 [MOCK RATING] Actualizando estadísticas:', updatedStats);
 };
 
 
 export const clearMockCache = () => {
   mockDataCache.clear();
-  console.log('🎭 [MOCK RATING] Cache limpiado');
 };
