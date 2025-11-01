@@ -31,7 +31,6 @@ export const useRealtimeConnection = () => {
   });
 
   useEffect(() => {
-    console.log('🔌 [HOOK] Iniciando conexión en tiempo real...');
     realTimeService.connect();
 
     const statusInterval = setInterval(() => {
@@ -41,7 +40,6 @@ export const useRealtimeConnection = () => {
 
     return () => {
       clearInterval(statusInterval);
-      console.log('🔌 [HOOK] Limpiando conexión en tiempo real...');
     };
   }, []);
 

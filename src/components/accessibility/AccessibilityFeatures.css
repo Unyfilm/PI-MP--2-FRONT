@@ -256,7 +256,6 @@
   font-size: 10px !important;
 }
 
-/* Removed global * font-size overrides to avoid breaking icons/inputs */
 
 .font-small .unyfilm-card__title {
   font-size: 8px !important;
@@ -314,7 +313,6 @@
   font-size: 20px !important;
 }
 
-/* Removed global star override for large */
 
 .font-large .unyfilm-card__title {
   font-size: 16px !important;
@@ -328,7 +326,7 @@
 
 .font-large .unyfilm-header__search-input {
   font-size: 20px !important;
-  padding: 8px 12px 8px 56px !important; /* más espacio para la lupa */
+  padding: 8px 12px 8px 56px !important; 
 }
 
 .font-large .unyfilm-catalog__filter-select {
@@ -392,7 +390,6 @@
   font-size: 28px !important;
 }
 
-/* Removed global star override for extra-large */
 
 .font-extra-large .unyfilm-card__title {
   font-size: 20px !important;
@@ -527,7 +524,6 @@
   }
 }
 
-/* Focus outlines */
 .focus-visible *:focus {
   outline: 3px solid #6366f1 !important;
   outline-offset: 2px !important;

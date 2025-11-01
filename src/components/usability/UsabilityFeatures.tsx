@@ -225,13 +225,13 @@ export default function UsabilityFeatures() {
 
     
     const handleKeyDown = (event: KeyboardEvent) => {
-      // No interceptar si Ctrl está presionado (para permitir caracteres especiales como @ con Ctrl+Alt+2)
-      // o si el usuario está en un input/textarea (para permitir pegado, copiado, etc.)
+
+
       if (event.ctrlKey || (event.target && 'matches' in event.target && (event.target as Element).matches('input, textarea, [contenteditable]'))) {
         return;
       }
 
-      // Solo prevenir el comportamiento por defecto para las combinaciones específicas que manejamos
+
       const handledAltKeys = ['n', 's', 'm', '1', '2', '3', '4', '5', '0', 'p', 'f', 'r', 'g', 'o', 'y', 't', 'a', 'h', '/'];
       
       if (event.altKey && handledAltKeys.includes(event.key.toLowerCase())) {

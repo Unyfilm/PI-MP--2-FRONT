@@ -18,7 +18,6 @@ const SimpleRatingTest: React.FC<SimpleRatingTestProps> = ({ movieId, title }) =
 
   useEffect(() => {
     const handleEvent = () => {
-      console.log('🎯 [SIMPLE TEST] Evento recibido para:', movieId);
       setEventCount(prev => prev + 1);
     };
 

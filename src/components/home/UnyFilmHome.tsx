@@ -494,8 +494,8 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               <span className="hero-rating">
                 <Star size={16} />
                 {
-                  // Preferir stats del hook en tiempo real si ya llegaron
-                  (ratingStats && ratingStats.totalRatings > 0)
+
+(ratingStats && ratingStats.totalRatings > 0)
                     ? ratingStats.averageRating.toFixed(1)
                     : (heroRating.loading ? '…' : (heroRating.total > 0 ? heroRating.avg.toFixed(1) : '—'))
                 }

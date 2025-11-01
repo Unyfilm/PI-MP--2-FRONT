@@ -64,13 +64,10 @@ class RealTimeService {
    */
   connect() {
     if (this.isConnected || this.socket) {
-      console.log('🔄 [REALTIME] Ya conectado, ignorando nueva conexión');
       return;
     }
 
     try {
-      console.log('🔌 [REALTIME] Conectando al servidor WebSocket...');
-      
       const serverUrl = process.env.NODE_ENV === 'development' 
         ? 'http://localhost:3001' 
         : API_CONFIG.BASE_URL;
@@ -82,13 +79,11 @@ class RealTimeService {
       });
 
       this.socket.on('connect', () => {
-        console.log('✅ [REALTIME] Conectado al servidor WebSocket');
         this.isConnected = true;
         this.reconnectAttempts = 0;
       });
 
-      this.socket.on('disconnect', (reason) => {
-        console.log('❌ [REALTIME] Desconectado del servidor:', reason);
+      this.socket.on('disconnect', (_reason) => {
         this.isConnected = false;
         this.handleReconnection();
       });
@@ -99,12 +94,10 @@ class RealTimeService {
       });
 
       this.socket.on('rating-updated', (data: RatingUpdateEvent) => {
-        console.log('📡 [REALTIME] Rating actualizado recibido:', data);
         this.handleRatingUpdate(data);
       });
 
       this.socket.on('rating-stats-updated', (data: any) => {
-        console.log('📊 [REALTIME] Estadísticas actualizadas:', data);
         this.handleStatsUpdate(data);
       });
 
@@ -158,7 +151,6 @@ class RealTimeService {
    */
   private handleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log('❌ [REALTIME] Máximo de intentos de reconexión alcanzado');
       return;
     }
 
@@ -231,7 +223,6 @@ class RealTimeService {
    */
   disconnect() {
     if (this.socket) {
-      console.log('🔌 [REALTIME] Desconectando del servidor WebSocket...');
       this.socket.disconnect();
       this.socket = null;
       this.isConnected = false;

@@ -50,7 +50,6 @@ class CrossBrowserService {
 
   constructor() {
     this.browserId = this.generateBrowserId();
-    console.log('🌐 [CROSS BROWSER] Iniciado con ID:', this.browserId);
   }
 
 
@@ -67,11 +66,9 @@ class CrossBrowserService {
 
   startPolling() {
     if (this.isPolling) {
-      console.log('🔄 [CROSS BROWSER] Ya está haciendo polling');
       return;
     }
 
-    console.log('🔄 [CROSS BROWSER] Iniciando polling entre navegadores...');
     this.isPolling = true;
     this.lastProcessedTimestamp = Date.now();
 
@@ -87,7 +84,6 @@ class CrossBrowserService {
       this.pollTimer = null;
     }
     this.isPolling = false;
-    console.log('🔄 [CROSS BROWSER] Polling detenido');
   }
 
   
@@ -104,8 +100,6 @@ class CrossBrowserService {
       );
 
       if (newEvents.length > 0) {
-        console.log(`🌐 [CROSS BROWSER] Encontrados ${newEvents.length} eventos nuevos`);
-        
         newEvents.forEach(event => {
           this.processCrossBrowserEvent(event);
         });
@@ -119,8 +113,6 @@ class CrossBrowserService {
 
   
   private processCrossBrowserEvent(event: CrossBrowserEvent) {
-    console.log(`🌐 [CROSS BROWSER] Procesando evento de navegador ${event.browserId}:`, event);
-    
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
         movieId: event.movieId,
@@ -142,8 +134,6 @@ class CrossBrowserService {
       browserId: this.browserId
     };
 
-    console.log('🌐 [CROSS BROWSER] Enviando evento a otros navegadores:', event);
-
     try {
       const existingEvents = localStorage.getItem('cross-browser-events');
       let events: CrossBrowserEvent[] = existingEvents ? JSON.parse(existingEvents) : [];
@@ -155,8 +145,6 @@ class CrossBrowserService {
       }
 
       localStorage.setItem('cross-browser-events', JSON.stringify(events));
-
-      console.log('✅ [CROSS BROWSER] Evento enviado correctamente');
     } catch (error) {
       console.error('❌ [CROSS BROWSER] Error enviando evento:', error);
     }

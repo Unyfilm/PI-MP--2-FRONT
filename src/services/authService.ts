@@ -119,11 +119,11 @@ export interface LoginInput { email: string; password: string; }
  * for backward compatibility and will be normalized.
  */
 export interface RegisterInput {
-  // English (preferred)
+
   firstName?: string;
   lastName?: string;
   age?: string | number;
-  // Spanish (legacy)
+
   nombres?: string;
   apellidos?: string;
   edad?: string;

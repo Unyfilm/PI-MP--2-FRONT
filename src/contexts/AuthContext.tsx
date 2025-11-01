@@ -26,11 +26,11 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
   register: (userData: {
-    // English (preferred)
+
     firstName?: string;
     lastName?: string;
     age?: string | number;
-    // Spanish (legacy)
+
     nombres?: string;
     apellidos?: string;
     edad?: string;
@@ -417,7 +417,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isTokenValid = () => {
     if (!token) return false;
     
-    // If token looks like a JWT, validate expiration; otherwise consider it valid
+
     const isJwtLike = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/.test(token);
     if (!isJwtLike) {
       return true;
@@ -427,7 +427,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const currentTime = Math.floor(Date.now() / 1000);
       return payload.exp > currentTime;
     } catch (error) {
-      // In case of decode error assume valid to avoid blocking navigation
+
       return true;
     }
   };

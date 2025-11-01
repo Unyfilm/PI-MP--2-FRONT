@@ -3,10 +3,7 @@ import React, { useEffect } from 'react';
 
 const EventTester: React.FC = () => {
   useEffect(() => {
-    console.log('🧪 [EVENT TESTER] Iniciando test de eventos...');
-
     const testEvent = () => {
-      console.log('🧪 [EVENT TESTER] Emitiendo evento de prueba...');
       
       window.dispatchEvent(new CustomEvent('rating-updated', {
         detail: {
@@ -29,8 +26,7 @@ const EventTester: React.FC = () => {
       }));
     };
 
-    const handleTestEvent = (event: CustomEvent) => {
-      console.log('🧪 [EVENT TESTER] Evento recibido:', event.type, event.detail);
+    const handleTestEvent = (_event: CustomEvent) => {
     };
 
     window.addEventListener('rating-updated', handleTestEvent as EventListener);

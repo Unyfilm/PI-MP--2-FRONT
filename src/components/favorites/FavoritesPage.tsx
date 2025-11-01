@@ -64,7 +64,6 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
    */
   useEffect(() => {
     if (!isLoaded && favorites.length === 0 && !loading) {
-      console.log('📋 FavoritesPage: Cargando favoritos...');
       loadFavorites();
     }
   }, [isLoaded, favorites.length, loading, loadFavorites]);
@@ -188,16 +187,7 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ onMovieClick }) => {
               movieId={favorite.movieId._id}
               onMovieClick={async () => {
                 try {
-                  console.log('🎬 FavoritesPage - Obteniendo datos completos de la película:', favorite.movieId._id);
-                  
                   const fullMovieData = await movieService.getMovie(favorite.movieId._id);
-                  
-                  console.log('🎬 FavoritesPage - Datos completos obtenidos:', {
-                    movieId: fullMovieData._id,
-                    hasVideoUrl: !!fullMovieData.videoUrl,
-                    hasCloudinaryId: !!fullMovieData.cloudinaryVideoId,
-                    hasSynopsis: !!fullMovieData.synopsis
-                  });
                   
                   onMovieClick({
                     _id: fullMovieData._id,

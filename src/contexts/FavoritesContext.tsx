@@ -33,7 +33,7 @@ export const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }
   const { user } = useAuth();
   const lastUserIdRef = useRef<string | null>(null);
   
-  // Reload favorites when the authenticated user changes
+
   useEffect(() => {
     const currentUserId = user?._id?.toString() || null;
     

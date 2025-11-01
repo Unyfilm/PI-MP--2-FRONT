@@ -27,7 +27,7 @@ interface RegisterProps extends AuthProps {
 }
 
 export default function Register({ onRegister }: RegisterProps = {}) {
-    // Preferred English state (UI texts remain in Spanish)
+
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
     const [age, setAge] = useState<string>('');
@@ -55,7 +55,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
             firstName,
             lastName,
             age,
-            // legacy fields for compatibility (will be ignored by service if English is present)
+
             nombres: firstName,
             apellidos: lastName,
             edad: age,
@@ -90,7 +90,7 @@ export default function Register({ onRegister }: RegisterProps = {}) {
                 firstName,
                 lastName,
                 age,
-                // legacy copies
+
                 nombres: firstName,
                 apellidos: lastName,
                 edad: age,

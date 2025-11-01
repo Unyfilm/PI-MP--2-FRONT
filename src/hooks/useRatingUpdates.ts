@@ -50,10 +50,8 @@ export const useRatingUpdates = (
       const customEvent = event as CustomEvent;
       if (customEvent.detail?.movieId === movieId && !isProcessing) {
         isProcessing = true;
-        console.log('🔄 [HOOK] Evento de tiempo real recibido:', customEvent.detail);
         getMovieRatingStats(movieId)
           .then(stats => {
-            console.log('📊 [HOOK] Estadísticas actualizadas:', stats);
             onRatingUpdate(stats);
           })
           .catch(error => console.error('Error actualizando stats desde tiempo real:', error))
@@ -99,13 +97,13 @@ export const broadcastRatingUpdate = (
   rating: number,
   action: 'create' | 'update' | 'delete'
 ) => {
-  // Emitir evento de rating actualizado
+
   const ratingEvent = new CustomEvent('rating-updated', {
     detail: { movieId, rating, action, source: 'interactive-rating' }
   });
   window.dispatchEvent(ratingEvent);
   
-  // También emitir evento de estadísticas actualizadas (se cargarán automáticamente)
+
   const statsEvent = new CustomEvent('rating-stats-updated', {
     detail: { movieId, source: 'interactive-rating' }
   });

@@ -63,7 +63,7 @@ export const useFavorites = (): UseFavoritesReturn => {
   const [isLoaded, setIsLoaded] = useState(false);
   const loadingRef = useRef(false); 
 
-  // Load favorites from API
+
   const loadFavorites = useCallback(async () => {
     if (loadingRef.current) {
       return;
@@ -93,7 +93,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  // Add a movie to favorites
+
   const addToFavorites = useCallback(async (
     movieId: string, 
     notes: string = '', 
@@ -130,7 +130,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  // Remove a movie from favorites
+
   const removeFromFavorites = useCallback(async (
     favoriteId: string
   ): Promise<{ success: boolean; message?: string }> => {
@@ -159,7 +159,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  // Update notes/rating for a favorite
+
   const updateFavorite = useCallback(async (
     favoriteId: string,
     updates: { notes?: string; rating?: number }
@@ -191,7 +191,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, []);
 
-  // Check if a movie is favorite (prefer local state if already loaded)
+
   const isMovieInFavorites = useCallback(async (movieId: string): Promise<boolean> => {
     try {
       if (isLoaded && favorites.length >= 0) {
@@ -206,7 +206,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, [favorites, isLoaded]);
 
-  // Fetch a favorite by id
+
   const getFavoriteById = useCallback(async (favoriteId: string): Promise<Favorite | null> => {
     try {
       const result = await favoriteService.getFavoriteById(favoriteId);
@@ -224,7 +224,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     loadingRef.current = false;
   }, []);
 
-  // Aggregate simple stats
+
   const getStats = useCallback(() => {
     const total = favorites.length;
     const byGenre: Record<string, number> = {};
@@ -238,7 +238,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     return { total, byGenre };
   }, [favorites]);
 
-  // Auto-load favorites if token exists and state is empty
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token && !isLoaded && !loadingRef.current && favorites.length === 0) {
@@ -246,7 +246,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     }
   }, [isLoaded, favorites.length]); 
 
-  // Poll for token/user changes (basic resilience)
+
   useEffect(() => {
     const checkTokenChange = () => {
       const token = localStorage.getItem('token');
@@ -273,7 +273,7 @@ export const useFavorites = (): UseFavoritesReturn => {
     return () => clearInterval(interval);
   }, [isLoaded, loadFavorites]);
 
-  // React to storage changes (multi-tab)
+
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'token') {

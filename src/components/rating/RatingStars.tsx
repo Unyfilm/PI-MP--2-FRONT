@@ -44,7 +44,7 @@ interface RatingStarsProps {
    * @returns {JSX.Element[]} Array of rendered star elements.
    */
 const RatingStars: React.FC<RatingStarsProps> = ({
-  movieId,
+  movieId: _movieId,
   readonly = false,
   onRatingChange
 }) => {
@@ -55,7 +55,6 @@ const RatingStars: React.FC<RatingStarsProps> = ({
     if (readonly) return;
     
     setUserRating(rating);
-    console.log(`Calificando película ${movieId} con ${rating} estrellas`);
     
     if (onRatingChange) {
       onRatingChange(rating);

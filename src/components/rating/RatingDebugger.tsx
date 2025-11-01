@@ -14,7 +14,6 @@ const RatingDebugger: React.FC = () => {
 
   useEffect(() => {
     const handleRatingUpdate = (event: CustomEvent) => {
-      console.log('🐛 [DEBUG] Evento rating-updated recibido:', event.detail);
       setEvents(prev => [{
         id: `rating-${Date.now()}`,
         type: 'rating-updated',
@@ -25,7 +24,6 @@ const RatingDebugger: React.FC = () => {
     };
 
     const handleStatsUpdate = (event: CustomEvent) => {
-      console.log('🐛 [DEBUG] Evento rating-stats-updated recibido:', event.detail);
       setEvents(prev => [{
         id: `stats-${Date.now()}`,
         type: 'rating-stats-updated',
