@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Eye, EyeOff, Keyboard, Mouse, Sun } from 'lucide-react';
 import './AccessibilityFeatures.css';
 import { useLocation } from 'react-router-dom';
@@ -66,13 +66,19 @@ import { useLocation } from 'react-router-dom';
 export default function AccessibilityFeatures() {
   const location = useLocation();
   const isPlayerRoute = location.pathname.startsWith('/player');
+  const isPublicRoute = location.pathname === '/'
+    || location.pathname.startsWith('/login')
+    || location.pathname.startsWith('/register')
+    || location.pathname.startsWith('/recover')
+    || location.pathname.startsWith('/reset-password');
 
   const [highContrast, setHighContrast] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [fontSize, setFontSize] = useState('normal');
   const [focusVisible, setFocusVisible] = useState(true);
-  const [skipLinks, setSkipLinks] = useState(false); // default: desactivado
+  const [skipLinks, setSkipLinks] = useState(false); // default: disabled
   const [showFontChangeNotification, setShowFontChangeNotification] = useState(false);
+  const fontNotifTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const savedPrefs = localStorage.getItem('unyfilm-accessibility');
@@ -82,7 +88,7 @@ export default function AccessibilityFeatures() {
       setReducedMotion(prefs.reducedMotion || false);
       setFontSize(prefs.fontSize || 'normal');
       setFocusVisible(prefs.focusVisible !== false);
-      setSkipLinks(prefs.skipLinks === true); // solo true si fue guardado explícitamente
+      setSkipLinks(prefs.skipLinks === true); // only true if explicitly saved
     }
   }, []);
 
@@ -91,180 +97,135 @@ export default function AccessibilityFeatures() {
   }, [highContrast, reducedMotion, fontSize, focusVisible, skipLinks]);
 
   useEffect(() => {
+    if (fontNotifTimerRef.current) {
+      clearTimeout(fontNotifTimerRef.current);
+      fontNotifTimerRef.current = null;
+    }
+
     if (fontSize !== 'normal') {
       setShowFontChangeNotification(true);
-      const timer = setTimeout(() => {
+      fontNotifTimerRef.current = window.setTimeout(() => {
         setShowFontChangeNotification(false);
-      }, 3000);
-      return () => clearTimeout(timer);
+        fontNotifTimerRef.current = null;
+      }, 2000);
+    } else {
+      setShowFontChangeNotification(false);
     }
+
+    return () => {
+      if (fontNotifTimerRef.current) {
+        clearTimeout(fontNotifTimerRef.current);
+        fontNotifTimerRef.current = null;
+      }
+    };
   }, [fontSize]);
 
- 
   const applyAccessibilityFeatures = () => {
+    // Preserve scroll position to avoid layout jump when toggling classes
+    const x = window.scrollX;
+    const y = window.scrollY;
+
     const root = document.documentElement;
-    
-    if (highContrast) {
-      root.classList.add('high-contrast');
-    } else {
-      root.classList.remove('high-contrast');
-    }
-
-    if (reducedMotion) {
-      root.classList.add('reduced-motion');
-    } else {
-      root.classList.remove('reduced-motion');
-    }
-
+    if (highContrast) root.classList.add('high-contrast'); else root.classList.remove('high-contrast');
+    if (reducedMotion) root.classList.add('reduced-motion'); else root.classList.remove('reduced-motion');
     root.classList.remove('font-small', 'font-normal', 'font-large', 'font-extra-large');
     root.classList.add(`font-${fontSize}`);
+    if (focusVisible) root.classList.add('focus-visible'); else root.classList.remove('focus-visible');
 
-    if (focusVisible) {
-      root.classList.add('focus-visible');
-    } else {
-      root.classList.remove('focus-visible');
-    }
-
-    const prefs = {
-      highContrast,
-      reducedMotion,
-      fontSize,
-      focusVisible,
-      skipLinks
-    };
+    const prefs = { highContrast, reducedMotion, fontSize, focusVisible, skipLinks };
     localStorage.setItem('unyfilm-accessibility', JSON.stringify(prefs));
+
+    // Restore scroll position on next frame
+    requestAnimationFrame(() => {
+      window.scrollTo(x, y);
+    });
   };
 
- 
-  // Desactivar atajos cuando estamos en el reproductor
+  // Disable shortcuts on player and public routes
   useEffect(() => {
-    if (isPlayerRoute) return;
+    if (isPlayerRoute || isPublicRoute) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // No interceptar si Ctrl está presionado (para permitir caracteres especiales como @ con Ctrl+Alt+2)
-      // o si el usuario está en un input/textarea (para permitir pegado, copiado, etc.)
       if (e.ctrlKey || (e.target && 'matches' in e.target && (e.target as Element).matches('input, textarea, [contenteditable]'))) {
         return;
       }
-
-      // Solo prevenir el comportamiento por defecto para las combinaciones específicas que manejamos
       const handledKeys = ['n', 's', 'a', 'h', 'p', 'f', 'r', 'v', 'o'];
-
       if (e.altKey && handledKeys.includes(e.key.toLowerCase())) {
         e.preventDefault();
       }
-
       if (e.key === 'Tab' && e.target === document.body) {
         const mainContent = document.querySelector('.main-content') as HTMLElement;
         if (mainContent) {
           mainContent.focus();
         }
       }
-
-      if (e.altKey && e.key === 'n') { 
+      if (e.altKey && e.key === 'n') {
         const sidebar = document.querySelector('.unyfilm-sidebar') as HTMLElement;
-        if (sidebar) {
-          sidebar.focus();
-        }
+        if (sidebar) sidebar.focus();
       }
-
-      if (e.altKey && e.key === 's') { 
+      if (e.altKey && e.key === 's') {
         const searchInput = document.querySelector('#search-input') as HTMLElement;
-        if (searchInput) {
-          searchInput.focus();
-        }
+        if (searchInput) searchInput.focus();
       }
-
-      if (e.altKey && e.key === 'a') { 
+      if (e.altKey && e.key === 'a') {
         toggleAccessibilityPanel();
       }
-
-      if (e.altKey && e.key === 'h') { 
+      if (e.altKey && e.key === 'h') {
         const helpBtn = document.querySelector('.usability-help-btn') as HTMLElement;
-        if (helpBtn) {
-          helpBtn.click();
-        }
+        if (helpBtn) helpBtn.click();
       }
-
       if (e.key === 'Escape') {
         const panel = document.querySelector('.accessibility-panel');
         if (panel && panel.classList.contains('accessibility-panel--visible')) {
           panel.classList.remove('accessibility-panel--visible');
         }
-
         const helpModal = document.querySelector('.usability-help-modal');
         if (helpModal) {
           const closeBtn = helpModal.querySelector('.usability-help-close') as HTMLElement;
-          if (closeBtn) {
-            closeBtn.click();
-          }
+          if (closeBtn) closeBtn.click();
         }
-
         const player = document.querySelector('.unyfilm-player-page');
         if (player) {
           const closeBtn = player.querySelector('.unyfilm-player-close-btn') as HTMLElement;
-          if (closeBtn) {
-            closeBtn.click();
-          }
+          if (closeBtn) closeBtn.click();
         }
-
         const profileDropdown = document.querySelector('.unyfilm-dropdown--visible');
         if (profileDropdown) {
           const profileBtn = document.querySelector('.unyfilm-header__profile-btn') as HTMLElement;
-          if (profileBtn) {
-            profileBtn.click();
-          }
+          if (profileBtn) profileBtn.click();
         }
       }
-
-      if (e.altKey && e.key === 'p') { 
+      if (e.altKey && e.key === 'p') {
         const video = document.querySelector('.unyfilm-video-element') as HTMLVideoElement;
         if (video) {
-          if (video.paused) {
-            video.play();
-          } else {
-            video.pause();
-          }
+          if (video.paused) video.play(); else video.pause();
         }
       }
-
-      if (e.altKey && e.key === 'f') { 
+      if (e.altKey && e.key === 'f') {
         const videoContainer = document.querySelector('.unyfilm-video-container');
         if (videoContainer) {
           const fullscreenBtn = videoContainer.querySelector('button[aria-label*="pantalla completa"]') as HTMLElement;
-          if (fullscreenBtn) {
-            fullscreenBtn.click();
-          }
+          if (fullscreenBtn) fullscreenBtn.click();
         }
       }
-
-      if (e.altKey && e.key === 'r') { 
+      if (e.altKey && e.key === 'r') {
         const resetBtn = document.querySelector('.unyfilm-catalog__reset-btn') as HTMLElement;
-        if (resetBtn) {
-          resetBtn.click();
-        }
+        if (resetBtn) resetBtn.click();
       }
-
-      if (e.altKey && e.key === 'v') { 
+      if (e.altKey && e.key === 'v') {
         const viewToggle = document.querySelector('.unyfilm-catalog__view-toggle') as HTMLElement;
-        if (viewToggle) {
-          viewToggle.click();
-        }
+        if (viewToggle) viewToggle.click();
       }
-
-      if (e.altKey && e.key === 'o') { 
+      if (e.altKey && e.key === 'o') {
         const sortBtn = document.querySelector('.unyfilm-catalog__sort-btn') as HTMLElement;
-        if (sortBtn) {
-          sortBtn.click();
-        }
+        if (sortBtn) sortBtn.click();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isPlayerRoute]);
+  }, [isPlayerRoute, isPublicRoute]);
 
-  
   const toggleAccessibilityPanel = () => {
     const panel = document.querySelector('.accessibility-panel');
     if (panel) {
@@ -272,12 +233,11 @@ export default function AccessibilityFeatures() {
     }
   };
 
-  // En la ruta del reproductor no renderizamos el botón ni los skip links para evitar tabulación externa
-  const shouldRenderUi = !isPlayerRoute;
+  // Do not render UI on player or public routes
+  const shouldRenderUi = !(isPlayerRoute || isPublicRoute);
 
   return (
     <>
-      
       {shouldRenderUi && skipLinks && (
         <div className="skip-links">
           <a 
@@ -339,7 +299,6 @@ export default function AccessibilityFeatures() {
 
           <div className="accessibility-controls">
             <h3>Opciones de Accesibilidad</h3>
-            
             <div className="accessibility-control">
               <label>
                 <input
@@ -353,7 +312,6 @@ export default function AccessibilityFeatures() {
                 </span>
               </label>
             </div>
-
             <div className="accessibility-control">
               <label>
                 <input
@@ -367,7 +325,6 @@ export default function AccessibilityFeatures() {
                 </span>
               </label>
             </div>
-
             <div className="accessibility-control">
               <label>
                 <span className="control-label">
@@ -389,7 +346,6 @@ export default function AccessibilityFeatures() {
                 </select>
               </label>
             </div>
-
             <div className="accessibility-control">
               <label>
                 <input
@@ -403,7 +359,6 @@ export default function AccessibilityFeatures() {
                 </span>
               </label>
             </div>
-
             <div className="accessibility-control">
               <label>
                 <input

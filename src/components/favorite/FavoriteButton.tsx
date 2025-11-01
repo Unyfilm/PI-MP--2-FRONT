@@ -1,4 +1,7 @@
-
+/**
+ * FavoriteButton component
+ * Toggles a movie as favorite using FavoritesContext with loading/animation states.
+ */
 
 import React, { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';

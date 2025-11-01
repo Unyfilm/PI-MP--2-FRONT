@@ -1,3 +1,8 @@
+/**
+ * ResetPassword component
+ * Confirms a password change using a token from the URL query string.
+ * Performs strong password validation before calling the API.
+ */
 import { useState, useEffect } from 'react';
 import { Lock, Check, CheckCircle } from 'lucide-react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';

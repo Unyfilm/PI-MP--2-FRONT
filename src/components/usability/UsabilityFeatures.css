@@ -28,6 +28,12 @@
   z-index: 1001;
 }
 
+.usability-help-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0; /* evita que el ícono desaparezca con fuentes grandes */
+}
+
 .usability-help-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);

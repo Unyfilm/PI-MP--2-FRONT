@@ -6,7 +6,7 @@ import type { Comment, CreateCommentData, UpdateCommentData } from '../../types'
 import './MovieComments.scss';
 
 /**
- * Props para el componente MovieComments
+ * MovieComments props
  * @interface MovieCommentsProps
  */
 interface MovieCommentsProps {
@@ -15,14 +15,15 @@ interface MovieCommentsProps {
 }
 
 /**
- * Componente para mostrar y gestionar comentarios de una película específica.
- * Permite crear, editar, eliminar y visualizar comentarios con paginación.
- * Solo los usuarios autenticados pueden crear comentarios, y solo el autor puede editar/eliminar sus propios comentarios.
- * 
+ * MovieComments component
+ * Renders and manages comments for a specific movie: create, edit, delete and list
+ * with pagination. Only authenticated users can create comments and only the author
+ * can edit or delete their own comments.
+ *
  * @component
- * @param {MovieCommentsProps} props - Las props del componente
- * @returns {JSX.Element} El componente de comentarios renderizado
- * 
+ * @param {MovieCommentsProps} props - Component props
+ * @returns {JSX.Element} Rendered comments UI
+ *
  * @example
  * ```tsx
  * <MovieComments 
@@ -116,17 +117,8 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
 
 
   /**
-   * Carga los comentarios de la película desde el servidor.
-   * Maneja la paginación y actualiza el estado de los comentarios.
-   * 
+   * Load comments from server with pagination, updating local state
    * @async
-   * @function loadComments
-   * @returns {Promise<void>} No retorna valor, actualiza el estado
-   * 
-   * @description
-   * - Si es la primera página, reemplaza todos los comentarios
-   * - Si es una página posterior, agrega los comentarios a los existentes
-   * - Actualiza el total de comentarios y el estado de paginación
    */
   const loadComments = async () => {
     if (!movieId) return;
@@ -159,20 +151,8 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Maneja el envío de un nuevo comentario.
-   * Valida la autenticación, el contenido y la longitud del comentario.
-   * 
+   * Submit a new comment. Validates auth, emptiness and length.
    * @async
-   * @function handleSubmitComment
-   * @param {React.FormEvent} e - Evento del formulario
-   * @returns {Promise<void>} No retorna valor, actualiza el estado
-   * 
-   * @description
-   * - Verifica que el usuario esté autenticado
-   * - Valida que el comentario no esté vacío
-   * - Valida que no exceda 200 caracteres
-   * - Crea el comentario y lo agrega al inicio de la lista
-   * - Actualiza el contador total de comentarios
    */
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,11 +198,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Inicia el modo de edición para un comentario específico.
-   * 
-   * @function handleEditComment
-   * @param {Comment} comment - El comentario a editar
-   * @returns {void}
+   * Start editing mode for a given comment
    */
   const handleEditComment = (comment: Comment) => {
     const id = (comment as any)?._id || (comment as any)?.id;
@@ -231,10 +207,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Cancela el modo de edición y limpia el contenido editado.
-   * 
-   * @function handleCancelEdit
-   * @returns {void}
+   * Cancel edit mode and clear edit buffer
    */
   const handleCancelEdit = () => {
     setEditingComment(null);
@@ -242,19 +215,8 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Actualiza un comentario existente con el nuevo contenido.
-   * Valida el contenido y la longitud antes de enviar la actualización.
-   * 
+   * Update comment content after validation
    * @async
-   * @function handleUpdateComment
-   * @param {string} commentId - ID del comentario a actualizar
-   * @returns {Promise<void>} No retorna valor, actualiza el estado
-   * 
-   * @description
-   * - Valida que el contenido no esté vacío
-   * - Valida que no exceda 200 caracteres
-   * - Actualiza el comentario en la lista local
-   * - Sale del modo de edición
    */
   const handleUpdateComment = async (commentId: string) => {
     if (!editContent.trim()) {
@@ -297,11 +259,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Inicia el proceso de eliminación de un comentario mostrando el modal de confirmación.
-   * 
-   * @function handleDeleteComment
-   * @param {string} commentId - ID del comentario a eliminar
-   * @returns {void}
+   * Open confirmation modal to delete a comment
    */
   const handleDeleteComment = async (commentId: string) => {
     setCommentToDelete(commentId);
@@ -309,17 +267,8 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Confirma y ejecuta la eliminación del comentario seleccionado.
-   * 
+   * Confirm deletion and remove comment
    * @async
-   * @function confirmDeleteComment
-   * @returns {Promise<void>} No retorna valor, actualiza el estado
-   * 
-   * @description
-   * - Elimina el comentario del servidor
-   * - Remueve el comentario de la lista local
-   * - Actualiza el contador total de comentarios
-   * - Cierra el modal de confirmación
    */
   const confirmDeleteComment = async () => {
     if (!commentToDelete) return;
@@ -331,7 +280,10 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       const response = await commentService.deleteComment(commentToDelete);
       
       if (response.success) {
-        setComments(prev => (prev || []).filter(comment => comment._id !== commentToDelete));
+        setComments(prev => (prev || []).filter((comment) => {
+          const cid = (comment as any)?._id || (comment as any)?.id;
+          return String(cid) !== String(commentToDelete);
+        }));
         setTotalComments(prev => prev - 1);
         setShowDeleteModal(false);
         setCommentToDelete(null);
@@ -346,10 +298,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Cancela la eliminación del comentario y cierra el modal.
-   * 
-   * @function cancelDeleteComment
-   * @returns {void}
+   * Cancel deletion and close modal
    */
   const cancelDeleteComment = () => {
     setShowDeleteModal(false);
@@ -357,11 +306,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Carga más comentarios incrementando la página actual.
-   * Solo funciona si hay más comentarios disponibles y no está cargando.
-   * 
-   * @function loadMoreComments
-   * @returns {void}
+   * Load more comments by increasing current page
    */
   const loadMoreComments = () => {
     if (hasMore && !loading) {
@@ -370,35 +315,28 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
   };
 
   /**
-   * Obtiene la información del usuario para un comentario específico.
-   * Maneja el caché de usuarios y extrae información de objetos userId.
-   * 
-   * @function getUserInfo
-   * @param {any} userId - ID del usuario o objeto con información del usuario
-   * @returns {Object} Información del usuario con _id, firstName, lastName y username
-   * 
-   * @description
-   * - Si userId es un objeto, extrae el ID y la información disponible
-   * - Verifica el caché local antes de procesar
-   * - Si es el usuario actual, usa su información del contexto
-   * - Si no hay información, devuelve 'Error' como fallback
+   * Get user info from cache/context/object for a given userId
    */
   const getUserInfo = (userId: any) => {
-    let actualUserId: string;
+    if (!userId) {
+      return { _id: 'unknown', firstName: 'Usuario', lastName: '', username: 'Usuario' };
+    }
+
+    let actualUserId: string = '';
     let userData: any = {};
     
-    if (typeof userId === 'object') {
+    if (userId && typeof userId === 'object') {
       actualUserId = (userId as any)._id || (userId as any).id || '';
       userData = userId;
     } else {
-      actualUserId = userId;
+      actualUserId = String(userId);
     }
     
-    if (userCache[actualUserId]) {
+    if (actualUserId && userCache[actualUserId]) {
       return userCache[actualUserId];
     }
     
-    if (user && String(user._id) === String(actualUserId)) {
+    if (user && actualUserId && String(user._id) === String(actualUserId)) {
       const userInfo = {
         _id: user._id,
         firstName: user.firstName,
@@ -409,38 +347,29 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
       return userInfo;
     }
     
-    if (userData && Object.keys(userData).length > 0) {
+    if (userData && typeof userData === 'object' && Object.keys(userData).length > 0) {
       const userInfo = {
-        _id: actualUserId,
-        firstName: userData.firstName || '',
+        _id: actualUserId || 'unknown',
+        firstName: userData.firstName || 'Usuario',
         lastName: userData.lastName || '',
-        username: userData.username || (userData.firstName + (userData.lastName || '')) || 'Error'
+        username: userData.username || (userData.firstName ? (userData.firstName + (userData.lastName || '')) : 'Usuario')
       };
-      setUserCache(prev => ({ ...prev, [actualUserId]: userInfo }));
+      if (actualUserId) {
+        setUserCache(prev => ({ ...prev, [actualUserId]: userInfo }));
+      }
       return userInfo;
     }
     
     return {
-      _id: actualUserId,
-      firstName: 'Error',
+      _id: actualUserId || 'unknown',
+      firstName: 'Usuario',
       lastName: '',
-      username: 'Error'
+      username: 'Usuario'
     };
   };
 
   /**
-   * Formatea una fecha en un formato legible en español.
-   * Muestra tiempo relativo para fechas recientes y fecha absoluta para fechas antiguas.
-   * 
-   * @function formatDate
-   * @param {string} dateString - Fecha en formato ISO string
-   * @returns {string} Fecha formateada en español
-   * 
-   * @description
-   * - Menos de 1 hora: "Hace unos minutos"
-   * - Menos de 24 horas: "Hace X hora(s)"
-   * - Menos de 48 horas: "Ayer"
-   * - Más de 48 horas: Fecha en formato "DD MMM YYYY"
+   * Format date into Spanish-readable string (relative for recent, absolute otherwise)
    */
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -462,38 +391,38 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
     }
   };
 
-  /**
-   * Verifica si el usuario actual puede editar un comentario específico.
-   * Solo el autor del comentario puede editarlo.
-   * 
-   * @function canEditComment
-   * @param {Comment} comment - El comentario a verificar
-   * @returns {boolean} true si el usuario puede editar el comentario, false en caso contrario
-   */
+  
   const canEditComment = (comment: Comment) => {
     if (!isAuthenticated || !user) return false;
     
-    
-    let currentUserId = user._id;
-    
+
+    let currentUserId: string | null = user._id ? String(user._id) : null;
     
     if (!currentUserId) {
       const token = localStorage.getItem('token') || localStorage.getItem('unyfilm-token');
       if (token) {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
-          currentUserId = payload.userId || payload.id || payload._id;
+          currentUserId = payload?.userId || payload?.id || payload?._id || null;
+          currentUserId = currentUserId ? String(currentUserId) : null;
         } catch (error) {
-          
+          currentUserId = null;
         }
       }
     }
     
-    
     if (!currentUserId) return false;
     
-    const actualUserId = typeof comment.userId === 'object' ? (comment.userId as any)._id || (comment.userId as any).id : comment.userId;
-    return String(actualUserId) === String(currentUserId);
+    const rawUserId: any = (comment as any)?.userId ?? null;
+    let authorId: string | null = null;
+    if (rawUserId && typeof rawUserId === 'object') {
+      authorId = rawUserId._id || rawUserId.id || null;
+    } else if (rawUserId) {
+      authorId = String(rawUserId);
+    }
+    if (!authorId) return false;
+    
+    return String(authorId) === String(currentUserId);
   };
 
   return (
@@ -577,7 +506,7 @@ const MovieComments: React.FC<MovieCommentsProps> = ({ movieId, movieTitle }) =>
         ) : (
           <>
             {(comments || []).map((comment, index) => {
-              const userInfo = getUserInfo(comment.userId);
+              const userInfo = getUserInfo((comment as any)?.userId ?? null);
               const commentId = (comment as any)?._id || (comment as any)?.id;
               const stableKey = commentId || `${index}-${userInfo?._id || 'comment'}`;
               
