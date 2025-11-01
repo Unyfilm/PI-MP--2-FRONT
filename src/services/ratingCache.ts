@@ -1,11 +1,31 @@
 
-
+/**
+ * Represents a cached entry for movie rating statistics.
+ *
+ * @interface CachedRatingStats
+ * @property {any} data - The cached rating statistics data.
+ * @property {number} timestamp - The time (in milliseconds) when the data was cached.
+ * @property {number} ttl - The time-to-live duration (in milliseconds) for this cached entry.
+ */
 interface CachedRatingStats {
   data: any;
   timestamp: number;
   ttl: number; 
 }
 
+/**
+ * A simple in-memory cache for storing movie rating statistics.
+ * Each entry has a time-to-live (TTL) after which it expires.
+ *
+ * @class RatingCache
+ * @example
+ * ```ts
+ * const stats = { average: 4.2, totalRatings: 25 };
+ * ratingCache.set("movie123", stats);
+ * const cached = ratingCache.get("movie123");
+ * console.log(cached); // { average: 4.2, totalRatings: 25 }
+ * ```
+ */
 class RatingCache {
   private cache = new Map<string, CachedRatingStats>();
   private readonly DEFAULT_TTL = 5 * 60 * 1000; 

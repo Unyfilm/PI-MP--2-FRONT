@@ -1,3 +1,18 @@
+/**
+ * @file useRealtimeConnection.ts
+ * @description Custom React Hook for managing and monitoring real-time WebSocket connection status.
+ * It connects to the real-time service, tracks reconnection attempts, and provides
+ * live updates on connection health for use across the application.
+ *
+ * This hook automatically initiates a connection when mounted and periodically
+ * updates its internal state based on the connection's status.
+ *
+ * @module Hooks/useRealtimeConnection
+ * 
+ * @author
+ * Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta,
+ * Jerson Otero, Julian Mosquera
+ */
 import { useEffect, useState } from 'react';
 import { realTimeService, getRealTimeStatus } from '../services/realtimeService';
 

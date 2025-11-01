@@ -1,17 +1,58 @@
-
-
 import React, { useEffect } from 'react';
 import { Heart, Trash2, Star, Calendar, Clock } from 'lucide-react';
 import { useFavoritesContext } from '../../contexts/FavoritesContext';
 import { useAuth } from '../../contexts/AuthContext';
 import './FavoritesList.css';
 
+/**
+ * @file FavoritesList.tsx
+ * @description
+ * React component that displays a user's list of favorite movies.
+ * It allows authenticated users to view, reload, and remove their favorite movies.
+ *
+ * The component interacts with the `FavoritesContext` to load and manage the user's
+ * favorites, and with the `AuthContext` to ensure access is restricted to logged-in users.
+ *
+ * Includes formatted metadata such as rating, genre, duration, and date added.
+ *
+ * @module FavoritesList
+ */
+
+/**
+ * @interface FavoritesListProps
+ * @description
+ * Defines the props accepted by the `FavoritesList` component.
+ *
+ * @property {() => void} [onClose] - Optional callback triggered when the close button is clicked.
+ * @property {number} [maxItems=10] - Maximum number of favorite movies displayed.
+ * @property {boolean} [showActions=true] - Whether to display the remove (delete) button.
+ */
 interface FavoritesListProps {
   onClose?: () => void;
   maxItems?: number;
   showActions?: boolean;
 }
 
+/**
+ * @function FavoritesList
+ * @description
+ * Renders a list of the user's favorite movies with metadata and actions.
+ * Handles states such as loading, error, and empty favorites.
+ *
+ * Automatically fetches favorites from context when a user logs in and none are loaded.
+ *
+ * @param {FavoritesListProps} props - The component's properties.
+ * @returns {JSX.Element} Rendered favorites list with UI states.
+ *
+ * @example
+ * ```tsx
+ * <FavoritesList
+ *   onClose={() => setShowFavorites(false)}
+ *   maxItems={8}
+ *   showActions={true}
+ * />
+ * ```
+ */
 const FavoritesList: React.FC<FavoritesListProps> = ({
   onClose,
   maxItems = 10,
@@ -27,6 +68,17 @@ const FavoritesList: React.FC<FavoritesListProps> = ({
     }
   }, [user, favorites.length, loading, loadFavorites]);
 
+  /**
+   * @function handleRemoveFavorite
+   * @description
+   * Handles the removal of a movie from the favorites list.
+   * Confirms the action, calls the context removal function, and logs the result.
+   *
+   * @async
+   * @param {string} favoriteId - The unique ID of the favorite entry to remove.
+   * @param {string} movieTitle - The title of the movie to display in the confirmation message.
+   * @returns {Promise<void>}
+   */
   const handleRemoveFavorite = async (favoriteId: string, movieTitle: string) => {
     if (!confirm(`¿Eliminar "${movieTitle}" de favoritos?`)) {
       return;
@@ -46,6 +98,14 @@ const FavoritesList: React.FC<FavoritesListProps> = ({
     }
   };
 
+  /**
+   * @function formatDate
+   * @description
+   * Formats a date string into a localized human-readable format.
+   *
+   * @param {string} dateString - ISO date string to format.
+   * @returns {string} Formatted date (e.g., "28 oct 2025").
+   */
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -55,6 +115,14 @@ const FavoritesList: React.FC<FavoritesListProps> = ({
     });
   };
 
+  /**
+   * @function formatDuration
+   * @description
+   * Converts a movie duration in minutes into hours and minutes.
+   *
+   * @param {number} minutes - Duration in minutes.
+   * @returns {string} Duration string (e.g., "2h 15m" or "45m").
+   */
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;

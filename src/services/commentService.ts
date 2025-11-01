@@ -12,7 +12,7 @@ const ENV_BASE = (ENV_API_CONFIG.BASE_URL || 'http://localhost:5000').replace(/\
 const ROOT_URL = ENV_BASE.replace(/\/api$/, '');
 
 /**
- * Configuración de la API para el servicio de comentarios
+ * API configuration for the Comment Service
  * @constant {Object} API_CONFIG
  */
 const API_CONFIG = {
@@ -22,21 +22,21 @@ const API_CONFIG = {
 };
 
 /**
- * Función utilitaria para realizar peticiones HTTP con manejo de errores y timeout.
- * Incluye autenticación automática y manejo de respuestas JSON.
+ * Utility function to perform HTTP requests with error handling and timeout.
+ * Automatically includes authentication headers and handles JSON responses.
  * 
  * @async
  * @function makeRequest
- * @template T - Tipo de datos esperados en la respuesta
- * @param {string} url - URL de la petición
- * @param {RequestInit} options - Opciones adicionales para la petición
- * @returns {Promise<ApiResponse<T>>} Respuesta de la API con tipado genérico
+ * @template T - Expected response data type
+ * @param {string} url - Request URL
+ * @param {RequestInit} [options={}] - Additional request options
+ * @returns {Promise<ApiResponse<T>>} Typed API response
  * 
  * @description
- * - Configura timeout automático
- * - Incluye token de autenticación del localStorage
- * - Maneja respuestas JSON y de texto
- * - Proporciona manejo consistente de errores
+ * - Sets up an automatic timeout
+ * - Includes authentication token from localStorage
+ * - Handles JSON and plain text responses
+ * - Provides consistent error handling
  */
 const makeRequest = async <T = any>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
   const controller = new AbortController();
@@ -81,15 +81,24 @@ const makeRequest = async <T = any>(url: string, options: RequestInit = {}): Pro
 };
 
 /**
- * Servicio para gestionar operaciones CRUD de comentarios.
- * Implementa la interfaz CommentService con métodos para crear, leer, actualizar y eliminar comentarios.
- * 
+ * Comment Service
  * @constant {CommentService} commentService
+ * @description
+ * Service to manage CRUD operations for comments.
+ * Implements the CommentService interface with methods to create, read,
+ * update, and delete comments.
+ * 
+ * @author
+ *  - Hernan Garcia  
+ *  - Juan Camilo Jimenez  
+ *  - Julieta Arteta  
+ *  - Jerson Otero  
+ *  - Julian Mosquera
  */
 export const commentService: CommentService = {
   /**
-   * Crea un nuevo comentario para una película específica.
-   * 
+   * Creates a new comment for a specific movie.
+   *
    * @async
    * @function createComment
    * @param {CreateCommentData} data - Datos del comentario a crear
@@ -102,14 +111,14 @@ export const commentService: CommentService = {
     }),
 
   /**
-   * Obtiene comentarios públicos de una película específica con paginación.
+   * Retrieves comments for a specific movie with pagination.
    * 
    * @async
    * @function getCommentsByMovie
-   * @param {string} movieId - ID de la película
-   * @param {number} [page=1] - Número de página
-   * @param {number} [limit=10] - Cantidad de comentarios por página
-   * @returns {Promise<ApiResponse<CommentPaginationResponse>>} Respuesta con comentarios paginados
+   * @param {string} movieId - ID of the movie
+   * @param {number} [page=1] - Page number
+   * @param {number} [limit=10] - Number of comments per page
+   * @returns {Promise<ApiResponse<CommentPaginationResponse>>} Response with paginated comments
    */
   getCommentsByMovie: (movieId: string, page: number = 1, limit: number = 10): Promise<ApiResponse<CommentPaginationResponse>> => 
     makeRequest<CommentPaginationResponse>(`${API_CONFIG.BASE_URL}/api/comments/public/movie/${movieId}?page=${page}&limit=${limit}`, {
@@ -117,12 +126,12 @@ export const commentService: CommentService = {
     }),
 
   /**
-   * Obtiene los comentarios del usuario autenticado con paginación.
+   * Retrieves comments made by the authenticated user with pagination.
    * 
    * @async
    * @function getMyComments
-   * @param {number} [page=1] - Número de página
-   * @param {number} [limit=10] - Cantidad de comentarios por página
+   * @param {number} [page=1] - Page number
+   * @param {number} [limit=10] - Number of comments per page
    * @returns {Promise<ApiResponse<CommentPaginationResponse>>} Respuesta con comentarios del usuario
    */
   getMyComments: (page: number = 1, limit: number = 10): Promise<ApiResponse<CommentPaginationResponse>> => 
@@ -131,13 +140,13 @@ export const commentService: CommentService = {
     }),
 
   /**
-   * Actualiza el contenido de un comentario existente.
+   * Updates the content of an existing comment.
    * 
    * @async
    * @function updateComment
-   * @param {string} commentId - ID del comentario a actualizar
-   * @param {UpdateCommentData} data - Nuevos datos del comentario
-   * @returns {Promise<ApiResponse<Comment>>} Respuesta con el comentario actualizado
+   * @param {string} commentId - ID of the comment to update
+   * @param {UpdateCommentData} data - New comment data
+   * @returns {Promise<ApiResponse<Comment>>} Response with the updated comment
    */
   updateComment: (commentId: string, data: UpdateCommentData): Promise<ApiResponse<Comment>> => 
     makeRequest<Comment>(`${API_CONFIG.BASE_URL}/api/comments/${commentId}`, {
@@ -146,12 +155,12 @@ export const commentService: CommentService = {
     }),
 
   /**
-   * Elimina un comentario específico.
+   * Deletes a specific comment.
    * 
    * @async
    * @function deleteComment
-   * @param {string} commentId - ID del comentario a eliminar
-   * @returns {Promise<ApiResponse<void>>} Respuesta de confirmación de eliminación
+   * @param {string} commentId - ID of the comment to delete
+   * @returns {Promise<ApiResponse<void>>} Response confirming deletion
    */
   deleteComment: (commentId: string): Promise<ApiResponse<void>> => 
     makeRequest<void>(`${API_CONFIG.BASE_URL}/api/comments/${commentId}`, {
@@ -159,12 +168,12 @@ export const commentService: CommentService = {
     }),
 
   /**
-   * Obtiene un comentario específico por su ID.
+   * Retrieves a specific comment by its ID.
    * 
    * @async
    * @function getComment
-   * @param {string} commentId - ID del comentario
-   * @returns {Promise<ApiResponse<Comment>>} Respuesta con el comentario solicitado
+   * @param {string} commentId - ID of the comment
+   * @returns {Promise<ApiResponse<Comment>>} Response with the requested comment
    */
   getComment: (commentId: string): Promise<ApiResponse<Comment>> => 
     makeRequest<Comment>(`${API_CONFIG.BASE_URL}/api/comments/${commentId}`, {

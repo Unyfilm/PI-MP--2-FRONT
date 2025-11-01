@@ -1,8 +1,21 @@
 /**
- * Login component
- * Renders the email/password form, client-side validation and calls auth context.
- * UI copy remains in Spanish by requirement; code and docs in English.
- * @returns JSX.Element
+ * @file Login.tsx
+ * @description
+ * Login page component for the UnyFilm platform.  
+ * Handles user authentication via email and password, client-side validation, and accessibility labels.
+ * The UI text remains in Spanish as per UX copy requirements.
+ * 
+ * Implements validation rules, password visibility toggle, error feedback, and navigation after successful login.
+ * 
+ * @version 3.0.0
+ * @module Login
+ * 
+ * @author
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
  */
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
@@ -12,16 +25,44 @@ import collage from '../../images/collage.jpg';
 import './Login.scss';
 import { useAuth } from '../../contexts/AuthContext';
 
+/**
+ * @interface FormErrors
+ * @description
+ * Represents the validation error messages for each field in the login form.
+ *
+ * @property {string} email - Error message for the email field.
+ * @property {string} password - Error message for the password field.
+ */
 interface FormErrors {
   email: string;
   password: string;
 }
 
+/**
+ * @interface TouchedFields
+ * @description
+ * Tracks whether each form field has been interacted with to manage error visibility.
+ *
+ * @property {boolean} email - True if email input has been touched.
+ * @property {boolean} password - True if password input has been touched.
+ */
 interface TouchedFields {
   email: boolean;
   password: boolean;
 }
 
+/**
+ * Login Component
+ * 
+ * Renders the email/password login form and manages:
+ * - Form state and validation
+ * - Password visibility toggle
+ * - API authentication via context
+ * - Client-side accessibility feedback
+ *
+ * @function Login
+ * @returns {JSX.Element} Rendered login form UI.
+ */
 export default function Login() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -32,7 +73,12 @@ export default function Login() {
   const [apiError, setApiError] = useState<string>('');
   const navigate = useNavigate();
   const { login } = useAuth();
-
+  
+  /**
+   * Validates the email format and presence.
+   * @param {string} value - User-entered email value.
+   * @returns {string} Validation error message or an empty string if valid.
+   */
   const validateEmail = (value: string): string => {
     if (!value) return 'El correo electrónico es requerido';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -40,6 +86,12 @@ export default function Login() {
     return '';
   };
 
+  
+  /**
+   * Validates the password's strength and length.
+   * @param {string} value - User-entered password.
+   * @returns {string} Validation error message or an empty string if valid.
+   */
   const validatePassword = (value: string): string => {
     if (!value) return 'La contraseña es requerida';
     if (value.length < 8) return 'Mínimo 8 caracteres';
@@ -50,6 +102,10 @@ export default function Login() {
     return '';
   };
 
+  /**
+   * Handles real-time validation and updates email input.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event.
+   */
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setEmail(value);
@@ -58,6 +114,10 @@ export default function Login() {
     }
   };
 
+  /**
+   * Handles real-time validation and updates password input.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event.
+   */
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setPassword(value);
@@ -66,6 +126,10 @@ export default function Login() {
     }
   };
 
+  /**
+   * Marks a field as touched and triggers its validation.
+   * @param {keyof TouchedFields} field - Field name ('email' or 'password').
+   */
   const handleBlur = (field: keyof TouchedFields): void => {
     setTouched(prev => ({ ...prev, [field]: true }));
     if (field === 'email') {
@@ -74,7 +138,13 @@ export default function Login() {
       setErrors(prev => ({ ...prev, password: validatePassword(password) }));
     }
   };
-
+  
+  /**
+   * Handles the login form submission and triggers authentication.
+   * Performs client-side validation before sending credentials to the backend.
+   * @param {React.FormEvent<HTMLFormElement>} e - Submit event.
+   * @returns {Promise<void>} - Asynchronous login result.
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const emailError = validateEmail(email);

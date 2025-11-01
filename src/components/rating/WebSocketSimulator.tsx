@@ -1,11 +1,74 @@
+/**
+ * @file WebSocketSimulator.tsx
+ * @description
+ * Developer-only testing tool for broadcasting simulated WebSocket events
+ * (e.g., movie rating updates or rating statistics) to verify real-time synchronization
+ * between browser tabs and connected clients.
+ * 
+ * The simulator sends events through the {@link sendWebSocketEvent} service and displays
+ * a small fixed-position UI in the corner of the screen. It allows developers to:
+ * 
+ * - Emit **rating update** events (`rating-updated`)
+ * - Emit **rating statistics** events (`rating-stats-updated`)
+ * - Test how different clients receive and react to these updates
+ * 
+ * This component is automatically hidden in production environments.
+ *
+ * @module WebSocketSimulator
+ * @version 3.0.0
+ * 
+ * @authors
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
+ */
 import React, { useState } from 'react';
 import { sendWebSocketEvent } from '../../services/websocketService';
 
-
+/**
+ * @component
+ * @name WebSocketSimulator
+ * @description
+ * Interactive developer tool that simulates WebSocket messages being sent
+ * to the server or other clients. Useful for testing cross-browser communication
+ * and real-time rating synchronization during development.
+ * 
+ * It provides two test actions:
+ * 
+ * - **Enviar Rating:** Sends a `"rating-updated"` event containing rating data.
+ * - **Enviar Stats:** Sends a `"rating-stats-updated"` event with aggregated statistics.
+ * 
+ * The UI only appears when `NODE_ENV === "development"`.
+ *
+ * @example
+ * ```tsx
+ * import WebSocketSimulator from '../components/debug/WebSocketSimulator';
+ * 
+ * function App() {
+ *   return (
+ *     <>
+ *       <MainApp />
+ *       <WebSocketSimulator />
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * @returns {JSX.Element | null} A floating debug panel in development mode, or `null` in production.
+ */
 const WebSocketSimulator: React.FC = () => {
   const [testMovieId, setTestMovieId] = useState('68f84e9aba5b03d95f2d6ce4');
   const [testRating, setTestRating] = useState(3);
 
+  /**
+   * Sends a simulated "rating-updated" WebSocket event.
+   * This mimics a user rating being submitted for a movie.
+   * 
+   * @function handleSendRatingEvent
+   * @returns {void}
+   */
   const handleSendRatingEvent = () => {
     console.log('📤 [WEBSOCKET SIMULATOR] Enviando evento de rating...');
     
@@ -22,6 +85,13 @@ const WebSocketSimulator: React.FC = () => {
     });
   };
 
+  /**
+   * Sends a simulated "rating-stats-updated" WebSocket event.
+   * This mimics an update to the movie’s aggregated rating statistics.
+   * 
+   * @function handleSendStatsEvent
+   * @returns {void}
+   */
   const handleSendStatsEvent = () => {
     console.log('📤 [WEBSOCKET SIMULATOR] Enviando evento de estadísticas...');
     

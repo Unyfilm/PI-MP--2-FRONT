@@ -1,3 +1,23 @@
+/**
+ * @file Profile.tsx
+ * @description
+ * User profile page for UnyFilm platform.
+ * Displays personal information from the authenticated user, allows navigation,
+ * profile editing, and secure account deletion through password confirmation.
+ * Includes accessible modal dialog with form validation and feedback messages.
+ *
+ * @module Profile
+ *
+ * @version 3.0.0
+ *
+ * @authors
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
+ */
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
@@ -5,13 +25,28 @@ import { useAuth } from '../../contexts/AuthContext';
 import './Profile.scss';
 
 /**
- * Profile
+ * @component
+ * @name Profile
+ * @description
+ * User profile summary page showing account data from `AuthContext`.
+ * Provides options to:
+ * - View profile details
+ * - Edit personal information
+ * - Return to the homepage
+ * - Permanently delete account via password confirmation modal
  *
- * User profile summary page with basic information and actions
- * (edit profile, navigate home, and delete account modal).
- * Uses real user data from AuthContext.
+ * Implements WCAG accessibility standards and form validation with feedback.
  *
- * @returns {JSX.Element} Profile page UI
+ * @returns {JSX.Element} A responsive, accessible user profile page.
+ *
+ * @example
+ * ```tsx
+ * import Profile from './pages/profile/Profile';
+ * 
+ * function App() {
+ *   return <Profile />;
+ * }
+ * ```
  */
 export default function Profile() {
   const { user, deleteAccount } = useAuth();
@@ -20,7 +55,12 @@ export default function Profile() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-
+  
+  /**
+   * Closes the delete account modal and resets its internal state.
+   * @function
+   * @returns {void}
+   */
   const handleCloseModal = () => {
     setShowDelete(false);
     setPassword('');
@@ -42,7 +82,16 @@ export default function Profile() {
       </div>
     );
   }
-
+  
+  /**
+   * Handles form submission for account deletion.
+   * Verifies the entered password and calls `deleteAccount` from context.
+   *
+   * @async
+   * @function
+   * @param {React.FormEvent<HTMLFormElement>} e - Form submission event.
+   * @returns {Promise<void>}
+   */
   const handleConfirmDelete = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     

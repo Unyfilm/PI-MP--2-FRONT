@@ -1,10 +1,23 @@
+/**
+ * @file AuthContext.tsx
+ * @description Provides a global authentication context that manages user session,
+ * token persistence, and interaction with authentication and profile APIs.
+ * Supports login, registration, logout, profile updates, password changes,
+ * and account deletion. Ensures session integrity and handles token validation.
+ * 
+ * @author
+ * Hernan Garcia, Juan Camilo Jimenez, Julieta Arteta,
+ * Jerson Otero, Julian Mosquera
+ */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import authService from '../services/authService';
 import { apiService } from '../services/apiService';
 import type { BackendUser } from '../services/authService';
 
-
+/**
+ * Defines the structure of the authentication context.
+ */
 interface AuthContextType {
   user: BackendUser | null;
   token: string | null;

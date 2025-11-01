@@ -1,7 +1,26 @@
 /**
- * InteractiveRating component
- * Displays and submits user star ratings, updates aggregate stats,
- * and broadcasts rating changes for real-time listeners.
+ * @file InteractiveRating.tsx
+ * @description
+ * Interactive React component that enables users to rate movies with a 1–5 star system,
+ * view aggregate statistics, update or delete their ratings, and broadcast updates for
+ * real-time listeners across the platform.
+ *
+ * Features:
+ * - Displays live average rating and total number of ratings.
+ * - Allows users to create, update, or remove their individual rating.
+ * - Synchronizes rating changes using `broadcastRatingUpdate` for multi-user environments.
+ * - Fully accessible via keyboard and screen readers (ARIA-compliant).
+ *
+ * @module InteractiveRating
+ *
+ * @version 3.0.0
+ *
+ * @authors
+ *  Hernan Garcia,
+ *  Juan Camilo Jimenez,
+ *  Julieta Arteta,
+ *  Jerson Otero,
+ *  Julian Mosquera
  */
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
@@ -112,6 +131,12 @@ const InteractiveRating: React.FC<InteractiveRatingProps> = ({
     }
   };
 
+    /**
+   * Renders the 5 interactive star buttons used for rating selection.
+   *
+   * @function renderStars
+   * @returns {JSX.Element[]} Array of interactive star buttons.
+   */
   const renderStars = () => {
     const stars = [];
     const currentRating = hoverRating || userRating?.rating || 0;

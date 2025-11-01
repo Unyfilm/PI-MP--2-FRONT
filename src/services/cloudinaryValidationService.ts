@@ -1,13 +1,23 @@
 /**
- * Servicio para validar y manejar URLs de Cloudinary
+ * Cloudinary Validation Service
+ * @fileoverview Provides validation and fallback management for Cloudinary URLs used in UnyFilm.
+ * Includes utilities for validating, checking existence, and processing fallback resources
+ * for both images and videos.
+ * 
  * @class CloudinaryValidationService
+ * @author
+ *  - Hernan Garcia
+ *  - Juan Camilo Jimenez
+ *  - Julieta Arteta
+ *  - Jerson Otero
+ *  - Julian Mosquera
  */
 class CloudinaryValidationService {
   
   /**
-   * Valida si una URL de Cloudinary es válida
-   * @param {string} url - URL a validar
-   * @returns {boolean} True si la URL es válida
+   * Validates whether a given URL is a valid Cloudinary URL.
+   * @param {string} url - The URL to validate.
+   * @returns {boolean} True if the URL matches the Cloudinary format.
    */
   isValidCloudinaryUrl(url: string): boolean {
     if (!url || typeof url !== 'string') {
@@ -19,9 +29,9 @@ class CloudinaryValidationService {
   }
 
   /**
-   * Valida si una URL existe haciendo una petición HEAD
-   * @param {string} url - URL a validar
-   * @returns {Promise<boolean>} True si la URL existe
+   * Checks if a given Cloudinary URL exists by performing a HEAD request.
+   * @param {string} url - The URL to verify.
+   * @returns {Promise<boolean>} True if the URL exists and returns a valid response.
    */
   async validateUrlExists(url: string): Promise<boolean> {
     if (!this.isValidCloudinaryUrl(url)) {
@@ -41,9 +51,9 @@ class CloudinaryValidationService {
   }
 
   /**
-   * Obtiene una URL de fallback para imágenes
-   * @param {string} type - Tipo de imagen (poster, port, etc.)
-   * @returns {string} URL de fallback
+   * Returns a fallback image URL based on the given type.
+   * @param {'poster' | 'port' | 'hero'} [type='poster'] - The image type.
+   * @returns {string} The fallback image URL.
    */
   getFallbackImageUrl(type: 'poster' | 'port' | 'hero' = 'poster'): string {
     const fallbackImages = {
@@ -56,18 +66,18 @@ class CloudinaryValidationService {
   }
 
   /**
-   * Obtiene una URL de fallback para videos
-   * @returns {string} URL de fallback
+   * Returns the fallback video URL.
+   * @returns {string} The fallback video URL.
    */
   getFallbackVideoUrl(): string {
     return '/videos/default-trailer.mp4';
   }
 
   /**
-   * Procesa una URL de imagen con fallback
-   * @param {string} url - URL original
-   * @param {string} type - Tipo de imagen
-   * @returns {Promise<string>} URL válida o fallback
+   * Validates an image URL and returns either the valid URL or a fallback one.
+   * @param {string} url - The original image URL.
+   * @param {'poster' | 'port' | 'hero'} [type='poster'] - The image type.
+   * @returns {Promise<string>} A valid image URL or a fallback.
    */
   async processImageUrl(url: string, type: 'poster' | 'port' | 'hero' = 'poster'): Promise<string> {
     if (!url) {
@@ -84,9 +94,9 @@ class CloudinaryValidationService {
   }
 
   /**
-   * Procesa una URL de video con fallback
-   * @param {string} url - URL original
-   * @returns {Promise<string>} URL válida o fallback
+   * Validates a video URL and returns either the valid URL or a fallback one.
+   * @param {string} url - The original video URL.
+   * @returns {Promise<string>} A valid video URL or a fallback.
    */
   async processVideoUrl(url: string): Promise<string> {
     if (!url) {
@@ -102,9 +112,10 @@ class CloudinaryValidationService {
   }
 
   /**
-   * Obtiene información de una película con URLs validadas
-   * @param {any} movie - Objeto de película
-   * @returns {Promise<any>} Película con URLs procesadas
+   * Processes and validates all media URLs within a movie object.
+   * Applies fallback URLs when necessary.
+   * @param {any} movie - The movie object containing URLs.
+   * @returns {Promise<any>} The movie object with processed URLs.
    */
   async processMovieUrls(movie: any): Promise<any> {
     if (!movie) {
@@ -138,9 +149,9 @@ class CloudinaryValidationService {
   }
 
   /**
-   * Procesa un array de películas con URLs validadas
-   * @param {any[]} movies - Array de películas
-   * @returns {Promise<any[]>} Array de películas con URLs procesadas
+   * Processes and validates all media URLs within an array of movies.
+   * @param {any[]} movies - The array of movie objects.
+   * @returns {Promise<any[]>} The array of movies with validated URLs.
    */
   async processMoviesUrls(movies: any[]): Promise<any[]> {
     if (!Array.isArray(movies)) {

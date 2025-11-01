@@ -1,8 +1,16 @@
-
+/**
+ * @file types.ts
+ * @description
+ * Centralized TypeScript type and interface definitions for the UnyFilm application.  
+ * Defines reusable models for movies, users, authentication, API responses, components,  
+ * and configuration options across the frontend codebase.
+ *
+ * @module Types
+ */
 
 /**
- * Application view types
- * @type {ViewType}
+ * Represents the main view types of the application.
+ * @typedef {'home' | 'catalog' | 'about' | 'sitemap' | 'favorites'} ViewType
  */
 export type ViewType = 'home' | 'catalog' | 'about' | 'sitemap' | 'favorites';
 
