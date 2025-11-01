@@ -7,8 +7,6 @@ const WebSocketSimulator: React.FC = () => {
   const [testRating, setTestRating] = useState(3);
 
   const handleSendRatingEvent = () => {
-    console.log('📤 [WEBSOCKET SIMULATOR] Enviando evento de rating...');
-    
     sendWebSocketEvent({
       type: 'rating-updated',
       movieId: testMovieId,
@@ -23,8 +21,6 @@ const WebSocketSimulator: React.FC = () => {
   };
 
   const handleSendStatsEvent = () => {
-    console.log('📤 [WEBSOCKET SIMULATOR] Enviando evento de estadísticas...');
-    
     sendWebSocketEvent({
       type: 'rating-stats-updated',
       movieId: testMovieId,

@@ -63,7 +63,7 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     enableRealtime: true
   });
 
-  // Estado local para asegurar valor inmediato en Home
+
   const [heroRating, setHeroRating] = useState<{ avg: number; total: number; loading: boolean }>({ avg: 0, total: 0, loading: true });
   const getHeroImage = (movie: Movie): string => {
     if (movie.port) return movie.port;
@@ -188,14 +188,14 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
     }
   }, []);
 
-  // Cargar/recargar rating cuando cambia la película destacada
+
   useEffect(() => {
     if (featuredMovie?._id) {
       loadRatingStats();
     }
   }, [featuredMovie?._id, loadRatingStats]);
 
-  // Fetch directo para el héroe (no depende de eventos) con timeout de seguridad
+
   useEffect(() => {
     let cancelled = false;
     let safetyTimer: number | null = null;
@@ -205,7 +205,7 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
         return;
       }
       setHeroRating(prev => ({ ...prev, loading: true }));
-      // timeout de 2s para evitar "…" indefinido si hay problemas de red
+
       safetyTimer = window.setTimeout(() => {
         if (!cancelled) {
           setHeroRating(prev => ({ ...prev, loading: false }));
@@ -428,8 +428,8 @@ export default function UnyFilmHome({ onMovieClick }: Omit<HomeProps, 'favorites
               <span className="hero-rating">
                 <Star size={16} />
                 {
-                  // Preferir stats del hook en tiempo real si ya llegaron
-                  (ratingStats && ratingStats.totalRatings > 0)
+
+(ratingStats && ratingStats.totalRatings > 0)
                     ? ratingStats.averageRating.toFixed(1)
                     : (heroRating.loading ? '…' : (heroRating.total > 0 ? heroRating.avg.toFixed(1) : '—'))
                 }

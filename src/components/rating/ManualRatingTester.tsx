@@ -19,13 +19,11 @@ const ManualRatingTester: React.FC = () => {
   const [testRating, setTestRating] = useState(3);
 
   const testRatingUpdate = () => {
-    console.log('🧪 [MANUAL TEST] Emitiendo evento de prueba...');
     
     emitRatingUpdate('68f84e9aba5b03d95f2d6ce4', testRating, 'create');
   };
 
   const testStatsUpdate = () => {
-    console.log('🧪 [MANUAL TEST] Emitiendo estadísticas de prueba...');
     
     emitStatsUpdate('68f84e9aba5b03d95f2d6ce4', testRating, 5);
   };

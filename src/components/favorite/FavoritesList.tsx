@@ -22,7 +22,6 @@ const FavoritesList: React.FC<FavoritesListProps> = ({
 
   useEffect(() => {
     if (user && favorites.length === 0 && !loading) {
-      console.log('📋 FavoritesList: Cargando favoritos desde contexto...');
       loadFavorites();
     }
   }, [user, favorites.length, loading, loadFavorites]);
@@ -35,7 +34,6 @@ const FavoritesList: React.FC<FavoritesListProps> = ({
     try {
       const result = await removeFromFavorites(favoriteId);
       if (result.success) {
-        console.log('✅ Favorito eliminado desde FavoritesList');
       } else {
         console.error('❌ Error eliminando favorito:', result.message);
         alert('Error al eliminar de favoritos');

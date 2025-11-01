@@ -5,7 +5,7 @@
  */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Home, Film, Heart, LogOut, Eye } from 'lucide-react';
+import { Home, Film, Heart, LogOut, Eye, FileText } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import logoImage from '../../images/logo3.png';
@@ -30,7 +30,7 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
   const navigate = useNavigate();
   const { logout } = useAuth();
   
-  const accessibilityRef = useClickOutside(() => {
+  const accessibilityRef = useClickOutside<HTMLDivElement>(() => {
     setShowAccessibility(false);
   });
 
@@ -41,6 +41,23 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  /**
+   * Download user manual PDF
+   * Works in both development and production environments
+   */
+  const handleDownloadManual = () => {
+    const fileName = 'ManualDeUsuarioUnyFilm.pdf';
+    const filePath = `/${fileName}`;
+    
+    const link = document.createElement('a');
+    link.href = filePath;
+    link.download = fileName;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -99,6 +116,11 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
             label="Favoritos"
           />
         </Link>
+        <NavIcon 
+          icon={<FileText size={24} strokeWidth={2} />}
+          label="Manual de Usuario"
+          onClick={handleDownloadManual}
+        />
       </nav>
       
       <div className="unyfilm-sidebar__bottom">
@@ -131,7 +153,6 @@ export default function UnyFilmSidebar({ currentView }: UnyFilmSidebarProps) {
             </>
           )}
         </div>
-        
         
         <NavIcon 
           icon={<LogOut size={24} strokeWidth={2} />}

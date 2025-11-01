@@ -27,7 +27,7 @@ export default function PlayerPage() {
         setMovie(parsed);
         return;
       } catch {
-        // ignore
+
       }
     }
 
