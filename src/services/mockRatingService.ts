@@ -31,7 +31,6 @@ export const getMockRatingStats = async (movieId: string): Promise<RatingStats> 
   const mockStats = generateMockRatingStats(movieId);
   mockDataCache.set(movieId, mockStats);
   
-  console.log('🎭 [MOCK RATING] Generando estadísticas mock:', mockStats);
   return mockStats;
 };
 
@@ -45,7 +44,6 @@ export const updateMockRatingStats = (movieId: string, newRating: number, action
     newStats.averageRating = newRating;
     newStats.totalRatings = 1;
     mockDataCache.set(movieId, newStats);
-    console.log('🎭 [MOCK RATING] Creando nuevas estadísticas:', newStats);
     return;
   }
 
@@ -79,11 +77,9 @@ export const updateMockRatingStats = (movieId: string, newRating: number, action
   };
 
   mockDataCache.set(movieId, updatedStats);
-  console.log('🎭 [MOCK RATING] Actualizando estadísticas:', updatedStats);
 };
 
 
 export const clearMockCache = () => {
   mockDataCache.clear();
-  console.log('🎭 [MOCK RATING] Cache limpiado');
 };

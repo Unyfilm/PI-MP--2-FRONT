@@ -50,8 +50,6 @@ const RealtimeTestPanel: React.FC = () => {
     const rating = Math.floor(Math.random() * 5) + 1;
     const action = Math.random() > 0.5 ? 'create' : 'update';
     
-    console.log('🧪 [TEST] Simulando evento de rating:', { movieId, rating, action });
-    console.log('🧪 [TEST] Busca la card con ID:', movieId);
     simulateRatingEvent(movieId, rating, action);
   };
 
@@ -60,7 +58,6 @@ const RealtimeTestPanel: React.FC = () => {
     const averageRating = Math.random() * 5;
     const totalRatings = Math.floor(Math.random() * 100) + 1;
     
-    console.log('🧪 [TEST] Simulando evento de estadísticas:', { movieId, averageRating, totalRatings });
     simulateStatsEvent(movieId, averageRating, totalRatings);
   };
 
@@ -122,13 +119,11 @@ const RealtimeTestPanel: React.FC = () => {
               📊 Simular Rating (Aleatorio)
             </button>
             <button onClick={() => {
-              console.log('🧪 [TEST] Simulando Superman específicamente');
               simulateRatingEvent('68f84e9aba5b03d95f2d6ce1', 4, 'create');
             }} className="test-btn">
               🦸 Simular Superman
             </button>
             <button onClick={async () => {
-              console.log('🧪 [TEST] Probando cross-tab directamente');
               const { broadcastToOtherTabs } = await import('../../services/crossTabService');
               broadcastToOtherTabs('68f84e9aba5b03d95f2d6ce1', 5, 'create');
             }} className="test-btn">
@@ -138,11 +133,9 @@ const RealtimeTestPanel: React.FC = () => {
               📈 Simular Estadísticas
             </button>
             <button onClick={() => {
-              console.log('🧪 [TEST] Probando conexión al servidor Socket.io');
               fetch('http://localhost:3001/api/realtime/test')
                 .then(res => res.json())
                 .then(data => {
-                  console.log('📡 Respuesta del servidor:', data);
                   alert(`Servidor: ${data.message}\nUsuarios conectados: ${data.connectedUsers}`);
                 })
                 .catch(error => {

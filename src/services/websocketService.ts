@@ -24,17 +24,13 @@ class WebSocketService {
 
   connect() {
     if (this.isConnected || this.ws) {
-      console.log('🔄 [WEBSOCKET] Ya conectado, ignorando nueva conexión');
       return;
     }
 
     try {
-      console.log('🔌 [WEBSOCKET] Conectando al servidor WebSocket...');
-      
       this.ws = new WebSocket(this.serverUrl);
       
       this.ws.onopen = () => {
-        console.log('✅ [WEBSOCKET] Conectado al servidor WebSocket');
         this.isConnected = true;
         this.reconnectAttempts = 0;
       };
@@ -42,8 +38,6 @@ class WebSocketService {
       this.ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('📡 [WEBSOCKET] Mensaje recibido:', data);
-          
           this.handleWebSocketEvent(data);
         } catch (error) {
           console.error('❌ [WEBSOCKET] Error procesando mensaje:', error);
@@ -57,7 +51,6 @@ class WebSocketService {
       };
 
       this.ws.onclose = () => {
-        console.log('🔌 [WEBSOCKET] Conexión cerrada');
         this.isConnected = false;
         this.handleReconnection();
       };
@@ -71,14 +64,11 @@ class WebSocketService {
   
   private handleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log('❌ [WEBSOCKET] Máximo de intentos de reconexión alcanzado');
       return;
     }
 
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    
-    console.log(`🔄 [WEBSOCKET] Reintentando conexión en ${delay}ms (intento ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
     
     setTimeout(() => {
       this.disconnect();
@@ -88,9 +78,6 @@ class WebSocketService {
 
   
   private handleWebSocketEvent(event: WebSocketEvent) {
-    console.log(`🎯 [WEBSOCKET] Procesando evento ${event.type} para película ${event.movieId}`);
-    
-   
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
         movieId: event.movieId,
@@ -104,7 +91,6 @@ class WebSocketService {
   
   sendEvent(event: WebSocketEvent) {
     if (this.ws && this.isConnected) {
-      console.log('📤 [WEBSOCKET] Enviando evento:', event);
       this.ws.send(JSON.stringify(event));
     } else {
       console.warn('⚠️ [WEBSOCKET] No conectado, no se puede enviar evento');
@@ -114,7 +100,6 @@ class WebSocketService {
   
   disconnect() {
     if (this.ws) {
-      console.log('🔌 [WEBSOCKET] Desconectando del servidor...');
       this.ws.close();
       this.ws = null;
       this.isConnected = false;

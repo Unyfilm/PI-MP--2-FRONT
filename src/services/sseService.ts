@@ -27,13 +27,10 @@ class SSEService {
   
   connect() {
     if (this.isConnected || this.eventSource) {
-      console.log('🔄 [SSE] Ya conectado, ignorando nueva conexión');
       return;
     }
 
     try {
-      console.log('🔌 [SSE] Conectando al servidor SSE...');
-      
       const sseUrl = `${API_CONFIG.BASE_URL}/api/realtime/events`;
       
       this.eventSource = new EventSource(sseUrl, {
@@ -41,7 +38,6 @@ class SSEService {
       });
 
       this.eventSource.onopen = () => {
-        console.log('✅ [SSE] Conectado al servidor SSE');
         this.isConnected = true;
         this.reconnectAttempts = 0;
       };
@@ -49,7 +45,6 @@ class SSEService {
       this.eventSource.onmessage = (event) => {
         try {
           const sseEvent: SSEEvent = JSON.parse(event.data);
-          console.log('📡 [SSE] Evento recibido del servidor:', sseEvent);
           this.handleSSEEvent(sseEvent);
         } catch (error) {
           console.error('❌ [SSE] Error procesando evento:', error);
@@ -65,7 +60,6 @@ class SSEService {
       this.eventSource.addEventListener('rating-updated', (event) => {
         try {
           const data = JSON.parse((event as MessageEvent).data);
-          console.log('📡 [SSE] Rating actualizado:', data);
           this.handleRatingUpdate(data);
         } catch (error) {
           console.error('❌ [SSE] Error procesando rating-updated:', error);
@@ -75,7 +69,6 @@ class SSEService {
       this.eventSource.addEventListener('rating-stats-updated', (event) => {
         try {
           const data = JSON.parse((event as MessageEvent).data);
-          console.log('📊 [SSE] Estadísticas actualizadas:', data);
           this.handleStatsUpdate(data);
         } catch (error) {
           console.error('❌ [SSE] Error procesando rating-stats-updated:', error);
@@ -130,14 +123,11 @@ class SSEService {
   
   private handleReconnection() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log('❌ [SSE] Máximo de intentos de reconexión alcanzado');
       return;
     }
 
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    
-    console.log(`🔄 [SSE] Reintentando conexión en ${delay}ms (intento ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
     
     setTimeout(() => {
       this.disconnect();
@@ -148,7 +138,6 @@ class SSEService {
  
   disconnect() {
     if (this.eventSource) {
-      console.log('🔌 [SSE] Desconectando del servidor SSE...');
       this.eventSource.close();
       this.eventSource = null;
       this.isConnected = false;

@@ -6,7 +6,7 @@ import React from 'react';
  */
 export const AccessibilityTest: React.FC = () => {
   const testScreenReader = () => {
-    // Simular anuncios para probar lectores de pantalla
+
     const announcement = document.createElement('div');
     announcement.setAttribute('aria-live', 'polite');
     announcement.setAttribute('aria-atomic', 'true');

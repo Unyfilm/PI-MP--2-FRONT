@@ -36,7 +36,6 @@ class MockRealtimeServer {
       timestamp: Date.now()
     };
 
-    console.log('🎭 [MOCK SERVER] Simulando evento de rating:', event);
     
     updateMockRatingStats(movieId, rating, action as 'create' | 'update' | 'delete');
     
@@ -57,7 +56,6 @@ class MockRealtimeServer {
       timestamp: Date.now()
     };
 
-    console.log('🎭 [MOCK SERVER] Simulando evento de estadísticas:', event);
     this.broadcastEvent(event);
   }
 
@@ -72,7 +70,6 @@ class MockRealtimeServer {
       }
     });
 
-    console.log('🎭 [MOCK SERVER] Emitiendo evento del DOM:', event);
     window.dispatchEvent(new CustomEvent(event.type, {
       detail: {
         movieId: event.movieId,
@@ -88,7 +85,6 @@ class MockRealtimeServer {
     if (this.isRunning) return;
     
     this.isRunning = true;
-    console.log('🎭 [MOCK SERVER] Iniciando eventos aleatorios...');
 
     const movieIds = [
       '68f84e9aba5b03d95f2d6ce1',
@@ -120,7 +116,6 @@ class MockRealtimeServer {
  
   stopRandomEvents() {
     this.isRunning = false;
-    console.log('🎭 [MOCK SERVER] Deteniendo eventos aleatorios...');
   }
 
   

@@ -2,12 +2,12 @@ import { render } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import UsabilityFeatures from '../UsabilityFeatures';
 
-// Mock del hook useClickOutside
+
 vi.mock('../../hooks/useClickOutside', () => ({
   useClickOutside: () => ({ current: null })
 }));
 
-// Mock de window.matchMedia
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({
@@ -22,7 +22,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Mock de ResizeObserver
+
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
@@ -63,7 +63,7 @@ describe('UsabilityFeatures', () => {
       
       helpButton.click();
       
-      // Esperar a que aparezca el modal
+
       setTimeout(() => {
         expect(getByText('Guía de Usabilidad - UnyFilm')).toBeInTheDocument();
       }, 100);
@@ -130,7 +130,7 @@ describe('UsabilityFeatures', () => {
       helpButton.click();
       
       setTimeout(() => {
-        // Simular clic fuera del modal
+
         document.body.click();
         
         setTimeout(() => {
@@ -186,7 +186,7 @@ describe('UsabilityFeatures', () => {
       const { getByRole } = render(<UsabilityFeatures />);
       const helpButton = getByRole('button', { name: /mostrar u ocultar ayuda/i });
       
-      // Simular evento de teclado
+
       const keyboardEvent = new KeyboardEvent('keydown', {
         key: 'h',
         altKey: true,

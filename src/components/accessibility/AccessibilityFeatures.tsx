@@ -121,7 +121,7 @@ export default function AccessibilityFeatures() {
   }, [fontSize]);
 
   const applyAccessibilityFeatures = () => {
-    // Preserve scroll position to avoid layout jump when toggling classes
+
     const x = window.scrollX;
     const y = window.scrollY;
 
@@ -135,13 +135,13 @@ export default function AccessibilityFeatures() {
     const prefs = { highContrast, reducedMotion, fontSize, focusVisible, skipLinks };
     localStorage.setItem('unyfilm-accessibility', JSON.stringify(prefs));
 
-    // Restore scroll position on next frame
+
     requestAnimationFrame(() => {
       window.scrollTo(x, y);
     });
   };
 
-  // Disable shortcuts on player and public routes
+
   useEffect(() => {
     if (isPlayerRoute || isPublicRoute) return;
 
@@ -233,7 +233,7 @@ export default function AccessibilityFeatures() {
     }
   };
 
-  // Do not render UI on player or public routes
+
   const shouldRenderUi = !(isPlayerRoute || isPublicRoute);
 
   return (

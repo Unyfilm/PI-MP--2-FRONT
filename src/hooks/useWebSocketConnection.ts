@@ -16,7 +16,6 @@ export const useWebSocketConnection = () => {
   });
 
   useEffect(() => {
-    console.log('🔌 [HOOK] Iniciando conexión WebSocket...');
     websocketService.connect();
 
     const statusInterval = setInterval(() => {
@@ -26,7 +25,6 @@ export const useWebSocketConnection = () => {
 
     return () => {
       clearInterval(statusInterval);
-      console.log('🔌 [HOOK] Limpiando conexión WebSocket...');
     };
   }, []);
 

@@ -67,11 +67,11 @@ export interface LoginFormData {
  * @interface RegisterFormData
  */
 export interface RegisterFormData {
-  // Preferred English
+
   firstName?: string;
   lastName?: string;
   age?: string;
-  // Legacy Spanish (deprecated)
+
   nombres?: string;
   apellidos?: string;
   edad?: string;
@@ -259,7 +259,7 @@ export interface User {
   username?: string;
   firstName?: string;
   lastName?: string;
-  // Legacy
+
   nombres?: string;
   apellidos?: string;
   edad?: string;
